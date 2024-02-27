@@ -5,6 +5,7 @@ from django.db import models
 
 class TiposHabitos(models.Model):
     nombre = models.CharField(max_length=100)
+    numero = models.IntegerField()
 
 class Habito(models.Model):
     numero = models.IntegerField()
@@ -14,9 +15,9 @@ class Habito(models.Model):
     count = models.IntegerField()
     type = models.ForeignKey(TiposHabitos, on_delete=models.CASCADE)
     orden_n = models.IntegerField()
-    color = models.CharField( max_length=7)
-    objetivo = models.IntegerField()
-    progresion = models.IntegerField()
+    color = models.CharField(max_length=7,default='FFFFFF')
+    objetivo = models.IntegerField(default=0)
+    progresion = models.IntegerField(default=0)
     
 class Historial_habitos(models.Model):
     fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE)
