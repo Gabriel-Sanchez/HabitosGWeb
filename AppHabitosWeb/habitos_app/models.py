@@ -32,7 +32,7 @@ class Habito(models.Model):
     
 class Historial_habitos(models.Model):
     fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE)
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField()
     duracion = models.DurationField()
     duracion_descanso = models.DurationField()
