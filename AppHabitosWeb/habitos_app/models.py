@@ -36,3 +36,7 @@ class Historial_habitos(models.Model):
     fecha_fin = models.DateTimeField()
     duracion = models.DurationField()
     duracion_descanso = models.DurationField()
+    
+    def __str__(self):
+        return self.fk_habito.nombre + '-' + str(self.fecha_inicio) + str(self.duracion)
+    

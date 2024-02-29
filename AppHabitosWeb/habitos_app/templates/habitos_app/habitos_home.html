@@ -1,0 +1,206 @@
+{% extends "base_app/base_app.html" %}
+
+{% block title %}
+
+<title>habito</title>
+  
+{% endblock title %}
+
+{% block content %}
+
+
+
+
+
+
+
+<div class="columnas">
+    <div class="columna1">
+
+        <div id="ventana1" class="ventana">
+
+            <div class="conotenedor-superior">
+
+                <div class="contenedor_datos_superior">
+
+                    <button class="material-icons" onclick="configurar_habito_nuevo()"> add</button>
+
+                    <h4 id="tiempo_restante"></h4>
+                    <h4 id="horas_completadas"></h4>
+                    <h4 id="tareas_restantes"></h4>
+                </div>
+
+
+
+
+                <div class="contenedor-bar">
+
+
+                    <div class="progress-bar">
+                        <progress value="0" max="100"></progress>
+                        <div class="progress-text">0%</div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <div class="detalles_lista">
+
+                <ul id="miLista">
+            </div>
+            </ul>
+            <details id="details_lista_hecha">
+                <summary>Tareas completadas hoy</summary>
+                <ul id="miLista_hechos">
+            </details>
+            </ul>
+            <details id="details_lista_hecha">
+                <summary>Tareas Archivadas</summary>
+                <ul id="miLista_archivados">
+            </details>
+            </ul>
+        </div>
+
+        <div id="ventana2" class="ventana" style="display: none;">
+            
+            <div class="botones_superior">
+                <button class="material-icons" onclick="cambiarVentana('ventana1')">arrow_back</button>
+                <button class="material-icons" id="boton_borrar" onclick="eliminar_habito()">delete</button>
+                <button class="material-icons" id="archivar_borrar" onclick="archivarHabito(1)">archive</button>
+                <button class="material-icons" id="des_archivar_borrar" onclick="archivarHabito(0)">unarchive</button>
+
+            </div>
+            <h2 id="titulo_habito"></h2>
+            <div class="contenedor_formulario">
+
+
+                <div id="formDiv">
+
+                    <label for="nombre">Nombre:</label>
+                    <input class="imput_form" type="hidden" id="id" name="id">
+                    <input class="imput_form" type="hidden" id="orden_n" name="orden_n">
+                    <input class="imput_form" type="text" id="nombre" name="nombre">
+                    <label for="work_time">Work Time:</label>
+                    <input class="imput_form" type="number" id="work_time" name="work_time">
+                    <label for="short_break">Short Break:</label>
+                    <input class="imput_form" type="number" id="short_break" name="short_break">
+                    <label for="count">Count:</label>
+                    <input class="imput_form" type="number" id="count" name="count">
+                    <label for="objetivo">Objetivo:</label>
+                    <input class="imput_form" type="number" id="objetivo" name="objetivo">
+                    <label for="type">Type:</label>
+                    <select class="imput_form" id="type" name="type">
+                        <option value="1">Pomodoro</option>
+                        <option value="2">Checker</option>
+                    </select>
+                    <div id="colorPalette"></div>
+                    <input class="imput_form" type="hidden" id="color_hab" name="color_hab">
+                    <input class="imput_form" type="hidden" id="archivado" name="archivado">
+                    <button id="boton_agregar" onclick="guardar_habito_json()">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="columna2">
+
+
+        <div class="heatmap_principal">
+
+            <div id="header"></div>
+
+            <div class="div_totales">
+                <h4 class="h_total" id="horas_invertidas_habito"></h4>
+                <h4 class="h_total" id="dias_totales_invertidas_habito"></h4>
+            </div>
+
+            <div class="center_div arriba_e">
+                <div id="cal-heatmap"></div>
+
+            </div>
+            <div class="center_div">
+                <button class="botones_nyp" id="minDate-previous_year">
+                    << /button>
+                        <button class="botones_nyp" id="minDate-next_year">></button>
+            </div>
+            <div>
+                <div style="justify-content: center; display: flex; height: 170px; width: 350px;">
+
+                    <canvas id="miGrafico"></canvas>
+
+                    <div class="center_div">
+
+                        <button class="botones_nyp" id="minDate-previous">
+                            << /button>
+                                <div id="mes_habito"></div>
+                                <button class="botones_nyp" id="minDate-next">></button>
+                    </div>
+                </div>
+
+            </div>
+            <div id="onClick-placeholder">
+
+            </div>
+            <div id="form_edicion_historial">
+
+                <input class="imput_form" type="hidden" id="id_historial_habito" name="id_historial_habito">
+                <input class="imput_form" type="hidden" id="fecha_historial" name="fecha_historial">
+                <input class="imput_form" type="hidden" id="objeto_historial" name="objeto_historial">
+                <input class="imput_form" type="hidden" id="objeto_habito_edicion" name="objeto_habito_edicion">
+                <input id="duracion_historial" type="text">
+                <button id="boton_agregar" onclick="agregarEditarHabito()">Guardar</button>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+        <div style="justify-content: center; display: flex;">
+
+
+
+            <div style="width: 1000px; height: 250px;">
+                <div class="button-container">
+                    <button class="botones_nyp" id="prevButton">
+                        << /button>
+                            <button class="botones_nyp" id="nextButton">></button>
+                </div>
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block script %}
+<script>
+   
+    llenar_lista_habitos('miLista', false, false, {{Habitos_por_hacer|safe}})
+llenar_lista_habitos('miLista_hechos', false, false, {{Habitos_hechos |safe}})
+</script>
+  
+{% endblock script %}

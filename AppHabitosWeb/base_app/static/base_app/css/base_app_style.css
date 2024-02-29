@@ -1,0 +1,19 @@
+h1{
+    color: red;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: rgb(52, 53, 65);
+  font-family: 'Fira Sans Condensed', sans-serif;
+  color: aliceblue;
+}
+
+:root{
+  --mi-color-primario: rgb(5, 85, 133);
+  --mi-color-secundario: rgb(73, 201, 79);
+  --mi-color-terciario: rgb(0, 178, 132);
+  --mi-color-cuaternario: rgb(0, 150, 162);
+}

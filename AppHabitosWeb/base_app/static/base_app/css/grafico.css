@@ -1,0 +1,73 @@
+
+
+
+#cal-heatmap-container {
+    height: 100%; /* Ocupar toda la altura disponible */
+    width: 100%; /* Ocupar todo el ancho disponible */
+    display: flex;
+    justify-content: center; /* Centrar el heatmap horizontalmente */
+    align-items: center; /* Centrar el heatmap verticalmente */
+  }
+  
+  #cal-heatmap {
+    width: 100%; /* Ocupar todo el ancho del contenedor */
+    /* No es necesario establecer altura aquí */
+  }
+  
+  #heatmap {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+  }
+  
+  .heatmap_principal{
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      /* height: 100vh;  */
+  }
+  
+  .center_div{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* display:none; */
+      /* height: 50px;  */
+  }
+  
+  .arriba_e{
+      margin-top: 40px;
+  }
+  /* .y_2023.m_1 .domain-background {
+      fill: red !important;
+    }
+  .y_2023 .domain-background {
+      fill: rgb(10, 194, 191) !important;
+    } */
+  
+  #header{
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      
+  }
+  
+  .subdomain-text {
+  fill: white !important; /* Cambia 'white' al color que desees */
+  }
+
+
+ 
+  /* Estilos opcionales para los botones */
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .button-container button {
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+  }

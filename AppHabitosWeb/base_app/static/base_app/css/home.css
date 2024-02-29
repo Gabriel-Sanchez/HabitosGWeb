@@ -1,0 +1,408 @@
+/* h1{
+    color: red;
+    margin-right: auto; 
+} */
+
+.item_habito{
+    background-color: rgb(103, 222, 80);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item_habito_check{
+    background-color: rgb(80, 196, 222);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* height: 100%; */
+
+}
+.boton_habito{
+    /* margin: auto; */
+    padding: 10px;
+}
+.elemento_lista{
+    padding: 5px;
+    list-style-type: none;
+}
+.titulo_habito{
+  display: flex;
+  justify-content: space-between;
+  
+    color: black;
+    font-size: 18px;
+    padding-left: 10px;
+    width: 70%;
+    height: 100%;
+    align-items: center;
+
+}
+.titulo_habito_texto{
+    color: black;
+    font-size: 18px;
+    padding-left: 10px;
+    padding: 0;
+    margin: 0;
+}
+.racha_habito_texto{
+    color: rgb(45, 45, 45);
+    font-size: 14px;
+    padding-left: 10px;
+    padding: 0;
+    margin: 0;
+    
+}
+
+.boton_config{
+  height: 47px;
+}
+
+ul{
+    padding-left: 0;
+}
+
+
+
+
+.columnas {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100vh; /* Ajusta esto a la altura que prefieras */
+  }
+  .columna1, .columna2 {
+    height: 100%; /* Esto asegura que cada columna tenga una altura definida */
+    overflow-y: auto; /* Esto habilita el scroll solo si es necesario */
+  }
+  .columna1 {
+    width: 500px;
+    
+  }
+  .columna2 {
+    flex-grow: 1;
+    
+  }
+  @media (max-width: 500px) {
+    .columna2 {
+      display: none;
+    }
+  }
+
+
+  #formDiv {
+
+    display: flex;
+    flex-direction: column;
+    /* width: 300px; */
+    width: auto ;
+    margin: 5%;
+  
+    /* margin: 0 auto; */
+    /* background-color: #f2f2f2; */
+    /* padding: 20px; */
+    /* margin: auto; */
+    /* border-radius: 8px; */
+}
+
+#formDiv h2 {
+    text-align: center;
+    color: #ffffff;
+}
+
+#formDiv label {
+    /* display: block; */
+    margin-top: 20px;
+    color: #ffffff;
+}
+
+.imput_form {
+    width: auto;
+    /* padding-inline: 0; */
+    padding: 10px;
+    border-radius: 4px; 
+    border: 1px solid #ddd;
+}
+
+#formDiv button {
+    /* display: block; */
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#formDiv button:hover {
+    background-color: #45a049;
+}
+
+.contenedor_formulario{
+  margin: auto;
+
+}
+
+#titulo_habito{
+  text-align: center;
+  width: 100%;
+}
+
+.botones_superior{
+  display: flex;
+justify-content: space-between;
+}
+
+#boton_borrar{
+  color: red;
+}
+#archivar_borrar{
+  color: rgb(244, 99, 99);
+}
+#des_archivar_borrar{
+  color: rgb(9, 228, 79);
+}
+
+#tareas_restantes{
+  height: 40px;
+  width: 40px;
+  /* Utilizar un diseño Flexbox */
+  display: flex;
+  
+  /* Centrar los elementos verticalmente */
+  align-items: center;
+  
+  /* Centrar los elementos horizontalmente */
+  justify-content: center;
+  background-color: #525467;
+  margin: 0;
+}
+
+.contenedor_datos_superior{
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
+
+}
+
+button{
+  background-color: #aaadce;
+  border: none; /* Elimina los bordes */
+}
+
+button:hover {
+  background-color: #bec4c2; /* Verde al pasar el ratón */
+}
+
+#details_lista_hecha{
+  /* margin-left: 10px;
+  margin-right: 10px; */
+  background-color: #525467;
+  /* padding: auto; */
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding-top: 0;
+}
+
+summary{
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 18px;
+}
+
+.detalles_lista{
+  background-color: #525467;
+}
+
+.div_color_habito{
+  width: 12px;
+  height: 47px;
+}
+
+.div_botones{
+  display: flex;
+}
+
+#tiempo_restante{
+  height: 40px;
+  width: 220px;
+  /* Utilizar un diseño Flexbox */
+  display: flex;
+  
+  /* Centrar los elementos verticalmente */
+  align-items: center;
+  
+  /* Centrar los elementos horizontalmente */
+  justify-content: center;
+  background-color: #525467;
+  margin: 0;
+}
+#horas_completadas{
+  height: 40px;
+  width: 70px;
+  /* Utilizar un diseño Flexbox */
+  display: flex;
+  
+  /* Centrar los elementos verticalmente */
+  align-items: center;
+  
+  /* Centrar los elementos horizontalmente */
+  justify-content: center;
+  background-color: #525467;
+  margin: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.div_totales{
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.h_total{
+  padding-left: 10px;
+  padding-right: 10px;
+  /* background-color: #525467; */
+  padding: 6px;
+  margin: 0;
+}
+
+.botones_nyp{
+  display: none;
+}
+
+.horas_css{
+  color: var(--mi-color-cuaternario);
+}
+
+.minutos_css{
+  color: var(--mi-color-secundario);
+}
+.seg_css{
+  color: var(--mi-color-terciario);
+}
+
+#form_edicion_historial{
+  display: none;
+}
+
+#onClick-placeholder{
+  margin: 5px;
+  text-align: center;
+
+}
+
+
+            .progress-bar {
+              position: relative;
+              width: 100%;
+              height: 35px;
+              
+            }
+            
+            progress {
+            
+              
+              width: 100%;
+              height: 100%;
+
+              margin: 0;
+              padding: 0;
+              
+            }
+        
+
+          progress {
+            accent-color: var(--mi-color-cuaternario); /* Color de la barra de progreso */
+        }
+          
+
+
+            
+            .progress-text {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 1em;
+              color: black;
+             
+            }
+            .contenedor-bar{
+              margin-left: 10px;
+              margin-right: 10px;
+              
+            }
+
+         
+            
+       
+
+            .progress-bar {
+                position: relative;
+                width: 100%;
+                height: 35px;
+                
+              }
+              
+              progress {
+              
+                
+                width: 100%;
+                height: 100%;
+    
+                margin: 0;
+                padding: 0;
+                
+              }
+          
+    
+            progress {
+              accent-color: var(--mi-color-cuaternario); /* Color de la barra de progreso */
+          }
+            
+    
+    
+              
+              .progress-text {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1em;
+                color: black;
+               
+              }
+              .contenedor-bar{
+                margin-left: 10px;
+                margin-right: 10px;
+                
+              }
+    
+           
+
+              #colorPalette {
+                display: flex;
+                justify-content: space-around;
+                margin-top: 10px;
+            
+            }
+            
+            .color {
+                width: 50px;
+                height: 50px;
+                border-radius: 5px;
+            }

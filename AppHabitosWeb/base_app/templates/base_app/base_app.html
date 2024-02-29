@@ -1,1 +1,44 @@
-<h1>hola</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block title %}
+      
+    {% endblock title %}
+    <!-- cambiar despues por paquete de node -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'base_app/css/base_app_style.css'  %}">
+    <link rel="stylesheet" href="{% static 'base_app/css/home.css'  %}">
+    <link rel="stylesheet" href="{% static 'base_app/css/grafico.css'  %}">
+    <link rel="stylesheet" href="{% static 'base_app/css/formulario_habito.css'  %}">
+
+    {% block head %}
+      
+    {% endblock head %}
+</head>
+<body>
+
+
+    {% block content %}
+      
+    {% endblock content %}
+
+    
+    <script src="{% static 'base_app/js/lista_habito_script.js' %}"></script>
+    <script src="{% static 'base_app/js/time_day.js' %}"></script>
+    <script src="{% static 'base_app/js/formulario_habito.js' %}"></script>
+    <script src="{% static 'base_app/js/principal.js' %}"></script>
+    {% block script %}
+      
+    {% endblock script %}
+    
+</body>
+</html>
