@@ -57,8 +57,9 @@ class Historial_habitos(models.Model):
         return self.fk_habito.nombre + '-' + str(self.fecha_inicio) + str(self.duracion)
     
     def tranformarDuracion(self):
-        duracion_minutos = self.duracion.total_seconds() // 60  
-        return  int(duracion_minutos)
+        duracion_minutos =  self.duracion.total_seconds() / 60  
+        duracion_minutos = round(duracion_minutos, 2)
+        return  duracion_minutos
     
     def tranformarfecha(self):
         fecha_transformada = self.fecha_inicio.date()  
