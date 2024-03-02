@@ -13,8 +13,8 @@ def listar_habitos():
     habitosenelhistorial_no_hoy = Habito.objects.exclude(historial_habitos__fecha_inicio__date=fecha_actual)
     habitosenelhistorial_hoy = Habito.objects.filter(historial_habitos__fecha_inicio__date=fecha_actual)
  
-    habitos_No_hechos_hoy = list(habitosenelhistorial_no_hoy.values('id', 'type__numero', 'nombre', 'work_time', 'short_break', 'count', 'orden_n', 'color', 'objetivo', 'progresion'))
-    habitos_hechos_hoy = list(habitosenelhistorial_hoy.values('id', 'type__numero', 'nombre', 'work_time', 'short_break', 'count', 'orden_n', 'color', 'objetivo', 'progresion'))
+    habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
+    habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
     context = {
         
         'Habitos_por_hacer': habitos_No_hechos_hoy,
@@ -25,6 +25,7 @@ def listar_habitos():
 
 def obtener_habitos_restantes_hoy(request):
     context = listar_habitos()
+    print(context)
     return JsonResponse(context, safe=False)
 
 
@@ -68,6 +69,27 @@ def getHabitosOnly(request):
     context = {
         'listaHabitos': listaHabitos
     }
-    
-    
     return JsonResponse(context, safe=False)
+
+def getHistorialHabito(request, id_habito):
+    objetoHistorialHabito = Historial_habitos.objects.filter(fk_habito=id_habito)
+    lista_HistorialHabito = [historial.obtenerHistorialFormateado() for historial in objetoHistorialHabito ]
+    lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
+    print(lista_HistorialHabito)
+    context = {
+        'lista_HistorialHabito': lista_HistorialHabito,
+        'data_historial': lista_HistorialFechaDuracion
+    }
+    return JsonResponse(context, safe=False )
+
+
+def getHistorialHabitosBar(request, id_habito):
+    objetoHistorialHabito = Historial_habitos.objects.filter(fk_habito=id_habito)
+    lista_HistorialHabito = [historial.obtenerHistorialFormateado() for historial in objetoHistorialHabito ]
+    lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
+    print('busca bar')
+    context = {
+        'lista_HistorialHabito': lista_HistorialHabito,
+        'data_historial': lista_HistorialFechaDuracion
+    }
+    return JsonResponse(context, safe=False )

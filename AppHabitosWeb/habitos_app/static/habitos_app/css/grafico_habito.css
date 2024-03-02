@@ -1,0 +1,63 @@
+#cal-heatmap-container {
+    height: 100%; 
+    width: 100%; 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+  }
+  
+  #cal-heatmap {
+    width: 100%; 
+  }
+  
+  #heatmap {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+  }
+  
+  .heatmap_principal{
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      
+  }
+  
+  .center_div{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  
+  .arriba_e{
+      margin-top: 40px;
+  }
+  
+  #header{
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      
+  }
+  
+  .subdomain-text {
+  fill: white !important; 
+  }
+
+  [data-theme='dark'] .ch-subdomain-bg {
+    fill: #525467 ;
+}
+
+#cal-heatmap{
+    background-color: '#22272d';
+    color: '#adbac7';
+border-radius: '3px';
+    padding: '1rem';
+    overflow: 'hidden';
+}
+
+#legend g{
+    width: 100%;
+}

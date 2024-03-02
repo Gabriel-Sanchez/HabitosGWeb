@@ -101,8 +101,12 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       botn_graf.addEventListener('click', function () {
 
       definir(objeto)
+
+
+      
       generarGraficoDuracionPorAnio(objeto.id+'', objeto.objetivo);
       graficar_semana(objeto.id+'', objeto.objetivo);
+      // mientras
       
       //mostrar_flechas()
       })

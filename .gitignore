@@ -2,3 +2,5 @@ data.json
 historial_habitos.csv
 agregarHabitos.py
 agregarHistorial.py
+AppHabitosWeb/base_app/templates/base_app/prueba.html
+AppHabitosWeb/base_app/templates/base_app/prueba2.html
