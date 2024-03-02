@@ -80,9 +80,15 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       if (data[index].type__numero == 1) {
         div_item_h.classList.add('item_habito')
         botn.innerHTML = '<i class="material-icons">alarm</i>';
+        
         botn.addEventListener('click', function () {
-          
-          ipcRenderer.send('abrir-ventana-secundaria', objeto)
+
+          window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
+
+
+          console.log('a')
+          // mientras
+          // ipcRenderer.send('abrir-ventana-secundaria', objeto)
         })
       } else {
         div_item_h.classList.add('item_habito_check')

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base_app',
     'habitos_app',
+    'pomodoro_app'
 ]
 
 MIDDLEWARE = [
