@@ -198,9 +198,89 @@
 
 {% block script %}
 <script>
-   
     llenar_lista_habitos('miLista', false, false, {{Habitos_por_hacer|safe}})
-llenar_lista_habitos('miLista_hechos', false, false, {{Habitos_hechos |safe}})
+    llenar_lista_habitos('miLista_hechos', false, false, {{Habitos_hechos |safe}})
 </script>
+
+<script>
+    function guardar_habito_json () {
+
+        var datos = {
+          id: Number(document.getElementById('id').value),
+          nombre: document.getElementById('nombre').value,
+          work_time: Number(document.getElementById('work_time').value),
+          short_break: Number(document.getElementById('short_break').value),
+          count: Number(document.getElementById('count').value),
+          type: Number(document.getElementById('type').value),
+          orden_n: Number(document.getElementById('orden_n').value),
+          color: document.getElementById('color_hab').value,
+          objetivo: Number(document.getElementById('objetivo').value)
+      };
+      
+      url = `/habitos/set_formHabito/${datos.id}`
+      
+      fetch(url, {
+          method : 'POST',
+          headers : {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{csrf_token}}' 
+          },
+          body: JSON.stringify(datos)
+      } )
+      .then(function(response){
+          if (!response.ok){
+              throw new Error('error')
+          }
+          return response.json()
+      })
+      .then(function(data){
+          console.log(data)
+          actualizar_listas()
+          cambiarVentana('ventana1')
+      })
+
+      }
+
+
+      function agregar_Nuevo_habito_js () {
+
+        var datos = {
+          id: Number(document.getElementById('id').value),
+          nombre: document.getElementById('nombre').value,
+          work_time: Number(document.getElementById('work_time').value),
+          short_break: Number(document.getElementById('short_break').value),
+          count: Number(document.getElementById('count').value),
+          type: Number(document.getElementById('type').value),
+          orden_n: Number(document.getElementById('orden_n').value),
+          color: document.getElementById('color_hab').value,
+          objetivo: Number(document.getElementById('objetivo').value)
+      };
+      
+      url = `/habitos/set_NewHabitoformHabito/`
+      
+      fetch(url, {
+          method : 'POST',
+          headers : {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{csrf_token}}' 
+          },
+          body: JSON.stringify(datos)
+      } )
+      .then(function(response){
+          if (!response.ok){
+              throw new Error('error')
+          }
+          return response.json()
+      })
+      .then(function(data){
+          console.log(data)
+          actualizar_listas()
+          cambiarVentana('ventana1')
+          
+      })
+      }
+
+
+    </script>
   
 {% endblock script %}

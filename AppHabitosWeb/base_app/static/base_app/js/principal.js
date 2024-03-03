@@ -184,7 +184,7 @@ function configurar_habito (valor) {
   document.getElementById('work_time').value = valor.work_time
   document.getElementById('short_break').value = valor.short_break
   document.getElementById('count').value = valor.count
-  document.getElementById('type').value = valor.type
+  document.getElementById('type').value = valor.type__numero
   document.getElementById('orden_n').value = valor.orden_n
   document.getElementById('color_hab').value = valor.color
   document.getElementById('archivado').value = valor.archivado
@@ -209,40 +209,7 @@ function configurar_habito (valor) {
   }
 }
 
-function guardar_habito_json () {
-  console.log('editar existente')
-  const data = fs.readFileSync('data.json', 'utf8')
-  const jsonData = JSON.parse(data)
-  const formValues = {
-    id: Number(document.getElementById('id').value),
-    nombre: document.getElementById('nombre').value,
-    work_time: Number(document.getElementById('work_time').value),
-    short_break: Number(document.getElementById('short_break').value),
-    count: Number(document.getElementById('count').value),
-    type: Number(document.getElementById('type').value),
-    orden_n: Number(document.getElementById('orden_n').value),
-    color: document.getElementById('color_hab').value,
-    objetivo: Number(document.getElementById('objetivo').value),
-  }
 
-  console.log(formValues)
-
-  // Buscar el índice del objeto con el id dado
-  const index = jsonData.findIndex(item => item.id === formValues.id)
-
-  // Si el objeto existe, actualizarlo
-  if (index !== -1) {
-    jsonData[index] = formValues
-    fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
-    console.log('guardardó')
-  } else {
-    // Si el objeto no existe, puedes decidir qué hacer (por ejemplo, añadirlo al array)
-    console.log('El objeto con id ' + formValues.id + ' no existe')
-  }
-
-  actualizar_listas()
-  cambiarVentana('ventana1')
-}
 
 function actualizar_listas () {
   document.getElementById('miLista').innerHTML = ''
@@ -259,47 +226,7 @@ function actualizar_listas () {
   eventos_lista_habitos()
 }
 
-function agregar_Nuevo_habito_js () {
-  console.log('guarda uno nuevo')
 
-  const data = fs.readFileSync('data.json', 'utf8')
-  const jsonData = JSON.parse(data)
-
-  const maxId = Math.max.apply(Math, jsonData.map(function (item) { return item.id }))
-  const maxOrdenN = Math.max.apply(Math, jsonData.map(function (item) { return item.orden_n }))
-
-  const formValues = {
-    id: maxId + 1,
-    nombre: document.getElementById('nombre').value,
-    work_time: Number(document.getElementById('work_time').value),
-    short_break: Number(document.getElementById('short_break').value),
-    count: Number(document.getElementById('count').value),
-    type: Number(document.getElementById('type').value),
-    color: document.getElementById('color_hab').value,
-    objetivo: Number(document.getElementById('objetivo').value),
-    orden_n: maxOrdenN + 1
-  }
-
-  console.log(formValues)
-
-  jsonData.push(formValues)
-  fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
-
-  // Buscar el índice del objeto con el id dado
-  // var index = jsonData.findIndex(item => item.id === formValues.id);
-
-  // Si el objeto existe, actualizarlo
-  // if (index !== -1) {
-  //     jsonData[index] = formValues;
-  //     console.log('guardardó')
-  // } else {
-  //     // Si el objeto no existe, puedes decidir qué hacer (por ejemplo, añadirlo al array)
-  //     console.log('El objeto con id ' + formValues.id + ' no existe');
-  // }
-
-  actualizar_listas()
-  cambiarVentana('ventana1')
-}
 
 function configurar_habito_nuevo () {
   cambiarVentana('ventana2')

@@ -8,4 +8,6 @@ urlpatterns = [
     path('getHistorialHabito/<id_habito>',views.getHistorialHabito, name='getHistorialHabito' ),
     path('getHistorialHabitosBar/<id_habito>',views.getHistorialHabito, name='getHistorialHabito' ),
     path('', views.home_habitos, name='habitos_home'),
+    path('set_formHabito/<id_habito>', views.guardar_formulario_Habito, name='guardar_formulario_Habito'),
+    path('set_NewHabitoformHabito/', views.set_NewHabitoformHabito, name='set_NewHabitoformHabito'),
 ]

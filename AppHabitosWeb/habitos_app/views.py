@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from .models import Habito, Historial_habitos
+from .models import Habito, Historial_habitos, TiposHabitos
 from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.utils import timezone
+from django.db.models import Max
+import json
 
 # Create your views here.
 
@@ -25,7 +27,7 @@ def listar_habitos():
 
 def obtener_habitos_restantes_hoy(request):
     context = listar_habitos()
-    print(context)
+    # print(context)
     return JsonResponse(context, safe=False)
 
 
@@ -53,7 +55,7 @@ def check_habito(request, habito):
                                         duracion_descanso = descanso_campo
     )
     
-    print(habito)
+    # print(habito)
     context = {
         'mensaje': 'bien'
     }
@@ -75,7 +77,7 @@ def getHistorialHabito(request, id_habito):
     objetoHistorialHabito = Historial_habitos.objects.filter(fk_habito=id_habito)
     lista_HistorialHabito = [historial.obtenerHistorialFormateado() for historial in objetoHistorialHabito ]
     lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
-    print(lista_HistorialHabito)
+    # print(lista_HistorialHabito)
     context = {
         'lista_HistorialHabito': lista_HistorialHabito,
         'data_historial': lista_HistorialFechaDuracion
@@ -93,3 +95,74 @@ def getHistorialHabitosBar(request, id_habito):
         'data_historial': lista_HistorialFechaDuracion
     }
     return JsonResponse(context, safe=False )
+
+
+def guardar_formulario_Habito(request, id_habito):
+    
+    if request.method == 'POST':
+        
+        objetoHabito = Habito.objects.get(id=id_habito)
+        datos = json.loads(request.body)
+       
+        numero_campo = datos['id']
+        nombre = str(datos['nombre']) 
+        work_time = datos['work_time']
+        short_break = datos['short_break']
+        count = datos['count']
+        campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
+        #orden_n = datos['orden_n']
+        color = datos['color']
+        objetivo = datos['objetivo']
+
+        objetoHabito.numero=numero_campo
+        objetoHabito.nombre=nombre
+        objetoHabito.work_time=work_time
+        objetoHabito.short_break=short_break
+        objetoHabito.count=count
+        objetoHabito.type=campo_type
+        #objetoHabito.orden_n=orden_n
+        objetoHabito.color=color
+        objetoHabito.objetivo=objetivo
+        
+        objetoHabito.save()
+
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
+    
+def set_NewHabitoformHabito(request):
+    
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+       
+        numero_campo = datos['id']
+        nombre = str(datos['nombre']) 
+        work_time = datos['work_time']
+        short_break = datos['short_break']
+        count = datos['count']
+        campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
+        color = datos['color']
+        objetivo = datos['objetivo']
+        
+        ultimo_valor_mas_alto = Habito.objects.aggregate(max_valor_mas_alto=Max('orden_n'))['max_valor_mas_alto']
+        if ultimo_valor_mas_alto is None:
+            nuevo_valor = 1
+        else:
+            nuevo_valor = ultimo_valor_mas_alto + 1
+
+        habito = Habito.objects.create(
+            numero=numero_campo,
+            nombre=nombre,
+            work_time=work_time,
+            short_break=short_break,
+            count=count,
+            type=campo_type,
+            orden_n=nuevo_valor,
+            color=color,
+            objetivo=objetivo
+        )
+
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
