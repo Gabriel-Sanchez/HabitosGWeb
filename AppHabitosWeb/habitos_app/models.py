@@ -1,10 +1,5 @@
 from django.db import models
-from django.utils import timezone
-
-# Create your models here.
-
-# Create your models here.
-
+from datetime import timedelta, date
 
 class TiposHabitos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -31,6 +26,28 @@ class Habito(models.Model):
     def __str__(self):
         return self.nombre + '-' + str(self.numero) 
     
+    def racha_dias(self):
+        fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
+        
+        numero_racha = 0
+        if fechas_ordenadas[0].fecha_inicio.date() == date.today():
+            fecha_anterior =  date.today() + timedelta(days=1)  
+        else:
+            fecha_anterior =  date.today()
+
+        for elemento in fechas_ordenadas:
+            fecha_actual = elemento.fecha_inicio.date()  
+            #print( fecha_anterior , "-" , fecha_actual , '=' , fecha_anterior - fecha_actual == timedelta(days=1))
+            if fecha_anterior - fecha_actual == timedelta(days=1):
+                numero_racha += 1  
+                # print(numero_racha)
+            else:
+                break  
+            fecha_anterior = fecha_actual
+
+        return numero_racha
+ 
+    
    
     def obtener_valores(self):
         return {
@@ -44,12 +61,17 @@ class Habito(models.Model):
             'color': self.color,
             'objetivo': self.objetivo,
             'progresion': self.progresion,
-            'archivado': self.archivado
+            'archivado': int(self.archivado),
+            'racha': self.racha_dias()
+            
         }
+        
+
+        
     
     
 class Historial_habitos(models.Model):
-    fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE)
+    fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='listHabitoHistorial')
     fecha_inicio = models.DateTimeField()
     fecha_fin = models.DateTimeField()
     duracion = models.DurationField()

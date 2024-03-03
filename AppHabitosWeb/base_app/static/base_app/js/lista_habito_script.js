@@ -2,20 +2,20 @@
 
 function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
-      numero_racha_h = 0
-
-      var lista = document.getElementById(nombre_lista);
-
-      for (let index = 0; index < data.length; index++) {
-          const element = data[index];
-      var li = document.createElement("li");
-      li.classList.add('elemento_lista')
-      li.id = data[index].orden_n
-
-      let objStr = JSON.stringify(data[index]);
-
-      // Agregar la cadena de texto al atributo data-obj del elemento
-      li.dataset.obj = objStr;
+  
+  var lista = document.getElementById(nombre_lista);
+  
+  for (let index = 0; index < data.length; index++) {
+    const element = data[index];
+    var li = document.createElement("li");
+    li.classList.add('elemento_lista')
+    li.id = data[index].orden_n
+    
+    let objStr = JSON.stringify(data[index]);
+    
+    // Agregar la cadena de texto al atributo data-obj del elemento
+    li.dataset.obj = objStr;
+    numero_racha_h = data[index].racha
 
 
 

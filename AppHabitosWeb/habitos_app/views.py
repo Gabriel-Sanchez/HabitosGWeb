@@ -12,8 +12,8 @@ import json
 def listar_habitos():
     # fecha_actual = date.today()
     fecha_actual = timezone.now()
-    habitosenelhistorial_no_hoy = Habito.objects.exclude(historial_habitos__fecha_inicio__date=fecha_actual)
-    habitosenelhistorial_hoy = Habito.objects.filter(historial_habitos__fecha_inicio__date=fecha_actual)
+    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual)
+    habitosenelhistorial_hoy = Habito.objects.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual)
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
