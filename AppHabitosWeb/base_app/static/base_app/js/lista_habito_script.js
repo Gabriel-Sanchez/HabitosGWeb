@@ -139,6 +139,9 @@ function fetch_lista_habitos(){
 
 
             set_tiempo_restante_Hoy( data.Tiempo_Restante_Hoy)
+            set_numero_restante_Hoy( data.Numero_Restante_Hoy)
+            actualizar_horas_realizadas(data.Tiempo_completado_Hoy)
+            
             // lista.appendChild(fragment)
         })
         .catch(function(error) {
@@ -151,4 +154,27 @@ function fetch_lista_habitos(){
 function set_tiempo_restante_Hoy(tiempoRestante){
   var texto_tiempo_restante = document.getElementById('tiempo_restante')
   texto_tiempo_restante.innerText =  tiempoRestante.Horas + " horas y " + tiempoRestante.Minutos + " minutos";
+}
+function set_numero_restante_Hoy(tiempoRestante){
+  var texto_numeros_restantes = document.getElementById('tareas_restantes')
+  texto_numeros_restantes.innerText = tiempoRestante
+}
+
+function actualizar_horas_realizadas(horasCompletadas){
+
+    label_horas_completadas = document.getElementById('horas_completadas')
+    horas_completadas.innerText = ''
+    
+    let horas = horasCompletadas.Horas
+    let minutos = horasCompletadas.Minutos
+    let segundos = horasCompletadas.Segundos
+    
+    console.log(`Duración total: ${horas}:${minutos}:${segundos}`);
+
+    horas = horas < 10 ? '0' + horas : horas;
+    minutos = minutos < 10 ? '0' + minutos : minutos;
+    segundos = segundos < 10 ? '0' + segundos : segundos;
+
+    console.log(`Duración total: ${horas} horas, ${minutos} minutos y ${segundos} segundos`);
+    horas_completadas.innerText = `${horas}:${minutos}:${segundos}`
 }

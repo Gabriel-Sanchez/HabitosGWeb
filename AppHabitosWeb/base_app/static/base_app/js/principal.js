@@ -218,10 +218,10 @@ function actualizar_listas () {
 
   fetch_lista_habitos()
 
-  llenar_lista_habitos('miLista_hechos', true, false)
-  llenar_lista_habitos('miLista_archivados', false, true)
-  llenar_lista_habitos('miLista_archivados', true, true)
-  llenar_lista_habitos('miLista', false, false)
+  // llenar_lista_habitos('miLista_hechos', true, false)
+  // llenar_lista_habitos('miLista_archivados', false, true)
+  // llenar_lista_habitos('miLista_archivados', true, true)
+  // llenar_lista_habitos('miLista', false, false)
   console.log('guardar')
   eventos_lista_habitos()
 }
@@ -373,57 +373,7 @@ function convertirMinutosAHoras(minutos) {
   return horas + " horas y " + minutosRestantes + " minutos";
 }
 
-function actualizar_horas_realizadas(){
 
-  label_horas_completadas = document.getElementById('horas_completadas')
-  horas_completadas.innerText = ''
-  
-  const data = fs.readFileSync('historial_habitos.csv', 'utf8');
-  const records = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
-  
-  // let hoy = new Date()
-  // hoy.setHours(0, 0, 0, 0)
-  
-  const hoy = new Date().toLocaleDateString('en-CA')
-  
-  const filteredData = records.filter(record => record.fecha === hoy);
-  console.log('-----------')
-  console.log(filteredData)
-  console.log(hoy)
-  
-  for (let dia in filteredData){
-    console.log('--eeeeeeeee-----')
-    console.log(dia)
-  }
-  
-  let totalSegundos = 0;
-  
-  filteredData.forEach(objeto => {
-    console.log(objeto.duracion)
-    
-    let tiempo = objeto.duracion.split(':'); // divide la duración en horas, minutos y segundos
-    let segundos = (+tiempo[0]) * 60 * 60 + (+tiempo[1]) * 60 + (+tiempo[2]); 
-    totalSegundos += segundos;
-  } )
-  
-  let horas = Math.floor(totalSegundos / 3600);
-  totalSegundos %= 3600;
-  let minutos = Math.floor(totalSegundos / 60);
-  let segundos = totalSegundos % 60;
-  
-  console.log(`Duración total: ${horas}:${minutos}:${segundos}`);
-
-  // Asegurarse de que las horas, minutos y segundos siempre tengan dos dígitos
-horas = horas < 10 ? '0' + horas : horas;
-minutos = minutos < 10 ? '0' + minutos : minutos;
-segundos = segundos < 10 ? '0' + segundos : segundos;
-
-console.log(`Duración total: ${horas} horas, ${minutos} minutos y ${segundos} segundos`);
-  horas_completadas.innerText = `${horas}:${minutos}:${segundos}`
-}
 
 function obtener_historial_habitos(diario){
   const data = fs.readFileSync('historial_habitos.csv', 'utf8');

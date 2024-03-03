@@ -308,7 +308,7 @@ calAnio.paint(
         {
           text: function (date, value, dayjsDate) {
             return (
-              "score: " + (value ? value : 0) + "." + dayjsDate.format("LL")
+              "Min: " + (value ? value : 0) + "." + dayjsDate.format("LL")
             );
           },
         },
@@ -384,7 +384,7 @@ calMes.paint(
         {
           text: function (date, value, dayjsDate) {
             return (
-              "score: " + (value ? value : 0) + "." + dayjsDate.format("LL")
+              "Min: " + (value ? value : 0) + "." + dayjsDate.format("LL")
             );
           },
         },

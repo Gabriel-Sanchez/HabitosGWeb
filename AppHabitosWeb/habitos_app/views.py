@@ -8,8 +8,32 @@ from django.db.models import Max,Sum, F
 
 import json
 
+def totalMinutosHistorialCompletadosHoy(lista):
+    sumlistaHistorialHab = lista.aggregate(Sum('duracion'))['duracion__sum']
+    if sumlistaHistorialHab:
+    # Convertir la duración total a segundos
+        duracion_total_segundos = sumlistaHistorialHab.total_seconds()
+
+        # Calcular horas, minutos y segundos
+        horas = duracion_total_segundos // 3600
+        minutos = (duracion_total_segundos % 3600) // 60
+        segundos = duracion_total_segundos % 60
+        
+        return {
+                "Horas": horas,
+                "Minutos": minutos,
+                "Segundos": segundos,
+                }
+        
+    else:
+        return {
+                "Horas": 0,
+                "Minutos": 0,
+                "Segundos": 0,
+                }
+
             
-def totalMinutosHistorialRestantesHoy(listaHoy):
+def totalMinutosHistorialHoy(listaHoy):
     sumlistaHistorialHab = listaHoy.aggregate(total=Sum(F('work_time') * F('count')))
     if sumlistaHistorialHab:
         duracionMinutos = sumlistaHistorialHab['total']
@@ -28,8 +52,6 @@ def totalMinutosHistorialRestantesHoy(listaHoy):
                 "Minutos": 0,
                 }
 
-
-
 def listar_habitos():
     # fecha_actual = date.today()
     fecha_actual = timezone.now()
@@ -39,13 +61,19 @@ def listar_habitos():
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
     
-    varTotalTiempoHabitoHoy = totalMinutosHistorialRestantesHoy(habitosenelhistorial_no_hoy)
+    listaHistorialHoy = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual)
+    
+    varTotalTiempoHabitoHoyRestante = totalMinutosHistorialHoy(habitosenelhistorial_no_hoy)
+    varTotalTiempoHabitoHoyCompletado = totalMinutosHistorialCompletadosHoy(listaHistorialHoy)
+    varNumeroTareasRestantes = habitosenelhistorial_no_hoy.count()
     
     context = {
         
         'Habitos_por_hacer': habitos_No_hechos_hoy,
         'Habitos_hechos': habitos_hechos_hoy,
-        'Tiempo_Restante_Hoy': varTotalTiempoHabitoHoy
+        'Tiempo_Restante_Hoy': varTotalTiempoHabitoHoyRestante,
+        'Numero_Restante_Hoy': varNumeroTareasRestantes,
+        'Tiempo_completado_Hoy': varTotalTiempoHabitoHoyCompletado
     }
     return context
     
@@ -57,7 +85,8 @@ def obtener_habitos_restantes_hoy(request):
 
 
 def home_habitos(request):
-    context = listar_habitos()
+    # context = listar_habitos()
+    context = {}
     return render(request, 'habitos_app/habitos_home.html', context)
 
 
