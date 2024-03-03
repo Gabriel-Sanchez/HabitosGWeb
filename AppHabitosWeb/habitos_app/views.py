@@ -79,11 +79,13 @@ def getHistorialHabito(request, id_habito):
     lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
     # print(lista_HistorialHabito)
     varTotalTimpoHabito = objetoHistorialHabito.first().fk_habito.totalMinutosHabitos()
+    varTotalDiasHabito = objetoHistorialHabito.first().fk_habito.cantidadDiasHabito()
     
     context = {
         'lista_HistorialHabito': lista_HistorialHabito,
         'data_historial': lista_HistorialFechaDuracion,
-        'TotalTiempo': varTotalTimpoHabito
+        'TotalTiempo': varTotalTimpoHabito,
+        'TotalDias': varTotalDiasHabito
     }
     return JsonResponse(context, safe=False )
 

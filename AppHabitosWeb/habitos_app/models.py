@@ -87,6 +87,11 @@ class Habito(models.Model):
                     "Minutos": 0,
                     "Segundos": 0,
                     }
+    
+    def cantidadDiasHabito(self):
+        cantidadTodalListaHistorialHab = self.listHabitoHistorial.all().count()
+        return cantidadTodalListaHistorialHab
+        
 
 class Historial_habitos(models.Model):
     fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='listHabitoHistorial')

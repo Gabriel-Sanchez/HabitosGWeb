@@ -499,21 +499,23 @@ console.log(`Duración total: ${horas} horas, ${minutos} minutos y ${segundos} s
 label_horas_habito.innerHTML = `Total de tiempo: <strong class="horas_css">${horas}</strong> horas: <strong class="minutos_css">${minutos}</strong> min: <strong class="seg_css">${segundos}</strong> seg`
 }
 
-function dias_totales_invertidos_habito(id){
+function dias_totales_invertidos_habito(Ndias){
+  console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+  console.log(Ndias)
 
   let label_horas_habito = document.getElementById('dias_totales_invertidas_habito')
   label_horas_habito.innerText = ''
   
-  const data = fs.readFileSync('historial_habitos.csv', 'utf8');
-  const records = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
+  // const data = fs.readFileSync('historial_habitos.csv', 'utf8');
+  // const records = Papa.parse(data, {
+  //   header: true,
+  //   skipEmptyLines: true
+  // }).data;
 
-  const hoy = new Date().toLocaleDateString('en-CA')
+  // const hoy = new Date().toLocaleDateString('en-CA')
   
-  const filteredData = records.filter(record => record.id_habito === id);
-label_horas_habito.innerHTML = `Total de días: <strong class="minutos_css">${filteredData.length}</strong>`
+  // const filteredData = records.filter(record => record.id_habito === id);
+label_horas_habito.innerHTML = `Total de días: <strong class="minutos_css">${Ndias}</strong>`
 }
 
 

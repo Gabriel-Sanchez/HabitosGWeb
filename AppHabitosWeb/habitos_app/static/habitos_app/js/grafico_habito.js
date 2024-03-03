@@ -474,10 +474,10 @@ function definir(value) {
          .then(function(data){
           console.log(data.TotalTiempo)
           Ver_horas_invertidas_habito(data.TotalTiempo)
+          dias_totales_invertidos_habito(data.TotalDias)
         })
 
-        //  mientras
-        //  dias_totales_invertidos_habito(value.id+'')
+        
 
          let botones_prev_next = document.getElementsByClassName('botones_nyp')
          for (let boton of botones_prev_next) {
