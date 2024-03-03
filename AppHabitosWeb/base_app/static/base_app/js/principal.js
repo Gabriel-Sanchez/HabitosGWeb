@@ -500,22 +500,9 @@ label_horas_habito.innerHTML = `Total de tiempo: <strong class="horas_css">${hor
 }
 
 function dias_totales_invertidos_habito(Ndias){
-  console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
-  console.log(Ndias)
-
   let label_horas_habito = document.getElementById('dias_totales_invertidas_habito')
   label_horas_habito.innerText = ''
-  
-  // const data = fs.readFileSync('historial_habitos.csv', 'utf8');
-  // const records = Papa.parse(data, {
-  //   header: true,
-  //   skipEmptyLines: true
-  // }).data;
-
-  // const hoy = new Date().toLocaleDateString('en-CA')
-  
-  // const filteredData = records.filter(record => record.id_habito === id);
-label_horas_habito.innerHTML = `Total de días: <strong class="minutos_css">${Ndias}</strong>`
+  label_horas_habito.innerHTML = `Total de días: <strong class="minutos_css">${Ndias}</strong>`
 }
 
 
