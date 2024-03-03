@@ -25,6 +25,7 @@ class Habito(models.Model):
     color = models.CharField(max_length=7,default='FFFFFF')
     objetivo = models.IntegerField(default=0)
     progresion = models.IntegerField(default=0)
+    archivado = models.BooleanField(default=False)
     
     
     def __str__(self):
@@ -42,7 +43,8 @@ class Habito(models.Model):
             'orden_n': self.orden_n,
             'color': self.color,
             'objetivo': self.objetivo,
-            'progresion': self.progresion
+            'progresion': self.progresion,
+            'archivado': self.archivado
         }
     
     

@@ -166,3 +166,15 @@ def set_NewHabitoformHabito(request):
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
+    
+
+def archivarHabito(request, id_habito):
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        print(id_habito)
+        print(datos)
+       
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
