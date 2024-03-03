@@ -4,10 +4,31 @@ from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.utils import timezone
-from django.db.models import Max
+from django.db.models import Max,Sum, F
+
 import json
 
-# Create your views here.
+            
+def totalMinutosHistorialRestantesHoy(listaHoy):
+    sumlistaHistorialHab = listaHoy.aggregate(total=Sum(F('work_time') * F('count')))
+    if sumlistaHistorialHab:
+        duracionMinutos = sumlistaHistorialHab['total']
+        print(sumlistaHistorialHab)
+        print(type(sumlistaHistorialHab) )
+        horas = duracionMinutos // 60
+        minutos = duracionMinutos % 60
+        
+        return {
+                "Horas": horas,
+                "Minutos": minutos,
+                }
+    else:
+        return {
+                "Horas": 0,
+                "Minutos": 0,
+                }
+
+
 
 def listar_habitos():
     # fecha_actual = date.today()
@@ -17,10 +38,14 @@ def listar_habitos():
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
+    
+    varTotalTiempoHabitoHoy = totalMinutosHistorialRestantesHoy(habitosenelhistorial_no_hoy)
+    
     context = {
         
         'Habitos_por_hacer': habitos_No_hechos_hoy,
         'Habitos_hechos': habitos_hechos_hoy,
+        'Tiempo_Restante_Hoy': varTotalTiempoHabitoHoy
     }
     return context
     
@@ -81,11 +106,12 @@ def getHistorialHabito(request, id_habito):
     varTotalTimpoHabito = objetoHistorialHabito.first().fk_habito.totalMinutosHabitos()
     varTotalDiasHabito = objetoHistorialHabito.first().fk_habito.cantidadDiasHabito()
     
+    
     context = {
         'lista_HistorialHabito': lista_HistorialHabito,
         'data_historial': lista_HistorialFechaDuracion,
         'TotalTiempo': varTotalTimpoHabito,
-        'TotalDias': varTotalDiasHabito
+        'TotalDias': varTotalDiasHabito,
     }
     return JsonResponse(context, safe=False )
 

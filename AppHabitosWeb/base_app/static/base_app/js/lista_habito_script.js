@@ -1,4 +1,4 @@
-
+fetch_lista_habitos()
 
 function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
@@ -136,6 +136,9 @@ function fetch_lista_habitos(){
             // var fragment = document.createDocumentFragment();
             llenar_lista_habitos('miLista', false, false, data.Habitos_por_hacer)
             llenar_lista_habitos('miLista_hechos', false, false, data.Habitos_hechos)
+
+
+            set_tiempo_restante_Hoy( data.Tiempo_Restante_Hoy)
             // lista.appendChild(fragment)
         })
         .catch(function(error) {
@@ -143,3 +146,9 @@ function fetch_lista_habitos(){
         });
 
 }   
+
+
+function set_tiempo_restante_Hoy(tiempoRestante){
+  var texto_tiempo_restante = document.getElementById('tiempo_restante')
+  texto_tiempo_restante.innerText =  tiempoRestante.Horas + " horas y " + tiempoRestante.Minutos + " minutos";
+}
