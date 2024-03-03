@@ -450,43 +450,43 @@ function obtener_historial_habitos(diario){
 
 
 
-function Ver_horas_invertidas_habito(id){
+function Ver_horas_invertidas_habito(tiempo){
+
 
   let label_horas_habito = document.getElementById('horas_invertidas_habito')
   label_horas_habito.innerText = ''
   
-  const data = fs.readFileSync('historial_habitos.csv', 'utf8');
-  const records = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
+  // const data = fs.readFileSync('historial_habitos.csv', 'utf8');
+  // const records = Papa.parse(data, {
+  //   header: true,
+  //   skipEmptyLines: true
+  // }).data;
 
-  const hoy = new Date().toLocaleDateString('en-CA')
+  // const hoy = new Date().toLocaleDateString('en-CA')
   
-  const filteredData = records.filter(record => record.id_habito === id);
-  console.log('-----------')
-  console.log(filteredData)
-  console.log(hoy)
+  // const filteredData = records.filter(record => record.id_habito === id);
+  // console.log('-----------')
+  // console.log(filteredData)
+  // console.log(hoy)
   
-  for (let dia in filteredData){
-    console.log('--eeeeeeeeemmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm-----')
-    console.log(dia)
-  }
+  // for (let dia in filteredData){
+  //   console.log('--eeeeeeeeemmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm-----')
+  //   console.log(dia)
+  // }
   
-  let totalSegundos = 0;
+  // let totalSegundos = 0;
   
-  filteredData.forEach(objeto => {
-    console.log(objeto.duracion)
+  // filteredData.forEach(objeto => {
+  //   console.log(objeto.duracion)
     
-    let tiempo = objeto.duracion.split(':'); // divide la duración en horas, minutos y segundos
-    let segundos = (+tiempo[0]) * 60 * 60 + (+tiempo[1]) * 60 + (+tiempo[2]); 
-    totalSegundos += segundos;
-  } )
+  //   let tiempo = objeto.duracion.split(':'); // divide la duración en horas, minutos y segundos
+  //   let segundos = (+tiempo[0]) * 60 * 60 + (+tiempo[1]) * 60 + (+tiempo[2]); 
+  //   totalSegundos += segundos;
+  // } )
   
-  let horas = Math.floor(totalSegundos / 3600);
-  totalSegundos %= 3600;
-  let minutos = Math.floor(totalSegundos / 60);
-  let segundos = totalSegundos % 60;
+  let horas = tiempo['Horas']
+  let minutos = tiempo['Minutos']
+  let segundos = tiempo['Segundos']
   
   console.log(`Duración total: ${horas}:${minutos}:${segundos}`);
 

@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import timedelta, date
+from django.db.models import Sum
 
 class TiposHabitos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -47,8 +48,6 @@ class Habito(models.Model):
 
         return numero_racha
  
-    
-   
     def obtener_valores(self):
         return {
             'id': self.id,
@@ -63,13 +62,32 @@ class Habito(models.Model):
             'progresion': self.progresion,
             'archivado': int(self.archivado),
             'racha': self.racha_dias()
-            
         }
         
+    def totalMinutosHabitos(self):
+        sumlistaHistorialHab = self.listHabitoHistorial.all().aggregate(Sum('duracion'))['duracion__sum']
+        if sumlistaHistorialHab:
+        # Convertir la duración total a segundos
+            duracion_total_segundos = sumlistaHistorialHab.total_seconds()
 
-        
-    
-    
+            # Calcular horas, minutos y segundos
+            horas = duracion_total_segundos // 3600
+            minutos = (duracion_total_segundos % 3600) // 60
+            segundos = duracion_total_segundos % 60
+            
+            return {
+                    "Horas": horas,
+                    "Minutos": minutos,
+                    "Segundos": segundos,
+                    }
+            
+        else:
+            return {
+                    "Horas": 0,
+                    "Minutos": 0,
+                    "Segundos": 0,
+                    }
+
 class Historial_habitos(models.Model):
     fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='listHabitoHistorial')
     fecha_inicio = models.DateTimeField()

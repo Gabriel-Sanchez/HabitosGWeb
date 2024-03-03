@@ -2,6 +2,20 @@
 // const CalHeatMap = require('cal-heatmap');
 // const { duration } = require('moment');
 
+
+function fetchDetallesHabito(id_habito){
+
+  url = `/habitos/getHistorialHabito/${id_habito}`
+
+  return fetch(url)
+  .then(function(response){
+      if (!response.ok){
+          throw new Error('error')
+      }
+      return response.json()
+  })
+}
+
 var data = {
  '2023-12-18': 5,
  '2023-12-19': 10,
@@ -456,8 +470,13 @@ function definir(value) {
 
          transformarDatos(value.id, 'historial_habitos.csv');
 
+         fetchDetallesHabito(value.id)
+         .then(function(data){
+          console.log(data.TotalTiempo)
+          Ver_horas_invertidas_habito(data.TotalTiempo)
+        })
+
         //  mientras
-        //  Ver_horas_invertidas_habito(value.id+'')
         //  dias_totales_invertidos_habito(value.id+'')
 
          let botones_prev_next = document.getElementsByClassName('botones_nyp')
