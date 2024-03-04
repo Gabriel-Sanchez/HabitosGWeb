@@ -136,6 +136,11 @@ function fetch_lista_habitos(){
             // var fragment = document.createDocumentFragment();
             llenar_lista_habitos('miLista', false, false, data.Habitos_por_hacer)
             llenar_lista_habitos('miLista_hechos', false, false, data.Habitos_hechos)
+            llenar_lista_habitos('miLista_archivados', false, true, data.ListaHArchivados)
+
+             // llenar_lista_habitos('miLista_hechos', true, false)
+            // llenar_lista_habitos('miLista_archivados', true, true)
+            // llenar_lista_habitos('miLista', false, false)
 
 
             set_tiempo_restante_Hoy( data.Tiempo_Restante_Hoy)

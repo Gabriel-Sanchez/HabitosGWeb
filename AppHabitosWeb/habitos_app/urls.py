@@ -13,4 +13,6 @@ urlpatterns = [
     path('archivarHabito/<id_habito>', views.archivarHabito, name='archivarHabito'),
     path('getOneHistorial/<id_habito>', views.getOneHistorial, name='getOneHistorial'),
     path('editarDuracionForm_Habito/<id_habito>', views.editarDuracionForm_Habito, name='editarDuracionForm_Habito'),
+    path('delete_habito/', views.delete_habito, name='delete_habito'),
+    path('archivar_habito/', views.archivar_habito, name='archivar_habito'),
 ]

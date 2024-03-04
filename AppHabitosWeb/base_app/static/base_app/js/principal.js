@@ -115,31 +115,7 @@ function leer_archivo_historial (archivo) {
   return records
 }
 
-function archivarHabito(SeVaArchivar){
-  const data = fs.readFileSync('data.json', 'utf8')
-  const dataJson = JSON.parse(data)
 
-  habito = Number(document.getElementById('id').value) 
-  console.log(habito)
-
-   // Buscar el índice del objeto con el id dado
-   const index = dataJson.findIndex(item => item.id === habito)
-
-   // Si el objeto existe, actualizarlo
-   if (index !== -1) {
-     dataJson[index].archivado = SeVaArchivar
-     fs.writeFileSync('data.json', JSON.stringify(dataJson, null, 2), 'utf8')
-     console.log('guardardó')
-   } else {
-     // Si el objeto no existe, puedes decidir qué hacer (por ejemplo, añadirlo al array)
-     console.log('El objeto con id ' + habito.id + ' no existe')
-   }
-
-   actualizar_listas()
-   cambiarVentana('ventana1')
-
-
-}
 
 
 
@@ -258,21 +234,7 @@ function configurar_habito_nuevo () {
   document.getElementById('des_archivar_borrar').style.display = 'none'
 }
 
-function eliminar_habito () {
-  const data = fs.readFileSync('data.json', 'utf8')
-  let jsonData = JSON.parse(data)
-  // Buscar el índice del objeto con el id dado
-  const idParaEliminar = Number(document.getElementById('id').value)
 
-  // Filtrar el array para excluir el objeto con el id dado
-  jsonData = jsonData.filter(item => item.id !== idParaEliminar)
-
-  // Guardar el nuevo array en el archivo JSON
-  fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
-  console.log('Registro eliminado')
-  actualizar_listas()
-  cambiarVentana('ventana1')
-}
 
 function calcular_habitos_restanten (hecho, cantidad) {
   if (!hecho) {

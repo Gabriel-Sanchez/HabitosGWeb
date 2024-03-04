@@ -55,11 +55,13 @@ def totalMinutosHistorialHoy(listaHoy):
 def listar_habitos():
     # fecha_actual = date.today()
     fecha_actual = timezone.now()
-    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual)
-    habitosenelhistorial_hoy = Habito.objects.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual)
+    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False)
+    habitosenelhistorial_hoy = Habito.objects.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False)
+    habitosArchivado = Habito.objects.filter(archivado=True)
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
+    Lista_habitos_Archivados = [habito.obtener_valores() for habito in habitosArchivado]
     
     listaHistorialHoy = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual)
     
@@ -73,7 +75,8 @@ def listar_habitos():
         'Habitos_hechos': habitos_hechos_hoy,
         'Tiempo_Restante_Hoy': varTotalTiempoHabitoHoyRestante,
         'Numero_Restante_Hoy': varNumeroTareasRestantes,
-        'Tiempo_completado_Hoy': varTotalTiempoHabitoHoyCompletado
+        'Tiempo_completado_Hoy': varTotalTiempoHabitoHoyCompletado,
+        'ListaHArchivados': Lista_habitos_Archivados
     }
     return context
     
@@ -356,3 +359,37 @@ def editarDuracionForm_Habito(request, id_habito):
         return JsonResponse(context)
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
+
+def delete_habito(request):
+
+    if request.method == 'POST':
+        
+        datos = json.loads(request.body)
+        print(datos)
+        id_habito = int(datos['id']) 
+        
+        habitoAEliminar = Habito.objects.get(id = id_habito)
+        habitoAEliminar.delete()
+    
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
+def archivar_habito(request):
+
+    if request.method == 'POST':
+        
+        datos = json.loads(request.body)
+        print(datos)
+        id_habito = int(datos['id']) 
+        
+        habitoAEliminar = Habito.objects.get(id = id_habito)
+        valorArchivado = habitoAEliminar.archivado
+        habitoAEliminar.archivado = not valorArchivado
+        habitoAEliminar.save()
+    
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
