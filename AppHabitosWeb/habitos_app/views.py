@@ -100,14 +100,25 @@ def check_habito(request, habito):
     descanso_campo = timedelta(hours=0, minutes=0, seconds=0)
     
     # fecha_hora_fin = timezone.make_aware(datetime.strptime(f'{csv_fecha} {csv_end_timer}', '%Y-%m-%d %H:%M:%S'))
-    
-    Historial_habitos.objects.create(    
-                                     fk_habito = objeto_habito,
-                                        fecha_inicio = fecha_actual,
-                                        fecha_fin = fecha_actual,
-                                        duracion = duracion_campo,
-                                        duracion_descanso = descanso_campo
-    )
+    hayHistorial = Historial_habitos.objects.filter(fk_habito=objeto_habito, fecha_inicio__date = fecha_actual)
+    if hayHistorial:
+        elHistorial = hayHistorial.first()
+        
+        oldDuracion = elHistorial.duracion
+        newDuracion = duracion_campo
+        finishduracion = oldDuracion + newDuracion
+        
+        elHistorial.duracion = finishduracion
+        elHistorial.save()
+    else:
+        
+        Historial_habitos.objects.create(    
+                                        fk_habito = objeto_habito,
+                                            fecha_inicio = fecha_actual,
+                                            fecha_fin = fecha_actual,
+                                            duracion = duracion_campo,
+                                            duracion_descanso = descanso_campo
+        )
     
     # print(habito)
     context = {
