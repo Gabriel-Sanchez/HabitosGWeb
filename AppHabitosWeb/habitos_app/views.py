@@ -238,3 +238,73 @@ def archivarHabito(request, id_habito):
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
+    
+def getOneHistorial(request, id_habito):
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        print(id_habito)
+        print(datos)
+        fecha = datos['fecha']
+        
+        objeto_habito = Habito.objects.get(id = id_habito)
+        objeto_historial = objeto_habito.listHabitoHistorial.filter(fecha_inicio__date = fecha)
+        print(objeto_historial)
+        print(type(objeto_historial))
+        
+        context = {
+            'objeto_habito' : objeto_habito.obtener_valores(),
+            'mensaje': 'Datos recibidos correctamente',
+            'objeto_historial' : objeto_historial.first().obtenerHistorialFormateado()
+        }
+       
+        return JsonResponse(context, safe=False)
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
+
+
+def editarDuracionForm_Habito(request, id_habito):
+    
+    if request.method == 'POST':
+        
+        datos = json.loads(request.body)
+        print(datos)
+        
+        campofecha = datos['fecha']
+        campoDuracion = timedelta(hours=0, minutes=int(datos['duracion']), seconds=0)  
+        print('--------ooooooooooooo-------')
+        print(campofecha)
+        print(campoDuracion)
+        objetoHabito = Historial_habitos.objects.get(fk_habito=id_habito,fecha_inicio__date = campofecha )
+       
+        # nombre = str(datos['nombre']) 
+        # short_break = datos['short_break']
+        # count = datos['count']
+        # campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
+        # #orden_n = datos['orden_n']
+        # color = datos['color']
+        # objetivo = datos['objetivo']
+
+        objetoHabito.duracion=campoDuracion
+        # objetoHabito.nombre=nombre
+        # objetoHabito.work_time=work_time
+        # objetoHabito.short_break=short_break
+        # objetoHabito.count=count
+        # objetoHabito.type=campo_type
+        # #objetoHabito.orden_n=orden_n
+        # objetoHabito.color=color
+        # objetoHabito.objetivo=objetivo
+        
+        print(objetoHabito)
+        print(objetoHabito.duracion)
+        print(objetoHabito.fk_habito)
+        print('1--------ooooooooooooo-------')
+        
+        
+        
+        
+        objetoHabito.save()
+        print(' se guardo')
+
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'error': 'Se espera una solicitud POST'})

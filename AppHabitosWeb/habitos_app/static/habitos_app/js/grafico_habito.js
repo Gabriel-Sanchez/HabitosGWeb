@@ -3,6 +3,12 @@
 // const { duration } = require('moment');
 
 
+
+function holaa2(){
+  console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaa')
+}
+
+
 function fetchDetallesHabito(id_habito){
 
   url = `/habitos/getHistorialHabito/${id_habito}`
@@ -48,85 +54,86 @@ console.log(datasjs); // Mostrar el nuevo objeto con fechas en formato timestamp
 // const fs = require('fs');
 // const Papa = require('papaparse');
 
-function mostrar_datos(date, nb){
+function mostrar_datos(dateBase, nb, idHabito){
 
+  holaa2()
  let dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
  let meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
- let diaSemana = dias[date.getDay()];
- let ano = date.getFullYear();
- let mes = meses[date.getMonth()];
- let dia = date.getDate();
+  date = new Date(dateBase)
+  // date2 = new Date(dateBase)
+  // datePa = date.toLocaleString("es-PA", {timeZone: "America/Panama"});
+  // date = new Date(datePa);
+ let diaSemana = dias[date.getUTCDay()];
+ let ano = date.getUTCFullYear();
+ let mes = meses[date.getUTCMonth() ];
+ let dia = date.getUTCDate()
  console.log(`La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano}`);
 
+
  let fecha = date.toISOString().split('T')[0];
- datos_historial =  get_datos_historial(valor_completo.id, fecha,'historial_habitos.csv' )
- console.log(datos_historial)
-
- if (nb === null){
-     resultado = 'sin registro <br>'
-     duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
-     
- }else{
-  duracion_historial = document.getElementById("duracion_historial").value = datos_historial.duracion
-  var objetoDatos_historial = document.getElementById("objeto_historial");
-  objetoDatos_historial.dataset.objeto = JSON.stringify(datos_historial);
-  console.log("Objeto guardado en atributo de datos.");
-  // console.log("objeto_guardado:",objeto_habito)
-  
-  
-  resultado = ` <br>  La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano} </br>  <br> Concentración: ${datos_historial.duracion} - Descanso: ${datos_historial.duracion_descanso} <br/> <br> Hora de inicio: ${datos_historial.start_timer} - Hora de fin: ${datos_historial.end_timer}  <br/> `
-}
-
-document.getElementById('form_edicion_historial').style.display = 'none'
-
-document.getElementById('onClick-placeholder').innerHTML = `
-
-<!-- <b>${date}</b>  -->
-<br/> <b>${resultado}</b> <br/>
-
-
-<button id="boton_visibleEdicionHistorial" onclick="visibleEdicionHistorial()">Editar</button>
-
-<!-- with 
-
-
-<b>${(nb === null ? 'unknown' : nb)}</b> items -->
-`;
-
-
-id_historial = document.getElementById("id_historial_habito").value = valor_completo.id
-fecha_historial = document.getElementById("fecha_historial").value = fecha
-console.log(id_historial)
-
-
-
-
-var objetoDatos = document.getElementById("objeto_habito_edicion");
-objeto_habito = obtenerObjetoHabito(id_historial)
-objetoDatos.dataset.objeto = JSON.stringify(objeto_habito);
-console.log("Objeto guardado en atributo de datos.");
-console.log("objeto_guardado:",objeto_habito)
-
-
-
-}
-
-
-function get_datos_historial(idHabito, fechaHabito, archivo) {
- const data = fs.readFileSync(archivo, 'utf8');
- const records = Papa.parse(data, {
-     header: true,
-     skipEmptyLines: true
- }).data;
-
- for (let record of records) {
-     if (parseInt(record.id_habito) === idHabito && record.fecha === fechaHabito) {
-         console.log(record); // Imprime todo el registro en la consola
-         return record
-     }
+ console.log(fecha)
+  get_datos_historial(idHabito, fecha,'historial_habitos.csv' )
+ .then(function(datos_historial){
+  console.log(datos_historial)
+  objeto_habito = datos_historial.objeto_habito
+  console.log(datos_historial.objeto_historial)
+  console.log('historialll')
+  console.log(datos_historial.objeto_historial['duracion'])
+ 
+  if (nb === null){
+      resultado = 'sin registro <br>'
+      duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
+      
+  }else{
+   duracion_historial = document.getElementById("duracion_historial").value = datos_historial.objeto_historial['duracion']
+   var objetoDatos_historial = document.getElementById("objeto_historial");
+   objetoDatos_historial.dataset.objeto = JSON.stringify(datos_historial);
+   console.log("Objeto guardado en atributo de datos.");
+   // console.log("objeto_guardado:",objeto_habito)
+   
+   
+   resultado = ` <br>  La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano} </br>  
+   <br> Concentración: ${datos_historial.objeto_historial['duracion']} - Descanso: ${datos_historial.objeto_historial['duracion_descanso']} <br/> 
+   <br> Hora de inicio: ${ datos_historial.objeto_historial['hora_inicio']} - Hora de fin: ${ datos_historial.objeto_historial['hora_fin']}  <br/> `
  }
+ 
+ document.getElementById('form_edicion_historial').style.display = 'none'
+ 
+ document.getElementById('onClick-placeholder').innerHTML = `
+ 
+ <!-- <b>${date}</b>  -->
+ <br/> <b>${resultado}</b> <br/>
+ 
+ 
+ <button id="boton_visibleEdicionHistorial" onclick="visibleEdicionHistorial()">Editar</button>
+ 
+ <!-- with 
+ 
+ 
+ <b>${(nb === null ? 'unknown' : nb)}</b> items -->
+ `;
+ 
+ 
+ id_historial = document.getElementById("id_historial_habito").value = idHabito
+ fecha_historial = document.getElementById("fecha_historial").value = fecha
+ console.log(id_historial)
+ 
+ 
+ 
+ 
+ var objetoDatos = document.getElementById("objeto_habito_edicion");
+ // objeto_habito = obtenerObjetoHabito(id_historial)
+ objetoDatos.dataset.objeto = JSON.stringify(objeto_habito);
+ console.log("Objeto guardado en atributo de datos.");
+ console.log("objeto_guardado:",objeto_habito)
+  })
+
+
+
 }
+
+
+
 
 
 function transformarDatos(idHabito, archivo) {
@@ -327,7 +334,7 @@ calAnio.paint(
   );
 
   calAnio.on('click', (event, timestamp, value) => {
-    mostrar_datos(timestamp, value)
+    mostrar_datos(timestamp, value, idHabito)
     console.log(
       'On <b>' +
         new Date(timestamp).toLocaleDateString() +
@@ -402,7 +409,7 @@ calMes.paint(
   );
 
   calMes.on('click', (event, timestamp, value) => {
-    mostrar_datos(timestamp, value)
+    mostrar_datos(timestamp, value, idHabito)
     console.log(
       'On <b>' +
         new Date(timestamp).toLocaleDateString() +
@@ -650,75 +657,7 @@ let datosObjetivo = etiquetas.map(() => valorObjetivo);
 // Llamar a la función con el id que quieres graficar
 
 
-function agregarEditarHabito() {
-  id_habitoObjet = document.getElementById("id_historial_habito")
-  id_habito = id_habitoObjet.value
-  duracion_historialobject = document.getElementById("duracion_historial")
 
-  var objeto_historial_leido = {}
-  var objeto_historial = document.getElementById("objeto_historial");
-  var objetoGuardado_historial = objeto_historial.dataset.objeto;
-  if (objetoGuardado_historial) {
-    objeto_historial_leido = JSON.parse(objetoGuardado_historial);
-      console.log("Objeto recuperado:", objeto_historial_leido);
-  } else {
-      console.log("No hay ningún objeto guardado.");
-  }
-
-  fecha_historial = document.getElementById("fecha_historial").value
-
-  duracion_historial = duracion_historialobject.value
-  let data = fs.readFileSync('historial_habitos.csv', 'utf8');
-  let records = Papa.parse(data, {header: true}).data;
-
-  console.log('se guardara en -', id_habito, ' el tiempo', duracion_historial, 'en-', objeto_historial_leido.fecha)
-
-  let hoy = moment().format('YYYY-MM-DD');
-  let hora = moment().format('HH:mm:ss');
-
-  fechaSeleccionada = objeto_historial_leido.fecha
-
-  let existeHoy = records.some(record => moment(record.fecha).format('YYYY-MM-DD') === fecha_historial && record.id_habito === id_habito);
-  console.log(existeHoy)
-  console.log("--eeeeeeeeeeeeeeettttttttttttttttttteeeeeuuuuuuuuuuuuaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-  if (!existeHoy) {
-      let nueva_fila = {
-          id_habito: id_habito,
-          fecha: fecha_historial,
-          duracion: duracion_historial,
-          start_timer: hora,
-          end_timer: 0,
-          duracion_descanso: 0
-      };
-      records.push(nueva_fila);
-  }else{
-    records.forEach(record => {
-      if(moment(record.fecha).format('YYYY-MM-DD') === fechaSeleccionada && record.id_habito === id_habito) {
-          record.duracion = duracion_historial;
-      }
-  });
-  }
-
-  let csv = Papa.unparse(records);
-  fs.writeFileSync('historial_habitos.csv', csv);
-  
-  var objetoDatos = document.getElementById("objeto_habito_edicion");
-  var objetoGuardado = objetoDatos.dataset.objeto;
-  if (objetoGuardado) {
-      var objeto = JSON.parse(objetoGuardado);
-      console.log("Objeto recuperado:", objeto);
-      definir(objeto)
-      generarGraficoDuracionPorAnio(objeto.id+'', objeto.objetivo);
-      graficar_semana(objeto.id+'', objeto.objetivo);
-  } else {
-      console.log("No hay ningún objeto guardado.");
-  }
-  id_habitoObjet.value = ''
-  duracion_historialobject.value = ''
-  objetoDatos.dataset = {}
-
-
-}
 
 
 function visibleEdicionHistorial(){

@@ -108,6 +108,11 @@ class Historial_habitos(models.Model):
         duracion_minutos = round(duracion_minutos, 2)
         return  duracion_minutos
     
+    def tranformar_descanso(self):
+        duracion_minutos =  self.duracion_descanso.total_seconds() / 60  
+        duracion_minutos = round(duracion_minutos, 2)
+        return  duracion_minutos
+    
     def tranformarfecha(self):
         fecha_transformada = self.fecha_inicio.date()  
         return fecha_transformada
@@ -120,8 +125,10 @@ class Historial_habitos(models.Model):
             'fecha_inicio' : self.fecha_inicio.date(),
             'fecha_fin' : self.fecha_fin,
             'duracion' : self.tranformarDuracion(),
-            'duracion_descanso' : self.duracion_descanso,
-            'fecha': self.fecha_inicio.strftime('%Y-%m-%d')
+            'duracion_descanso' : self.tranformar_descanso(),
+            'fecha': self.fecha_inicio.strftime('%Y-%m-%d'),
+            'hora_fin': self.fecha_fin.time(),
+            'hora_inicio': self.fecha_inicio.time(),
         }
     def obtenerHistorialFechaDuracion(self):
         return{

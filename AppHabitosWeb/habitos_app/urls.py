@@ -11,4 +11,6 @@ urlpatterns = [
     path('set_formHabito/<id_habito>', views.guardar_formulario_Habito, name='guardar_formulario_Habito'),
     path('set_NewHabitoformHabito/', views.set_NewHabitoformHabito, name='set_NewHabitoformHabito'),
     path('archivarHabito/<id_habito>', views.archivarHabito, name='archivarHabito'),
+    path('getOneHistorial/<id_habito>', views.getOneHistorial, name='getOneHistorial'),
+    path('editarDuracionForm_Habito/<id_habito>', views.editarDuracionForm_Habito, name='editarDuracionForm_Habito'),
 ]
