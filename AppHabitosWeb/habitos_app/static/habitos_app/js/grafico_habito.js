@@ -74,17 +74,17 @@ function mostrar_datos(dateBase, nb, idHabito){
  console.log(fecha)
   get_datos_historial(idHabito, fecha,'historial_habitos.csv' )
  .then(function(datos_historial){
-  console.log(datos_historial)
-  objeto_habito = datos_historial.objeto_habito
-  console.log(datos_historial.objeto_historial)
-  console.log('historialll')
-  console.log(datos_historial.objeto_historial['duracion'])
- 
-  if (nb === null){
-      resultado = 'sin registro <br>'
-      duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
-      
-  }else{
+   
+   if (nb === null){
+     resultado = 'sin registro <br>'
+     duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
+     
+    }else{
+    console.log(datos_historial)
+    objeto_habito = datos_historial.objeto_habito
+    console.log(datos_historial.objeto_historial)
+    console.log('historialll')
+    console.log(datos_historial.objeto_historial['duracion'])
    duracion_historial = document.getElementById("duracion_historial").value = datos_historial.objeto_historial['duracion']
    var objetoDatos_historial = document.getElementById("objeto_historial");
    objetoDatos_historial.dataset.objeto = JSON.stringify(datos_historial);
@@ -95,7 +95,13 @@ function mostrar_datos(dateBase, nb, idHabito){
    resultado = ` <br>  La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano} </br>  
    <br> Concentración: ${datos_historial.objeto_historial['duracion']} - Descanso: ${datos_historial.objeto_historial['duracion_descanso']} <br/> 
    <br> Hora de inicio: ${ datos_historial.objeto_historial['hora_inicio']} - Hora de fin: ${ datos_historial.objeto_historial['hora_fin']}  <br/> `
- }
+ 
+   var objetoDatos = document.getElementById("objeto_habito_edicion");
+   // objeto_habito = obtenerObjetoHabito(id_historial)
+   objetoDatos.dataset.objeto = JSON.stringify(objeto_habito);
+   console.log("Objeto guardado en atributo de datos.");
+   console.log("objeto_guardado:",objeto_habito)
+  }
  
  document.getElementById('form_edicion_historial').style.display = 'none'
  
@@ -121,11 +127,7 @@ function mostrar_datos(dateBase, nb, idHabito){
  
  
  
- var objetoDatos = document.getElementById("objeto_habito_edicion");
- // objeto_habito = obtenerObjetoHabito(id_historial)
- objetoDatos.dataset.objeto = JSON.stringify(objeto_habito);
- console.log("Objeto guardado en atributo de datos.");
- console.log("objeto_guardado:",objeto_habito)
+
   })
 
 

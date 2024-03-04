@@ -274,12 +274,13 @@
             // let data = fs.readFileSync('historial_habitos.csv', 'utf8');
             // let records = Papa.parse(data, {header: true}).data;
             console.log(objeto_historial_leido)
-            console.log('se guardara en -', id_habito, ' el tiempo', duracion_historial, 'en-', objeto_historial_leido.objeto_historial.fecha)
+            //console.log('se guardara en -', id_habito, ' el tiempo', duracion_historial, 'en-', objeto_historial_leido.objeto_historial.fecha)
           
             // let hoy = moment().format('YYYY-MM-DD');
             // let hora = moment().format('HH:mm:ss');
           
-            fechaSeleccionada = objeto_historial_leido.objeto_historial.fecha
+            fechaSeleccionada = fecha_historial
+            console.log(fechaSeleccionada)
 
 
             var datos = {
@@ -305,7 +306,11 @@
             })
             .then(function(data){
                 console.log(data)
+                definir(data.objetoHabito)
+                generarGraficoDuracionPorAnio(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
+                graficar_semana(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
                 var objetoDatos = document.getElementById("objeto_habito_edicion");
+                /*
                 var objetoGuardado = objetoDatos.dataset.objeto;
                 if (objetoGuardado) {
                     var objeto = JSON.parse(objetoGuardado);
@@ -316,6 +321,7 @@
                 } else {
                     console.log("No hay ningún objeto guardado.");
                 }
+                */
                 id_habitoObjet.value = ''
                 duracion_historialobject.value = ''
                 objetoDatos.dataset = {}

@@ -245,18 +245,24 @@ def getOneHistorial(request, id_habito):
         print(id_habito)
         print(datos)
         fecha = datos['fecha']
+        print(fecha)
         
-        objeto_habito = Habito.objects.get(id = id_habito)
-        objeto_historial = objeto_habito.listHabitoHistorial.filter(fecha_inicio__date = fecha)
-        print(objeto_historial)
-        print(type(objeto_historial))
-        
-        context = {
-            'objeto_habito' : objeto_habito.obtener_valores(),
-            'mensaje': 'Datos recibidos correctamente',
-            'objeto_historial' : objeto_historial.first().obtenerHistorialFormateado()
-        }
-       
+        objeto_habito = Habito.objects.filter(id = id_habito)
+        objeto_historial = objeto_habito.first().listHabitoHistorial.filter(fecha_inicio__date = fecha)
+        if objeto_historial.exists():
+            print(objeto_historial)
+            print(type(objeto_historial))
+            
+            context = {
+                'objeto_habito' : objeto_habito.first().obtener_valores(),
+                'mensaje': 'Datos recibidos correctamente',
+                'objeto_historial' : objeto_historial.first().obtenerHistorialFormateado()
+            }
+        else: 
+            context = {
+                'mensaje': 'Datos recibidos correctamente'
+            }
+
         return JsonResponse(context, safe=False)
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
@@ -274,37 +280,68 @@ def editarDuracionForm_Habito(request, id_habito):
         print('--------ooooooooooooo-------')
         print(campofecha)
         print(campoDuracion)
-        objetoHabito = Historial_habitos.objects.get(fk_habito=id_habito,fecha_inicio__date = campofecha )
+        habitocompleto = Habito.objects.get(id= id_habito)
+        objetoHabito = Historial_habitos.objects.filter(fk_habito__id=id_habito,fecha_inicio__date = campofecha)
+        
+        if not objetoHabito.exists():
+            horaVacia = '00:00:00'
+            
+            fecha_hora_ = timezone.make_aware(datetime.strptime(f'{campofecha} {horaVacia}', '%Y-%m-%d %H:%M:%S'))
+            campoDuracionDescanso = timedelta(hours=0, minutes=0, seconds=0)   
+            
+            Historial_habitos.objects.create(
+                    fk_habito_id=id_habito, 
+                    fecha_inicio=fecha_hora_, 
+                    fecha_fin=fecha_hora_, 
+                    duracion=campoDuracion, 
+                    duracion_descanso=campoDuracionDescanso, 
+                    )
+            
+            
+            # objetoHabito.fk_habito__id = int(id_habito)
+            # objetoHabito.fecha_inicio = fecha_hora_
+            # objetoHabito.fecha_fin = fecha_hora_
+            # objetoHabito.duracion = campoDuracion
+            # objetoHabito.duracion_descanso = campoDuracionDescanso
+            
+            # objetoHabito.save()
+            
+        else:
+            objetoHabito = objetoHabito.first()
        
-        # nombre = str(datos['nombre']) 
-        # short_break = datos['short_break']
-        # count = datos['count']
-        # campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
-        # #orden_n = datos['orden_n']
-        # color = datos['color']
-        # objetivo = datos['objetivo']
+            # nombre = str(datos['nombre']) 
+            # short_break = datos['short_break']
+            # count = datos['count']
+            # campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
+            # #orden_n = datos['orden_n']
+            # color = datos['color']
+            # objetivo = datos['objetivo']
 
-        objetoHabito.duracion=campoDuracion
-        # objetoHabito.nombre=nombre
-        # objetoHabito.work_time=work_time
-        # objetoHabito.short_break=short_break
-        # objetoHabito.count=count
-        # objetoHabito.type=campo_type
-        # #objetoHabito.orden_n=orden_n
-        # objetoHabito.color=color
-        # objetoHabito.objetivo=objetivo
-        
-        print(objetoHabito)
-        print(objetoHabito.duracion)
-        print(objetoHabito.fk_habito)
-        print('1--------ooooooooooooo-------')
-        
-        
-        
-        
-        objetoHabito.save()
-        print(' se guardo')
+            objetoHabito.duracion=campoDuracion
+            # objetoHabito.nombre=nombre
+            # objetoHabito.work_time=work_time
+            # objetoHabito.short_break=short_break
+            # objetoHabito.count=count
+            # objetoHabito.type=campo_type
+            # #objetoHabito.orden_n=orden_n
+            # objetoHabito.color=color
+            # objetoHabito.objetivo=objetivo
+            
+            print(objetoHabito)
+            print(objetoHabito.duracion)
+            print(objetoHabito.fk_habito)
+            print('1--------ooooooooooooo-------')
+            
+            
+            
+            
+            objetoHabito.save()
+            print(' se guardo')
+        context = {
+            'objetoHabito': habitocompleto.obtener_valores(),
+            'mensaje': 'Datos recibidos correctamente'
+        }
 
-        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+        return JsonResponse(context)
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
