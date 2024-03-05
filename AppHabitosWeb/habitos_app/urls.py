@@ -15,4 +15,6 @@ urlpatterns = [
     path('editarDuracionForm_Habito/<id_habito>', views.editarDuracionForm_Habito, name='editarDuracionForm_Habito'),
     path('delete_habito/', views.delete_habito, name='delete_habito'),
     path('archivar_habito/', views.archivar_habito, name='archivar_habito'),
+    path('get_listHabitos_Sort/', views.get_listHabitos_Sort, name='get_listHabitos_Sort'),
+    path('set_listHabitos_Sort/', views.set_listHabitos_Sort, name='set_listHabitos_Sort'),
 ]

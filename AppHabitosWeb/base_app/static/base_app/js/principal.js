@@ -11,6 +11,7 @@ let data_historial
 let records
 
 let sortable
+var sorteableActivado = false
 
 // const path = require('path')
 // Al cargar la página, recuperar el orden de la lista del archivo
@@ -18,7 +19,7 @@ function ordenar_lista_habitos () {
   let orden
 
   // Selecciona la lista
-  const listaOrdenable = document.getElementById('miLista')
+  const listaOrdenable = document.getElementById('miLista_ParaOrdenar')
   // Obtiene todos los elementos <li>
   const elementos = listaOrdenable.children
   // Ordena los elementos basados en su atributo id numérico
@@ -33,13 +34,14 @@ function ordenar_lista_habitos () {
 };
 
 function eventos_lista_habitos () {
-  url = '/habitos/getHabitosOnly'
+  url = '/habitos/get_listHabitos_Sort/'
 
 
 
 
-  const lista = document.getElementById('miLista')
+  const lista = document.getElementById('miLista_ParaOrdenar')
   sortable = Sortable.create(lista, {
+    sort: true,
     // Definir el evento onEnd
     onEnd: function (/** Event */evt) {
 
@@ -54,12 +56,12 @@ function eventos_lista_habitos () {
     
       })
       .then(function(data){
-        console.log(data.listaHabitos)
+        console.log(data.ListHabitosSort)
      
-      const obj = data.listaHabitos
+      const obj = data.ListHabitosSort
 
       // let nuevoOrden = sortable.toArray();
-      const elementos_all = document.getElementById('miLista')
+      const elementos_all = document.getElementById('miLista_ParaOrdenar')
       const elementos_li = elementos_all.children
 
       console.log(obj)
@@ -92,6 +94,7 @@ function eventos_lista_habitos () {
       }
 
      // actualizar_listas()
+     console.log(obj)
 
       console.log('se guardo orden json')
     })
@@ -101,22 +104,70 @@ function eventos_lista_habitos () {
   ordenar_lista_habitos()
 }
 
+
+
+// importante ocultado mientras
+// window.onload = eventos_lista_habitos
+
 // window.onload =  ordenar_lista_habitos
-window.onload = eventos_lista_habitos
 
-function leer_archivo_historial (archivo) {
-  const data = fs.readFileSync(archivo, 'utf8')
-  const records = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
-  }).data
+// function leer_archivo_historial (archivo) {
+//   const data = fs.readFileSync(archivo, 'utf8')
+//   const records = Papa.parse(data, {
+//     header: true,
+//     skipEmptyLines: true
+//   }).data
 
-  // console.log(records)
-  return records
+//   // console.log(records)
+//   return records
+// }
+
+
+
+function ActivarOrdenarLista(){
+  sorteableActivado = !sorteableActivado
+  ventanalistas = document.getElementById('ventana1')
+  ventanaOrdenar = document.getElementById('ventana3')
+  
+  if (sorteableActivado){
+    ventanalistas.style.display = 'none'
+    ventanaOrdenar.style.display = 'block'
+    fetch_OrdenarListaHabitos()
+    .then(function(data) {
+      llenar_lista_habitosAOrdenar( 'miLista_ParaOrdenar', data.ListHabitosSort)
+      .then( () => {
+
+        eventos_lista_habitos()
+      }
+        )
+      })
+      sortable.option('sort', sorteableActivado);
+      // document.getElementById('des_archivar_borrar').style.display = 'block'
+      // document.getElementById('archivar_borrar').style.display = 'none'
+    }else{
+      ventanalistas.style.display = 'block'
+      ventanaOrdenar.style.display = 'none'
+      sortable.option('sort', sorteableActivado);
+      sortable.destroy();
+      const elementos_all = document.getElementById('miLista_ParaOrdenar')
+      elementos_all.innerHTML = ''
+      // document.getElementById('des_archivar_borrar').style.display = 'none'
+      // document.getElementById('archivar_borrar').style.display = 'block'
+    }
+
 }
 
+function fetch_OrdenarListaHabitos(){
 
-
+  url = '/habitos/get_listHabitos_Sort/';
+  return fetch(url)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('La solicitud falló');
+            }
+            return response.json();
+        })
+}
 
 
 function registrar_Habitos_checker(habito_obj) {

@@ -29,6 +29,7 @@
                 <div class="contenedor_datos_superior">
 
                     <button class="material-icons" onclick="configurar_habito_nuevo()"> add</button>
+                    <button class="material-icons" onclick="ActivarOrdenarLista()"> sort</button>
 
                     <h4 id="tiempo_restante"></h4>
                     <h4 id="horas_completadas"></h4>
@@ -112,6 +113,14 @@
             </div>
         </div>
 
+
+        <div id="ventana3" class="ventana" style="display: none;">
+            <button class="material-icons" onclick="ActivarOrdenarLista()"> sort</button>
+            <button class="material-icons" onclick="saveNewListSort()"> save</button>
+
+
+            <ul id="miLista_ParaOrdenar">
+        </div>
 
 
 
@@ -565,6 +574,68 @@
             // cambiarVentana('ventana1')
           
           
+          }
+
+          function saveNewListSort(){
+
+            const ids = [];
+            const elementos_all = document.getElementById('miLista_ParaOrdenar')
+            const elementos_li = elementos_all.children
+          
+            for (let i = 0; i < elementos_li.length; i++) {
+              // const id = obj[i].id
+          
+              const objStr = elementos_li[i].dataset.obj
+          
+              // Convertir la cadena de texto a un objeto
+              const obj2 = JSON.parse(objStr)
+          
+              // const index = obj.findIndex(item => item.id === obj2.id)
+              // obj[index].orden_n = Number(array[i].id)
+               console.log(obj2.id, '-', obj2.nombre, '-' , i)
+              ids.push(obj2.id);
+            }
+            
+            console.log(ids);
+
+            url = `/habitos/set_listHabitos_Sort/`
+                  
+            fetch(url, {
+                method : 'POST',
+                headers : {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{csrf_token}}' 
+                },
+                body: JSON.stringify(ids)
+            } )
+            .then(function(response){
+                if (!response.ok){
+                    throw new Error('error')
+                }
+                return response.json()
+            })
+            .then(function(data){
+                // console.log(data)
+                // actualizar_listas()
+                // cambiarVentana('ventana1')
+          
+          
+                 // Guardar el nuevo array en el archivo JSON
+            // fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
+            //console.log('Registro archivado')
+            // cambiarVentana('ventana1')
+            
+            sortable.destroy();
+            elementos_all.innerHTML = ''
+            ventanalistas = document.getElementById('ventana1')
+            ventanaOrdenar = document.getElementById('ventana3')
+            ventanalistas.style.display = 'block'
+            ventanaOrdenar.style.display = 'none'
+            actualizar_listas()
+            sorteableActivado = !sorteableActivado
+            })
+          
+           
           }
 
 

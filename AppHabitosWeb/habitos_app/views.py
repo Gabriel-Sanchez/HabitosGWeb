@@ -55,7 +55,7 @@ def totalMinutosHistorialHoy(listaHoy):
 def listar_habitos():
     # fecha_actual = date.today()
     fecha_actual = timezone.now()
-    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False)
+    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False).order_by('orden_n')
     habitosenelhistorial_hoy = Habito.objects.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False)
     habitosArchivado = Habito.objects.filter(archivado=True)
  
@@ -392,4 +392,49 @@ def archivar_habito(request):
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
-    
+
+
+def get_listHabitos_Sort(request): 
+    listaHabitos_a_ordenar = Habito.objects.filter(archivado=False)
+    valoresListaHabitosAordenarJson = [habito.obtener_valores() for habito in listaHabitos_a_ordenar]
+    context = {
+            'ListHabitosSort': valoresListaHabitosAordenarJson,
+            'mensaje': 'Datos recibidos correctamente'
+        }
+    return JsonResponse(context, safe=False)
+
+# def set_listHabitos_Sort(request): 
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         numero = 0
+#         for item in data:
+#             habitoAordenar = Habito.objects.get(id = item)
+#             habitoAordenar.orden_n = numero
+#             habitoAordenar.save()
+#             numero += 1
+            
+#             #print(item)  # Puedes hacer lo que necesites con cada elemento de la lista
+#         return JsonResponse({'message': 'Datos recibidos correctamente'})
+#     else:
+#         return JsonResponse({'message': 'Esta vista solo acepta solicitudes POST'})
+
+def set_listHabitos_Sort(request): 
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        habitos_ids = [item for item in data]
+        habitos = Habito.objects.filter(id__in=habitos_ids)
+
+        # Crear un diccionario que mapea los IDs a los objetos Habito
+        habitos_dict = {habito.id: habito for habito in habitos}
+
+        # Crear una lista de los objetos Habito en el orden correcto
+        habitos_ordenados = [habitos_dict[id] for id in habitos_ids]
+
+        for i, habito in enumerate(habitos_ordenados):
+            habito.orden_n = i
+
+        Habito.objects.bulk_update(habitos_ordenados, ['orden_n'])
+            
+        return JsonResponse({'message': 'Datos recibidos correctamente'})
+    else:
+        return JsonResponse({'message': 'Esta vista solo acepta solicitudes POST'})
