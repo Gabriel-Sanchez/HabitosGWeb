@@ -1,0 +1,64 @@
+{% load static %}
+
+<form action="{% url 'signup' %}" method="post">
+  {% csrf_token %}
+
+  <div>
+    {% if error %}
+    <p>{{error}}</p>
+    {% endif %}
+
+    <div>
+      <div>
+        <div>
+
+          <div>
+            <div>
+              <p class="status"></p>
+
+              <div>
+
+                <h1>Registro</h1>
+
+                <div class="row">
+                  <div class="col">
+
+                    <div>
+                      <input type="text" id="signonname" name="First_name">
+                      <label for="signonname">Nombre</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-outline form-auth-mdb mb-4">
+                  <input type="email" id="email" name="email">
+                  <label for="email">Correo electronico</label>
+                </div>
+
+                <div class="row">
+                  <div class="col">
+
+                    <div>
+                      <input type="password" id="signonpassword" name="password" autocomplete="off">
+                      <label for="signonpassword">Contraseña</label>
+                    </div>
+                  </div>
+                  <div class="col">
+
+                    <div>
+                      <input type="password" id="password2" name="password_confirmation" autocomplete="off">
+                      <label for="password2">Repita su contraseña</label>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-block mb-4 gcolorbuttons" type="submit" value="SIGNUP">Registrarse</button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,18 @@
+{% load static %}
+
+<h2 > Perfil</h2>
+{% if profile.picture.url != null %}
+    <img  src="{{ profile.picture.url }}" width="265-50%" height="265-50%" style="display:block; margin:auto;">
+{% else %}
+    <img src="{% static '..\media\default\user.png' %}" width="265-50%" height="265-50%" style="display:block; margin:auto;">
+{% endif %}
+
+<h2 >{{ request.user }} </h2>
+
+<a href="{% url 'update_profile' %}" style=" margin-left: 17px; margin-bottom: 10px;">Editar</a>
+
+    
+
+            
+
+

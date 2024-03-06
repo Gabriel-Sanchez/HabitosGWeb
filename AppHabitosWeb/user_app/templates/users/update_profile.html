@@ -1,0 +1,111 @@
+
+{% load static %}
+
+    <div>
+        {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endfor %}
+      
+    {% endif %}
+    
+        <h2 class=""> Configuración de cuenta</h2>
+
+
+        <div style="background-color: white">
+               
+            <div class="">
+                <div class="">Configuración de imagen</div>
+                <div class="">
+                    <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="">
+                            {% if profile.picture.url != null %}
+                            <img class="" src="{{ profile.picture.url }}" width="265-50%"
+                                height="265-50%" style="display:block; margin:auto;">
+                            {% else %}
+                            <img class="" src="{% static '..\media\default\user.png' %}"
+                                width="265-50%" height="265-50%" style="display:block; margin:auto;">
+                            {% endif %}
+                        </div>
+                        <div class="" style="padding-bottom: 10px;">
+                            <h5 class="" style="text-align: center;"> {{user.username}} </h5>
+
+                            <label for="customFile">Subir imagen</label>
+                            <input type="file" name="picture" class="form-control" id="customFile"
+                                required="true" />
+                        </div>
+
+                        <div>
+                            <button>Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <hr>
+
+                <div class="">
+                    <div class="card-header h5">Configuración de cuenta</div>
+
+                    {% if error_usuario %}
+
+                    <div class=""> {{error_usuario}} </div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <input value="{{ request.user.username }}" name="username" type="text" id="display_name"
+                                class="form-control mb-3 " placeholder="Nombre de Usuario" required>
+                                
+
+                            <input value="{{ request.user.email }}" name="email" type="email" id="user_email"
+                                class="form-control mb-3" placeholder="Dirección de correo electrónico" required>
+
+                            <div class="text-center d-grid gap-2 col-6 mx-auto">
+                                <button id="edit-user-account">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="">
+
+                    <div class="">Cambiar contraseña</div>
+                    <div class="">
+
+                        {% if error %}
+
+                        <div class=""> {{error}} </div>
+                        {% endif %}
+
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <input type="password" name="currentPass" 
+                               placeholder="contraseña actual">
+
+                            <input type="password" name="newPass" 
+                                placeholder="nueva contraseña">
+
+                            <input type="password" name="confirmPass" 
+                                 placeholder="Confirmar nueva contraseña">
+
+                            <div>
+                                <button 
+                                    class="">Cambiar contraseña</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5pcse1s4x0o&*tt_t^^5nxf57$h5#c*bo$5tbk8l7)*57l7y%d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.16']
+ALLOWED_HOSTS = ['192.168.0.16', 'localhost']
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base_app',
     'habitos_app',
-    'pomodoro_app'
+    'pomodoro_app',
+    'user_app'
 ]
 
 MIDDLEWARE = [
@@ -107,14 +108,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-eu'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Panama'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -126,3 +130,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL='/media/'
+MEDIA_ROOT= BASE_DIR / 'media'
+LOGIN_URL = '/users/login'

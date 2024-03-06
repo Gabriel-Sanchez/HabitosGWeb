@@ -1,0 +1,41 @@
+{% load static %}
+
+
+<form action="{% url 'login' %}" method="post">
+  {% csrf_token %}
+
+  <div>
+    <div>
+      <div>
+        <h1>Inicio de sesión</h1>
+
+        <div>
+          <div>
+            <p class="status"></p>
+
+            <div>
+              <input type="text" id="username" name="username">
+              <label for="username">Usuario</label>
+            </div>
+
+            <div>
+              <input type="password" id="password" name="password" autocomplete="off">
+              <label for="password">Contraseña</label>
+            </div>
+
+            {% if error %}
+            <div id="msg">{{error}}</div>
+            {% endif %}
+
+            <button type="submit" value="LOGIN">Iniciar Sesión</button>
+
+            <hr>
+            <br>
+            <p>¿No tienes una cuenta?</p>
+            <a href="{% url 'signup' %}">Registrarse</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
