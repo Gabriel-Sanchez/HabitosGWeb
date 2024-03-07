@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import timedelta, date
 from django.db.models import Sum
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 class TiposHabitos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -22,6 +24,7 @@ class Habito(models.Model):
     objetivo = models.IntegerField(default=0)
     progresion = models.IntegerField(default=0)
     archivado = models.BooleanField(default=False)
+    fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listHabitos', null=True)
     
     
     def __str__(self):
@@ -31,10 +34,13 @@ class Habito(models.Model):
         fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
         
         numero_racha = 0
-        if fechas_ordenadas[0].fecha_inicio.date() == date.today():
-            fecha_anterior =  date.today() + timedelta(days=1)  
-        else:
-            fecha_anterior =  date.today()
+        if fechas_ordenadas:
+            if fechas_ordenadas[0].fecha_inicio.date() == date.today():
+                # fecha_anterior =  date.today() + timedelta(days=1)  
+                fecha_anterior =  timezone.now().date() + timedelta(days=1)  
+            else:
+                # fecha_anterior =  date.today()
+                fecha_anterior =  timezone.now().date()
 
         for elemento in fechas_ordenadas:
             fecha_actual = elemento.fecha_inicio.date()  

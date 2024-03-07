@@ -5,6 +5,7 @@ from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Max,Sum, F
+from django.contrib.auth.models import User
 
 import json
 
@@ -52,18 +53,21 @@ def totalMinutosHistorialHoy(listaHoy):
                 "Minutos": 0,
                 }
 
-def listar_habitos():
+def listar_habitos(Usuario):
     # fecha_actual = date.today()
+    listaHabitos = Usuario.listHabitos.all()
+    print(listaHabitos)
     fecha_actual = timezone.now()
-    habitosenelhistorial_no_hoy = Habito.objects.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False).order_by('orden_n')
-    habitosenelhistorial_hoy = Habito.objects.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False)
-    habitosArchivado = Habito.objects.filter(archivado=True)
+    habitosenelhistorial_no_hoy = listaHabitos.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False).order_by('orden_n')
+    habitosenelhistorial_hoy = listaHabitos.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False)
+    habitosArchivado = listaHabitos.filter(archivado=True)
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
     Lista_habitos_Archivados = [habito.obtener_valores() for habito in habitosArchivado]
     
-    listaHistorialHoy = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual)
+    # listaHistorialHoy = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual)
+    listaHistorialHoy = Historial_habitos.objects.filter(fk_habito__fk_user=Usuario ,fecha_inicio__date=fecha_actual)
     
     varTotalTiempoHabitoHoyRestante = totalMinutosHistorialHoy(habitosenelhistorial_no_hoy)
     varTotalTiempoHabitoHoyCompletado = totalMinutosHistorialCompletadosHoy(listaHistorialHoy)
@@ -82,7 +86,7 @@ def listar_habitos():
     
 
 def obtener_habitos_restantes_hoy(request):
-    context = listar_habitos()
+    context = listar_habitos(request.user)
     # print(context)
     return JsonResponse(context, safe=False)
 
@@ -132,7 +136,8 @@ def check_habito(request, habito):
 
 def getHabitosOnly(request):
     
-    objtosHabitos = Habito.objects.all()
+    # objtosHabitos = Habito.objects.all()
+    objtosHabitos = request.user.listHabitos.all()
     
     listaHabitos = list(objtosHabitos.values())
     
@@ -143,12 +148,18 @@ def getHabitosOnly(request):
 
 def getHistorialHabito(request, id_habito):
     objetoHistorialHabito = Historial_habitos.objects.filter(fk_habito=id_habito)
-    lista_HistorialHabito = [historial.obtenerHistorialFormateado() for historial in objetoHistorialHabito ]
-    lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
-    # print(lista_HistorialHabito)
-    varTotalTimpoHabito = objetoHistorialHabito.first().fk_habito.totalMinutosHabitos()
-    varTotalDiasHabito = objetoHistorialHabito.first().fk_habito.cantidadDiasHabito()
-    
+    if objetoHistorialHabito:
+        lista_HistorialHabito = [historial.obtenerHistorialFormateado() for historial in objetoHistorialHabito ]
+        lista_HistorialFechaDuracion = [historial.obtenerHistorialFechaDuracion() for historial in objetoHistorialHabito ]
+        # print(lista_HistorialHabito)
+        varTotalTimpoHabito = objetoHistorialHabito.first().fk_habito.totalMinutosHabitos()
+        varTotalDiasHabito = objetoHistorialHabito.first().fk_habito.cantidadDiasHabito()
+    else:
+        lista_HistorialHabito = [ ]
+        lista_HistorialFechaDuracion = [ ]
+        varTotalTimpoHabito = {"Horas": 0, "Minutos": 0, "Segundos": 0, }
+        varTotalDiasHabito = 0
+        
     
     context = {
         'lista_HistorialHabito': lista_HistorialHabito,
@@ -234,7 +245,8 @@ def set_NewHabitoformHabito(request):
             type=campo_type,
             orden_n=nuevo_valor,
             color=color,
-            objetivo=objetivo
+            objetivo=objetivo,
+            fk_user=request.user
         )
 
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
@@ -395,7 +407,8 @@ def archivar_habito(request):
 
 
 def get_listHabitos_Sort(request): 
-    listaHabitos_a_ordenar = Habito.objects.filter(archivado=False)
+    # listaHabitos_a_ordenar = Habito.objects.filter(archivado=False)
+    listaHabitos_a_ordenar =   request.user.listHabitos.filter(archivado=False)
     valoresListaHabitosAordenarJson = [habito.obtener_valores() for habito in listaHabitos_a_ordenar]
     context = {
             'ListHabitosSort': valoresListaHabitosAordenarJson,
