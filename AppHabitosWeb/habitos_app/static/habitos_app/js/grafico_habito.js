@@ -289,25 +289,38 @@ const calAnio = new CalHeatmap();
 calAnio.paint(
     {
       data: { source: data.data_historial, x: "fecha", y: "duracion" },
-      date: { start: new Date(),    highlight: [
+      date: { start: new Date(new Date().getFullYear(), 0, 1),    highlight: [
         new Date(),
       ], },
-      range: 1,
+      // range: 1,
+      range: 12,
       scale: {
         color: {
-            domain: [0, 10, 30, 60, 120],
-            range: ['#5cff64',  '#055585'],
-            // interpolate: 'rgb',
-            // interpolate: 'rgb',
-            interpolate: d3.interpolateRgb.gamma(2.2),
-            type: 'linear',
+            // domain: [0, 10, 30, 60, 120],
+            // range: ['#5cff64',  '#055585'],
+            // // interpolate: 'rgb',
+            // // interpolate: 'rgb',
+            // interpolate: d3.interpolateRgb.gamma(2.2),
+            // type: 'linear',
             // scheme: 'YlOrRd'
+            range: ['#bfbfbf','#49c94f', '#055585'],
+            interpolate: 'hsl',
+             type: 'linear',
+            // domain: [0, 30, 60, 80, 120],
+            domain: [0,1, 120],
+            // domain: [0, 5, 25, 50, 100, 120],
         },
       },
+      // domain: {
+      //   type: "year",
+      // },
+      // subDomain: { type: "day", radius: 3 , width: 15, height: 15 },
       domain: {
-        type: "year",
+        type: 'month',
+        gutter: 5,
+        label: { text: 'MMM', textAlign: 'start', position: 'top' },
       },
-      subDomain: { type: "day", radius: 3 , width: 15, height: 15 },
+      subDomain: { type: 'ghDay', radius: 3, width: 15, height: 15, gutter: 3 },
       itemSelector: "#cal-heatmap",
       theme: 'dark',
     },
@@ -322,7 +335,28 @@ calAnio.paint(
           },
         },
       ],
-      [LegendLite, { itemSelector: '#legendY', includeBlank: true }],
+      [
+        CalendarLabel,
+        {
+          width: 30,
+          textAlign: 'start',
+          text: () => dayjs.weekdaysShort().map((d, i) => (i % 2 == 0 ? '' : d)),
+          padding: [25, 0, 0, 0],
+        },
+      ],
+      // [
+        
+      //   // LegendLite, { itemSelector: '#legendY', includeBlank: true }
+      //   Legend,
+      //   {
+      //     tickSize: 0,
+        
+      //     itemSelector: "#legendMes",
+      //     label: "",
+      //   },
+      
+      
+      // ],
     //   [
     //     Legend,
     //     {

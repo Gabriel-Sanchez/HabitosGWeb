@@ -65,6 +65,9 @@ function gurdar_salir(){
                     window.location.href = "/habitos/";
                 });
             }
+        }else{
+            window.location.href = "/habitos/";
+            console.log('salir sin guardar')
         }
 
     }
