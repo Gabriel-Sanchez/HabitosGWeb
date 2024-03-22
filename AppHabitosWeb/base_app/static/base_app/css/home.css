@@ -5,6 +5,7 @@
 
 .item_habito{
     background-color: rgb(103, 222, 80);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,10 +21,27 @@
 .boton_habito{
     /* margin: auto; */
     padding: 10px;
+    border-radius: 3px;
+    border: 1px solid rgb(121, 121, 121);
+  }
+  .boton_checker{
+  /* background-color: #50c4de; */
+
 }
+
+.boton_pomodono{
+/* background-color: #67de50; */
+}
+
 .elemento_lista{
     padding: 5px;
     list-style-type: none;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.carta_lista{
+  border-radius: 5px;
+  overflow: hidden;
 }
 .titulo_habito{
   display: flex;

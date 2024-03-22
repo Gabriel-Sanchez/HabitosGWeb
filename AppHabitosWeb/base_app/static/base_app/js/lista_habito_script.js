@@ -70,32 +70,35 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
       botn.classList.add('boton_habito')
       botn_graf.classList.add('boton_habito')
-
+      
       boton_config.addEventListener('click', function () {
         configurar_habito(objeto)
         cambiarVentana('ventana2')
       })
-
-
+      
+      div_item_h.classList.add('carta_lista')
+      
       if (data[index].type__numero == 1) {
         div_item_h.classList.add('item_habito')
+        botn.classList.add('boton_pomodono')
         botn.innerHTML = '<i class="material-icons">alarm</i>';
         
         botn.addEventListener('click', function () {
-
+          
           window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
-
-
+          
+          
           console.log('a')
           // mientras
           // ipcRenderer.send('abrir-ventana-secundaria', objeto)
         })
       } else {
         div_item_h.classList.add('item_habito_check')
+        botn.classList.add('boton_checker')
         botn.innerHTML = '';
         botn.innerHTML = '<i class="material-icons">check</i>';
         botn.addEventListener('click', function () {
-
+          
           registrar_Habitos_checker(objeto)
           // actualizar_listas()
           definir(objeto)
@@ -259,32 +262,35 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
 
       botn.classList.add('boton_habito')
       botn_graf.classList.add('boton_habito')
-
+      
       boton_config.addEventListener('click', function () {
         configurar_habito(objeto)
         cambiarVentana('ventana2')
       })
-
-
+      
+      div_item_h.classList.add('carta_lista')
+      
       if (data[index].type__numero == 1) {
         div_item_h.classList.add('item_habito')
+        botn.classList.add('boton_pomodono')
         botn.innerHTML = '<i class="material-icons">alarm</i>';
         
         botn.addEventListener('click', function () {
-
+          
           window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
-
-
+          
+          
           console.log('a')
           // mientras
           // ipcRenderer.send('abrir-ventana-secundaria', objeto)
         })
       } else {
         div_item_h.classList.add('item_habito_check')
+        botn.classList.add('boton_checker')
         botn.innerHTML = '';
         botn.innerHTML = '<i class="material-icons">check</i>';
         botn.addEventListener('click', function () {
-
+          
           registrar_Habitos_checker(objeto)
           // actualizar_listas()
           definir(objeto)
