@@ -320,7 +320,7 @@ calAnio.paint(
         gutter: 5,
         label: { text: 'MMM', textAlign: 'start', position: 'top' },
       },
-      subDomain: { type: 'ghDay', radius: 3, width: 15, height: 15, gutter: 3 },
+      subDomain: { type: 'ghDay', radius: 3, width: 14, height: 14, gutter: 3 },
       itemSelector: "#cal-heatmap",
       theme: 'dark',
     },

@@ -61,3 +61,19 @@ border-radius: '3px';
 #legend g{
     width: 100%;
 }
+
+.botones_nyp{
+    background-color: #ffffff00;
+    padding: 2px;
+    margin: 5px;
+    height: 50%;
+    color: white;
+}
+
+.botones_nyp:hover{
+    color: black;
+}
+
+#mi-cal-heatmap rect.highlight {
+    fill: #FF0000 !important;
+}

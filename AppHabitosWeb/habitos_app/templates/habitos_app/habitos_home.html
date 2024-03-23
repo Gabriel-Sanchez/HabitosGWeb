@@ -143,14 +143,17 @@
                 <h4 class="h_total" id="dias_totales_invertidas_habito"></h4>
             </div>
             
-            <div class="center_div arriba_e">
-                <div id="cal-heatmap"></div>
-                
+            <div style="justify-content: center; display: flex;">
+
+                <div class="center_div arriba_e"  >
+                    <button class="botones_nyp" id="minDate-previous_year"> < </button>
+                    <div id="cal-heatmap"></div>
+                    <button class="botones_nyp" id="minDate-next_year">></button>
+                    
+                </div>
             </div>
             <div id="legendY" style="margin-bottom: 5px; float: right;" ></div>
             <div class="center_div">
-                <button class="botones_nyp" id="minDate-previous_year"> < </button>
-                        <button class="botones_nyp" id="minDate-next_year">></button>
             </div>
             <div>
                 <div style="justify-content: center; display: flex; height: 170px; width: 350px;">
@@ -159,8 +162,7 @@
 
                     <div class="center_div">
 
-                        <button class="botones_nyp" id="minDate-previous">
-                            < </button>
+                        <button class="botones_nyp" id="minDate-previous"> < </button>
                                 <div id="mes_habito"></div>
                                 <button class="botones_nyp" id="minDate-next">></button>
                     </div>
@@ -192,13 +194,16 @@
 
 
 
-            <div style="width: 1000px; height: 250px;">
+            <div class="center_div"> 
+            <div style="width: 950px; height: 250px;" class="center_div">
                 <div class="button-container">
-                    <button class="botones_nyp" id="prevButton">
-                        < </button>
-                            <button class="botones_nyp" id="nextButton">></button>
                 </div>
-                <canvas id="myChart"></canvas>
+
+                    <button class="botones_nyp" id="prevButton"> < </button>
+                    <canvas id="myChart"></canvas>
+                    <button class="botones_nyp" id="nextButton">></button>
+                </div>
+
             </div>
         </div>
 
