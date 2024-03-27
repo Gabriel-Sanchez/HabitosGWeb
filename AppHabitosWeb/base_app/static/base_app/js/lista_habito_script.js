@@ -32,11 +32,24 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       racha_habito_p.classList.add('racha_habito_texto')
       var texto_nombre = document.createTextNode(data[index].nombre)
       var texto_numero_racha = document.createTextNode( numero_racha_h)
-      racha_habito_p.appendChild(texto_numero_racha)
+      var span_racha = document.createElement("span");
+
+      if (Number(numero_racha_h) == 0){
+        span_racha.style.color = "orange";
+      } else if (Number(numero_racha_h) <0
+      ) {
+        span_racha.style.color = "red";
+        
+      } else {
+        span_racha.style.color = "green";
+        
+      }
+      span_racha.appendChild(texto_numero_racha)
+      racha_habito_p.appendChild(span_racha)
 
       var boton_config = document.createElement("button")
       boton_config.style.backgroundColor = data[index].color
-      //boton_config.innerHTML = '<index class="material-icons">settings</index>';
+      boton_config.innerHTML = '<index class="material-icons">settings</index>';
       boton_config.classList.add('boton_config')
       Nombre_habito_h1.appendChild(texto_nombre)
       Nombre_habito_h1.title = data[index].work_time

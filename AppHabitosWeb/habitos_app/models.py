@@ -49,6 +49,9 @@ class Habito(models.Model):
                 numero_racha += 1  
                 # print(numero_racha)
             else:
+                if numero_racha == 0:
+                    racha_negativa = fecha_anterior - fecha_actual
+                    numero_racha = -racha_negativa.days
                 break  
             fecha_anterior = fecha_actual
 
