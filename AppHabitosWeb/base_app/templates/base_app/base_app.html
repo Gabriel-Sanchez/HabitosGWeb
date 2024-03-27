@@ -34,6 +34,8 @@
     
     
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
     
     
     <link rel="stylesheet" href="{% static 'base_app/css/base_app_style.css'  %}">
@@ -108,10 +110,10 @@
   <div class="dropdown">
     {% if request.user.profile.picture.url != null %}
                   
-    <img src="{{ request.user.profile.picture.url }}"  height="25" width="25" alt=""
+    <img class="h-10" src="{{ request.user.profile.picture.url }}"  height="25" width="25" alt=""
       loading="lazy" onclick="myFunction()" class="dropbtn"/>
     {% else %}
-    <img src="{% static '..\media\default\user.png' %}"  height="25" alt=""
+    <img class="h-10" src="{% static '..\media\default\user.png' %}"  height="25" alt=""
       loading="lazy" onclick="myFunction()" class="dropbtn"/>
 
 
