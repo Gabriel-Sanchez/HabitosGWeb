@@ -111,7 +111,7 @@ function mostrar_datos(dateBase, nb, idHabito){
  <br/> <b>${resultado}</b> <br/>
  
  
- <button id="boton_visibleEdicionHistorial" onclick="visibleEdicionHistorial()">Editar</button>
+ <button class="boton_editarHistorial" id="boton_visibleEdicionHistorial" onclick="visibleEdicionHistorial()">Editar</button>
  
  <!-- with 
  

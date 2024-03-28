@@ -424,3 +424,16 @@ summary{
                 height: 50px;
                 border-radius: 5px;
             }
+
+
+.boton_editarHistorial{
+  background-color: #45a049;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #1e1e1e;
+  
+}
+.boton_editarHistorial:hover{
+  background-color: #019608;
+
+}
