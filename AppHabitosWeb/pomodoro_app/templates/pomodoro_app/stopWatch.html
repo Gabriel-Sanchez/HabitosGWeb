@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="{% static 'pomodoro_app/css/pomodoro.css' %}">
+
+{% comment %} eliminar luego, al unir con home {% endcomment %}
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'base_app/css/base_app_style.css'  %}">
+    <link rel="stylesheet" href="{% static 'base_app/css/home.css'  %}">
+</head>
+<body>
+    
+
+
+
+
+
+{% comment %} {% extends "base_app/base_app.html" %} {% endcomment %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+{% comment %} <audio id="myAudio" src="assets/audio/fin_bien.mp3"></audio> {% endcomment %}
+
+
+
+
+<div id="pom">
+   
+    <!-- <button id="playButton">Reproducir</button> -->
+    
+    
+        <div id="tiempo" class="tiempo_style">
+    
+            <h2 id="temporizador" >00:00</h2>
+            
+        </div>
+        
+        <div class="tiempo_style" style="display: none;">
+            <h2 id="ciclos">00</h2>
+            
+        </div>
+    
+    
+        <div class="botones_pom">
+            <div>
+                <button id="iniciarPausar" class="boton_start"><i class="material-icons" >play_arrow</i></button>
+
+            </div>
+            
+            <!-- <button id="titulo"><i class="material-icons">open_with</i></button> -->
+            <div>
+
+                <button id="cerrar">
+                    <i id="cerrar_icon" class="material-icons">close</i></button>
+            </div>
+            
+        </div>
+    </div>
+    
+{% endblock content %}
+
+{% block script %}
+
+<script src="{% static 'pomodoro_app/js/stopwatch.js' %}"></script>
+<script>
+
+    
+
+definirDatosIniciales({{objHabito |safe }})
+</script>
+
+
+
+<script>
+    //inicio
+function registrar_Inicio_habito(id_habito) {
+
+    var datos = {
+        'id_habito': id_habito,
+    };
+
+    fetch('/pomodoro/set_Inicio_Habito/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{csrf_token}}' 
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Error en la respuesta del servidor.');
+    })
+    .then(data => {
+        console.log('Respuesta del servidor:', data);
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+    });
+
+}
+
+function registrar_habito(id_habito, tiempo_habito) {
+
+    datos = {
+        'id_habito': id_habito, 
+        'tiempo_habito': tiempo_habito
+    }
+
+    url = '/pomodoro/set_tiempo_Habito/'
+
+    return fetch(url, {
+        method : 'POST',
+        headers : {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{csrf_token}}' 
+        },
+        body: JSON.stringify(datos)
+    } )
+    .then(function(response){
+        if (!response.ok){
+            throw new Error('error')
+        }
+        return response.json()
+    })
+    .then(function(data){
+        console.log(data)
+    })
+}
+
+//registrar descanso
+
+function registrar_habito_descanso(id_habito, tiempo_habito_descanso) {
+
+    var datos = {
+        'id_habito': id_habito,
+        'tiempo_descanso': tiempo_habito_descanso
+    }
+
+    url = '/pomodoro/set_descanso_Habito/'
+    return fetch(url, {
+        method : 'POST',
+        headers : {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{csrf_token}}' 
+        },
+        body: JSON.stringify(datos)
+    } )
+    .then(function(response){
+        if (!response.ok){
+            throw new Error('error')
+        }
+        return response.json()
+    })
+    .then(function(data){
+        console.log(data)
+    })
+}
+
+function registrar_Fin_habito(id_habito) {
+
+    var datos = {
+        'id_habito': id_habito,
+      }
+
+    url = '/pomodoro/set_fin_Habito/'
+
+    fetch(url, {
+        method : 'POST',
+        headers : {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{csrf_token}}' 
+        },
+        body: JSON.stringify(datos)
+    } )
+    .then(function(response){
+        if (!response.ok){
+            throw new Error('error')
+        }
+        return response.json()
+    })
+    .then(function(data){
+        console.log(data)
+    })
+}
+</script>
+
+{% endblock script %}
+
+
+</body>
+</html>

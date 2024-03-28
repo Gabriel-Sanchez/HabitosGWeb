@@ -17,6 +17,15 @@ def ventana_pomodoro(request, id_habito):
     }
     return render(request, 'pomodoro_app/pomodoro.html', context)
 
+def ventana_stopwatch(request, id_habito):
+    
+    filtroObjetotHabito = Habito.objects.get(id = id_habito)
+    objetoHabito = filtroObjetotHabito.obtener_valores()
+    context = {
+        'objHabito': objetoHabito
+    }
+    return render(request, 'pomodoro_app/stopWatch.html', context)
+
 def set_Inicio_Habito(request):
     
     if request.method == 'POST':

@@ -105,7 +105,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
           // mientras
           // ipcRenderer.send('abrir-ventana-secundaria', objeto)
         })
-      } else {
+      } else if (data[index].type__numero == 2) {
         div_item_h.classList.add('item_habito_check')
         botn.classList.add('boton_checker')
         botn.innerHTML = '';
@@ -118,6 +118,20 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
           
         })
 
+      } else if (data[index].type__numero == 3) {
+        div_item_h.classList.add('item_habito')
+        botn.classList.add('boton_pomodono')
+        botn.innerHTML = '<i class="material-icons">timer</i>';
+        
+        botn.addEventListener('click', function () {
+          
+          window.location.href = `/pomodoro/stopWatch/${objeto.id}`;
+          
+          
+          console.log('a')
+          // mientras
+          // ipcRenderer.send('abrir-ventana-secundaria', objeto)
+        })
       }
 
       botn_graf.addEventListener('click', function () {
