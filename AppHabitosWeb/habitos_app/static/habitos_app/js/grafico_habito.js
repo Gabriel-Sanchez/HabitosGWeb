@@ -2,7 +2,25 @@
 // const CalHeatMap = require('cal-heatmap');
 // const { duration } = require('moment');
 
+function transformDateToTimeZone(date, timezone) {
+  let dateInMilliseconds = date.getTime();
+  let dateInTimeZone = new Date(new Date(dateInMilliseconds).toLocaleString("en-US", {timeZone: timezone}));
+  return dateInTimeZone;
+}
 
+
+function getformatDate(date){
+  let dia = date.getDate();
+let mes = date.getMonth() + 1; // Los meses en JavaScript empiezan en 0
+let ano = date.getFullYear();
+
+// Asegurándose de que el día y el mes sean de dos dígitos
+if (dia < 10) dia = '0' + dia;
+if (mes < 10) mes = '0' + mes;
+
+let fecha = `${ano}-${mes}-${dia}`;
+return fecha
+}
 
 function holaa2(){
   console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaa')
@@ -55,23 +73,53 @@ console.log(datasjs); // Mostrar el nuevo objeto con fechas en formato timestamp
 // const Papa = require('papaparse');
 
 function mostrar_datos(dateBase, nb, idHabito){
+  console.log(dateBase)
 
   holaa2()
  let dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
  let meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  
   date = new Date(dateBase)
+   console.log(date)
+
+
+
+  // let dateBase = new Date(); // Asegúrate de definir tu fecha base
+  // let date = new Date(datea.toLocaleString("es-PA", {timeZone: "America/Panama"}));
+  // date.setGlobalTimeZone('America/Panama');
   // date2 = new Date(dateBase)
   // datePa = date.toLocaleString("es-PA", {timeZone: "America/Panama"});
   // date = new Date(datePa);
- let diaSemana = dias[date.getUTCDay()];
+
+//   let fechaSec = new Date(dateBase); // Tu fecha base en milisegundos
+// let date = transformDateToTimeZone(fechaSec, 'America/Panama');
+ 
+  let diaSemana = dias[date.getUTCDay()];
  let ano = date.getUTCFullYear();
  let mes = meses[date.getUTCMonth() ];
  let dia = date.getUTCDate()
+// console.log(date)
+// console.log(date.getDate())
+// let diaSemana = dias[date.getDay()];
+//  console.log(diaSemana)
+// let ano = date.getFullYear();
+// let mes = meses[date.getMonth()];
+// let dia = date.getDate();
+
+
+
  console.log(`La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano}`);
 
 
  let fecha = date.toISOString().split('T')[0];
+// let fecha = getformatDate(date)
  console.log(fecha)
+
+
+
+
+
+
   get_datos_historial(idHabito, fecha,'historial_habitos.csv' )
  .then(function(datos_historial){
    
@@ -80,6 +128,7 @@ function mostrar_datos(dateBase, nb, idHabito){
      duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
      
     }else{
+      console.log('-----aaaaaaeeeeeeeeeeeeeeeeaaaaaaaaaaaa-----------')
     console.log(datos_historial)
     objeto_habito = datos_historial.objeto_habito
     console.log(datos_historial.objeto_historial)

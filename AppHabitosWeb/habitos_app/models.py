@@ -35,7 +35,7 @@ class Habito(models.Model):
         
         numero_racha = 0
         if fechas_ordenadas:
-            if fechas_ordenadas[0].fecha_inicio.date() == date.today():
+            if fechas_ordenadas[0].fecha_inicio.date() == timezone.now().date():
                 # fecha_anterior =  date.today() + timedelta(days=1)  
                 fecha_anterior =  timezone.now().date() + timedelta(days=1)  
             else:
@@ -125,19 +125,23 @@ class Historial_habitos(models.Model):
     def tranformarfecha(self):
         fecha_transformada = self.fecha_inicio.date()  
         return fecha_transformada
+    
+    def tranformarTimeZone(self, date):
+        local_datetime = timezone.localtime(date)
+        return local_datetime
         
     
     def obtenerHistorialFormateado(self):
         return {
             'id': self.id,
             'id_habito' : self.fk_habito.id,
-            'fecha_inicio' : self.fecha_inicio.date(),
+            'fecha_inicio' : self.tranformarTimeZone(self.fecha_inicio).date(),
             'fecha_fin' : self.fecha_fin,
             'duracion' : self.tranformarDuracion(),
             'duracion_descanso' : self.tranformar_descanso(),
             'fecha': self.fecha_inicio.strftime('%Y-%m-%d'),
-            'hora_fin': self.fecha_fin.time(),
-            'hora_inicio': self.fecha_inicio.time(),
+            'hora_fin': self.tranformarTimeZone(self.fecha_fin).time(),
+            'hora_inicio': self.tranformarTimeZone(self.fecha_inicio).time(),
         }
     def obtenerHistorialFechaDuracion(self):
         return{
@@ -145,4 +149,7 @@ class Historial_habitos(models.Model):
             'fecha': self.fecha_inicio.strftime('%Y-%m-%d'),
             'id_habito': self.fk_habito.id,
         }
+        
+
+        
     
