@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db.models import Max,Sum, F
 from django.contrib.auth.models import User
 
+import csv
 import json
 
 def totalMinutosHistorialCompletadosHoy(lista):
@@ -451,3 +452,145 @@ def set_listHabitos_Sort(request):
         return JsonResponse({'message': 'Datos recibidos correctamente'})
     else:
         return JsonResponse({'message': 'Esta vista solo acepta solicitudes POST'})
+
+
+
+
+
+
+def import_json_to_sqlite(data, user):
+    # file_path = 'data.json'
+    # with open(file_path, 'r') as jsonfile:
+    #     data = json.load(jsonfile)
+    for item in data:
+        if 'objetivo' in item:
+            objetivo = item['objetivo']
+        else: 
+            objetivo = 0
+        
+        tipo = TiposHabitos.objects.get(numero=item['type'])
+        Habito.objects.create(
+            fk_user = user,
+            numero=item['id'], 
+            nombre=item['nombre'],
+            work_time=item['work_time'],
+            short_break=item['short_break'],
+            count=item['count'],
+            type=tipo,
+            orden_n=item['orden_n'],
+            color=item['color'],
+            objetivo=objetivo,
+            progresion=0,
+            )
+
+
+
+
+
+def import_csv_to_sqlite(reader, usuario):
+    # file_path = 'historial_habitos.csv'
+    # with open(file_path, 'r') as csvfile:
+    #     reader = csv.DictReader(csvfile)
+    for row in reader:
+        
+        csv_duracion = row['duracion']
+        csv_fecha = row['fecha']
+        csv_start_timer = row['start_timer']
+        csv_end_timer = row['end_timer']
+        csv_d_descanso = row['duracion_descanso']
+        
+        horaVacia = '00:00:00'
+        
+        #id
+        # print(row['duracion'], row['fecha'], row['start_timer'], row['end_timer'], row['duracion_descanso'], sep=', ')
+        # print(row['id_habito'])
+        id_habito_numero = row['id_habito']
+        id_habito = Habito.objects.filter(numero=id_habito_numero, fk_user= usuario).first()
+
+        if id_habito is not None:
+            #duracion
+            if csv_duracion:
+                if csv_duracion == '0':
+                    print('d es cero')
+                    csv_duracion = '0:0:0'
+                horas, minutos, segundos = map(int, csv_duracion.split(':'))
+                duracion_campo = timedelta(hours=horas, minutes=minutos, seconds=segundos)
+            else:
+                duracion_campo = timedelta(hours=0, minutes=0, seconds=0)
+            
+            #fecha de inicio
+            if csv_start_timer:
+                if csv_start_timer == '0':
+                    csv_start_timer = '00:00:00'
+                fecha_hora_inicio = timezone.make_aware(datetime.strptime(f'{csv_fecha} {csv_start_timer}', '%Y-%m-%d %H:%M:%S'))
+            else:
+                fecha_hora_inicio = timezone.make_aware(datetime.strptime(f'{csv_fecha} {horaVacia}', '%Y-%m-%d %H:%M:%S'))
+
+            #fecha de fin
+            if csv_end_timer:
+                if csv_end_timer == '0':
+                    csv_end_timer = '00:00:00'
+                fecha_hora_fin = timezone.make_aware(datetime.strptime(f'{csv_fecha} {csv_end_timer}', '%Y-%m-%d %H:%M:%S'))
+            else:
+                fecha_hora_fin = timezone.make_aware(datetime.strptime(f'{csv_fecha} {horaVacia}', '%Y-%m-%d %H:%M:%S'))
+                
+            #duracion descanso
+            if csv_d_descanso:
+                if csv_d_descanso == '0':
+                    print('es cero')
+                    csv_d_descanso = '0:0:0'
+                horas, minutos, segundos = map(int, csv_d_descanso.split(':'))
+                d_descanso = timedelta(hours=horas, minutes=minutos, seconds=segundos)
+            else:
+                d_descanso = timedelta(hours=0, minutes=0, seconds=0)
+            Historial_habitos.objects.create(
+                fk_habito=id_habito, 
+                fecha_inicio=fecha_hora_inicio, 
+                fecha_fin=fecha_hora_fin, 
+                duracion=duracion_campo, 
+                duracion_descanso=d_descanso, 
+                )
+        
+        else:
+            print(row['id_habito'])
+            print('no se encontro ')
+
+
+def process_csv_file(file):
+    # Procesar el archivo CSV
+    decoded_file = file.read().decode('utf-8')
+    csv_data = csv.reader(decoded_file.splitlines())
+    # Suponiendo que la primera fila del CSV contiene los encabezados
+    headers = next(csv_data)
+    # Convertir el resto del CSV en una lista de diccionarios
+    data = [dict(zip(headers, row)) for row in csv_data]
+    return data
+
+def process_json_file(file):
+    # Procesar el archivo JSON
+    decoded_file = file.read().decode('utf-8')
+    json_data = json.loads(decoded_file)
+    return json_data
+
+
+def importarArchivos(request):
+    if request.method == 'POST' and request.FILES['archivoCSV'] and request.FILES['archivoJSON']:
+        usuario = request.user
+        print(usuario)
+        
+        json_file = request.FILES['archivoJSON']
+        json_data = process_json_file(json_file)
+        print(json_data)
+        import_json_to_sqlite(json_data, usuario)
+        
+        csv_file = request.FILES['archivoCSV']
+        csv_data = process_csv_file(csv_file)
+        print(csv_data)
+        import_csv_to_sqlite(csv_data, usuario)
+        
+        
+        # Imprimir los datos en la consola
+        # for row in csv_data:
+        #     print(row)
+
+    return render(request,'habitos_app/form_archivos.html')

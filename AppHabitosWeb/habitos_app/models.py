@@ -33,9 +33,10 @@ class Habito(models.Model):
     def racha_dias(self):
         fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
         
+        
         numero_racha = 0
         if fechas_ordenadas:
-            if fechas_ordenadas[0].fecha_inicio.date() == timezone.now().date():
+            if timezone.localtime(fechas_ordenadas[0].fecha_inicio).date() == timezone.now().date():
                 # fecha_anterior =  date.today() + timedelta(days=1)  
                 fecha_anterior =  timezone.now().date() + timedelta(days=1)  
             else:
@@ -43,7 +44,7 @@ class Habito(models.Model):
                 fecha_anterior =  timezone.now().date()
 
         for elemento in fechas_ordenadas:
-            fecha_actual = elemento.fecha_inicio.date()  
+            fecha_actual = timezone.localtime( elemento.fecha_inicio ).date()  
             #print( fecha_anterior , "-" , fecha_actual , '=' , fecha_anterior - fecha_actual == timedelta(days=1))
             if fecha_anterior - fecha_actual == timedelta(days=1):
                 numero_racha += 1  
@@ -146,7 +147,7 @@ class Historial_habitos(models.Model):
     def obtenerHistorialFechaDuracion(self):
         return{
             'duracion' : self.tranformarDuracion(),
-            'fecha': self.fecha_inicio.strftime('%Y-%m-%d'),
+            'fecha': self.tranformarTimeZone(self.fecha_inicio).strftime('%Y-%m-%d'),
             'id_habito': self.fk_habito.id,
         }
         

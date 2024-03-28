@@ -1,0 +1,9 @@
+<form action="{% url 'importarArchivos' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+<input type="file" name="archivoCSV" accept=".csv" id="csv">
+<input type="file" name="archivoJSON" accept=".json" id="json">
+
+<button type="submit">importar</button>
+
+</form>

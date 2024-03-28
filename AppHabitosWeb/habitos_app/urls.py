@@ -17,4 +17,5 @@ urlpatterns = [
     path('archivar_habito/', views.archivar_habito, name='archivar_habito'),
     path('get_listHabitos_Sort/', views.get_listHabitos_Sort, name='get_listHabitos_Sort'),
     path('set_listHabitos_Sort/', views.set_listHabitos_Sort, name='set_listHabitos_Sort'),
+    path('importarArchivos/', views.importarArchivos, name='importarArchivos'),
 ]
