@@ -477,3 +477,20 @@ function obtenerObjetoHabito(id) {
   return jsonData[0]
 
 }
+
+document.querySelector('.dropbtn').addEventListener('click', function() {
+  //document.getElementById('myDropdown').classList.toggle('show');
+
+  var dropdowns = document.getElementById("myDropdown");
+  var i;
+ 
+    var openDropdown = dropdowns;
+    if (openDropdown.classList.contains('show')) {
+      console.log('show')
+      openDropdown.classList.remove('show');
+    }else{
+      openDropdown.classList.add('show');
+    }
+  
+  console.log('click')
+});

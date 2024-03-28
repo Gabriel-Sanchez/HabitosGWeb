@@ -1,4 +1,5 @@
 {% extends "base_app/base_app.html" %}
+{% load static %}
 
 {% block title %}
 
@@ -28,6 +29,51 @@
 
                 <div class="contenedor_datos_superior">
 
+
+                    
+                      <div class="">
+                        {% if not request.user.is_anonymous %}
+                          <div class="relative inline-block text-left">
+                            <div>
+                              <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 dropbtn" id="options-menu" aria-haspopup="true" aria-expanded="true">
+                                {% if request.user.profile.picture.url != null %}
+                                  <img class="h-10" src="{{ request.user.profile.picture.url }}" alt="" loading="lazy"/>
+                                {% else %}
+                                  <img class="h-10" src="{% static '..\media\default\user.png' %}" alt="" loading="lazy"/>
+                                {% endif %}
+                              </button>
+                            </div>
+                            <div id="myDropdown" class="dropdown-content origin-top-left absolute left-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                              <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                <a href="{% url 'details_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Mi Perfil</a>
+                                <a href="{% url 'update_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">configurar</a>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Cerrar sesión</a>
+                              </div>
+                            </div>
+                          </div>
+                        {% else %}
+                          <div>
+                            <ul>
+                              <li>
+                                <a href="{% url 'login' %}">
+                                  <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Iniciar sesión
+                                  </button>
+                                </a>
+                              </li>
+                              <li>
+                                <a href="{% url 'signup' %}">
+                                  <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Registrarse
+                                  </button>
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        {% endif %}
+                      </div>
+                    
+
                     <button class="material-icons" onclick="configurar_habito_nuevo()"> add</button>
                     <button class="material-icons" onclick="ActivarOrdenarLista()"> sort</button>
 
@@ -39,7 +85,7 @@
 
 
 
-                <div class="contenedor-bar">
+                <div class="contenedor-bar mt-1">
 
 
                     <div class="progress-bar">
