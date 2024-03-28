@@ -43,6 +43,10 @@
   border-radius: 5px;
   overflow: hidden;
 }
+.carta_lista:hover{
+  cursor: pointer;
+  background-color: rgba(55, 255, 245, 0.711)
+}
 .titulo_habito{
   display: flex;
   justify-content: space-between;
@@ -53,6 +57,7 @@
     width: 70%;
     height: 100%;
     align-items: center;
+    transition: color 0.3s;
 
 }
 .titulo_habito_texto{
@@ -237,7 +242,8 @@ summary{
 
 .div_color_habito{
   width: 12px;
-  height: 47px;
+  /* height: 47px; */
+  height: auto;
 }
 
 .div_botones{
@@ -386,6 +392,8 @@ summary{
     
             progress {
               accent-color: var(--mi-color-cuaternario); /* Color de la barra de progreso */
+              border-radius: 10px;
+              height: 35px;
           }
             
     

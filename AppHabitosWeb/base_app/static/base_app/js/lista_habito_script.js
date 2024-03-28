@@ -49,7 +49,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
       var boton_config = document.createElement("button")
       boton_config.style.backgroundColor = data[index].color
-      boton_config.innerHTML = '<index class="material-icons">settings</index>';
+      // boton_config.innerHTML = '<index class="material-icons">settings</index>';
       boton_config.classList.add('boton_config')
       Nombre_habito_h1.appendChild(texto_nombre)
       Nombre_habito_h1.title = data[index].work_time
@@ -84,7 +84,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       botn.classList.add('boton_habito')
       botn_graf.classList.add('boton_habito')
       
-      boton_config.addEventListener('click', function () {
+      Nombre_habito.addEventListener('click', function () {
         configurar_habito(objeto)
         cambiarVentana('ventana2')
       })
