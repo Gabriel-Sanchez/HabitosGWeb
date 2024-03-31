@@ -151,7 +151,7 @@
                     <select class="imput_form" id="type" name="type">
                         <option value="1">Pomodoro</option>
                         <option value="2">Checker</option>
-                        <option value="3">StopoWatch</option>
+                        <option value="3">StopWatch</option>
                     </select>
                     <div id="colorPalette"></div>
                     <input class="imput_form" type="hidden" id="color_hab" name="color_hab">
@@ -220,13 +220,26 @@
             <div id="onClick-placeholder">
 
             </div>
-            <div class="text-black" id="form_edicion_historial">
+            <div class="text-black flex justify-center flex-col gap-1" id="form_edicion_historial">
 
                 <input class="imput_form" type="hidden" id="id_historial_habito" name="id_historial_habito">
                 <input class="imput_form" type="hidden" id="fecha_historial" name="fecha_historial">
                 <input class="imput_form" type="hidden" id="objeto_historial" name="objeto_historial">
                 <input class="imput_form" type="hidden" id="objeto_habito_edicion" name="objeto_habito_edicion">
-                <input id="duracion_historial" type="text">
+                <!-- <input id="duracion_historial" type="text"> -->
+                <div class="flex gap-1">
+                    <select class="text-black" id="hora" name="hora">
+                    </select>
+                    <br>
+                    <label for="minutos">:</label><br>
+                    <select class="text-black" id="minutos" name="minutos">
+                    </select>
+                    <br>
+                    <label for="segundos">:</label><br>
+                    <select  class="text-black" id="segundos" name="segundos">
+                    </select>
+                    <br><br>
+                </div>
                 <button class="boton_editarHistorial" id="boton_agregar" onclick="agregarEditarHabito()">Guardar</button>
             </div>
 
@@ -318,7 +331,16 @@
         function agregarEditarHabito() {
             id_habitoObjet = document.getElementById("id_historial_habito")
             id_habito = id_habitoObjet.value
-            duracion_historialobject = document.getElementById("duracion_historial")
+            //duracion_historialobject = document.getElementById("duracion_historial")
+
+            var horas = parseInt(document.getElementById('hora').value);
+            var minutos = parseInt(document.getElementById('minutos').value);
+            var segundos = parseInt(document.getElementById('segundos').value);
+
+
+            console.log(segundos)
+            //var totalMinutos = horas * 60 + minutos + ( segundos / 60) ;
+            //console.log(totalMinutos)
           
             var objeto_historial_leido = {}
             var objeto_historial = document.getElementById("objeto_historial");
@@ -332,7 +354,8 @@
           
             fecha_historial = document.getElementById("fecha_historial").value
           
-            duracion_historial = duracion_historialobject.value
+            //duracion_historial = duracion_historialobject.value
+            //duracion_historial = totalMinutos
             // let data = fs.readFileSync('historial_habitos.csv', 'utf8');
             // let records = Papa.parse(data, {header: true}).data;
             console.log(objeto_historial_leido)
@@ -347,7 +370,9 @@
 
             var datos = {
                 fecha: fechaSeleccionada,
-                duracion: duracion_historial
+                horas: horas,
+                minutos: minutos,
+                segundos: segundos
             };
             
             url = `/habitos/editarDuracionForm_Habito/${id_habito}`
@@ -385,7 +410,7 @@
                 }
                 */
                 id_habitoObjet.value = ''
-                duracion_historialobject.value = ''
+                //duracion_historialobject.value = ''
                 objetoDatos.dataset = {}
 
             })
@@ -697,6 +722,24 @@
 
 
 
+    </script>
+
+
+    <script>
+        function llenarDesplegable(id, max) {
+            var select = document.getElementById(id);
+            for (var i = 0; i <= max; i++) {
+              var option = document.createElement('option');
+              option.value = i;
+              option.text = i;
+              select.appendChild(option);
+            }
+          }
+          
+          // Llena los desplegables
+          llenarDesplegable('hora', 23);
+          llenarDesplegable('minutos', 59);
+          llenarDesplegable('segundos', 59);
     </script>
     
   

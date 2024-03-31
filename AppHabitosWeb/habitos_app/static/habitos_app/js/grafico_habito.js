@@ -8,6 +8,22 @@ function transformDateToTimeZone(date, timezone) {
   return dateInTimeZone;
 }
 
+function fillDataFormHistorial(tiempoInicial){
+  var horas = Math.floor(tiempoInicial / 60);
+  var minutos = Math.floor(tiempoInicial % 60);
+  var segundos = Math.round((tiempoInicial % 1) * 60);
+    document.getElementById('hora').value = horas;
+  document.getElementById('minutos').value = minutos;
+  document.getElementById('segundos').value = segundos;
+}
+
+function breakdownTimeforMinutes(tiempoInicial){
+  var horas = Math.floor(tiempoInicial / 60);
+  var minutos = Math.floor(tiempoInicial % 60);
+  var segundos = Math.round((tiempoInicial % 1) * 60);
+  return [horas, minutos, segundos]
+}
+
 
 function getformatDate(date){
   let dia = date.getDate();
@@ -125,7 +141,9 @@ function mostrar_datos(dateBase, nb, idHabito){
    
    if (nb === null){
      resultado = 'sin registro <br>'
-     duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
+    //  duracion_historial = document.getElementById("duracion_historial").value = '0:0:0'
+     var tiempoInicial = 0;
+     fillDataFormHistorial(tiempoInicial)
      
     }else{
       console.log('-----aaaaaaeeeeeeeeeeeeeeeeaaaaaaaaaaaa-----------')
@@ -134,15 +152,18 @@ function mostrar_datos(dateBase, nb, idHabito){
     console.log(datos_historial.objeto_historial)
     console.log('historialll')
     console.log(datos_historial.objeto_historial['duracion'])
-   duracion_historial = document.getElementById("duracion_historial").value = datos_historial.objeto_historial['duracion']
+  //  duracion_historial = document.getElementById("duracion_historial").value = datos_historial.objeto_historial['duracion']
+  var tiempoInicial = datos_historial.objeto_historial['duracion'];
+  fillDataFormHistorial(tiempoInicial)
    var objetoDatos_historial = document.getElementById("objeto_historial");
    objetoDatos_historial.dataset.objeto = JSON.stringify(datos_historial);
    console.log("Objeto guardado en atributo de datos.");
    // console.log("objeto_guardado:",objeto_habito)
    
-   
+   let [horas, minutos, segundos ] = breakdownTimeforMinutes(tiempoInicial)
+   let [horasD, minutosD, segundosD ] = breakdownTimeforMinutes(datos_historial.objeto_historial['duracion_descanso'])
    resultado = ` <br>  La fecha es ${diaSemana}, ${dia} de ${mes} del año ${ano} </br>  
-   <br> Concentración: ${datos_historial.objeto_historial['duracion']} - Descanso: ${datos_historial.objeto_historial['duracion_descanso']} <br/> 
+   <br> Concentración: ${horas}:${minutos}:${segundos} - Descanso: ${horasD}:${minutosD}:${segundosD} <br/> 
    <br> Hora de inicio: ${ datos_historial.objeto_historial['hora_inicio']} - Hora de fin: ${ datos_historial.objeto_historial['hora_fin']}  <br/> `
  
    var objetoDatos = document.getElementById("objeto_habito_edicion");
@@ -151,6 +172,10 @@ function mostrar_datos(dateBase, nb, idHabito){
    console.log("Objeto guardado en atributo de datos.");
    console.log("objeto_guardado:",objeto_habito)
   }
+
+
+
+
  
  document.getElementById('form_edicion_historial').style.display = 'none'
  
@@ -747,7 +772,7 @@ let datosObjetivo = etiquetas.map(() => valorObjetivo);
 
 function visibleEdicionHistorial(){
   document.getElementById('boton_visibleEdicionHistorial').style.display = 'none'
-  document.getElementById('form_edicion_historial').style.display = 'block'
+  document.getElementById('form_edicion_historial').style.display = 'flex'
 }
 
 

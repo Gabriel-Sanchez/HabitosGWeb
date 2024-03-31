@@ -303,7 +303,7 @@ def editarDuracionForm_Habito(request, id_habito):
         print(datos)
         
         campofecha = datos['fecha']
-        campoDuracion = timedelta(hours=0, minutes=int(datos['duracion']), seconds=0)  
+        campoDuracion = timedelta(hours=int(datos['horas']), minutes=int(datos['minutos']), seconds=int(datos['segundos']))  
         print('--------ooooooooooooo-------')
         print(campofecha)
         print(campoDuracion)
