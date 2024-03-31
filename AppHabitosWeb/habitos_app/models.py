@@ -33,15 +33,16 @@ class Habito(models.Model):
     def racha_dias(self):
         fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
         
+        dia_hoy = timezone.localtime(timezone.now()).date() 
         
         numero_racha = 0
         if fechas_ordenadas:
-            if timezone.localtime(fechas_ordenadas[0].fecha_inicio).date() == timezone.now().date():
+            if timezone.localtime(fechas_ordenadas[0].fecha_inicio).date() == dia_hoy:
                 # fecha_anterior =  date.today() + timedelta(days=1)  
-                fecha_anterior =  timezone.now().date() + timedelta(days=1)  
+                fecha_anterior =  dia_hoy + timedelta(days=1)  
             else:
                 # fecha_anterior =  date.today()
-                fecha_anterior =  timezone.now().date()
+                fecha_anterior =  dia_hoy
 
         for elemento in fechas_ordenadas:
             fecha_actual = timezone.localtime( elemento.fecha_inicio ).date()  
