@@ -10,6 +10,21 @@ var corriendo = false;
 var reset_pom = false
 var intervalo;
 
+function playSound() {
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let oscillator = audioContext.createOscillator();
+
+    oscillator.frequency.value = 440; 
+    oscillator.type = 'sine'; 
+
+    oscillator.connect(audioContext.destination);
+    oscillator.start();
+
+    setTimeout(function(){
+        oscillator.stop();
+    }, 1000);
+}
+
 function definirDatosIniciales(objHabito){
 
     console.log('se dee')
@@ -135,6 +150,7 @@ function pomodoro_(){
             document.getElementById("temporizador").textContent = (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
             if (tiempoRestante <= 0) {
                 // audio.play();
+                playSound()
                 clearInterval(intervalo);
                 if (enDescanso) {
                     tiempoRestante = tiempoTrabajo;
