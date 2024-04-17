@@ -239,7 +239,12 @@ function configurar_habito (valor) {
 
 
 function actualizar_listas () {
-  document.getElementById('miLista').innerHTML = ''
+  // document.getElementById('miLista').innerHTML = ''
+  // let lista = document.getElementById('miLista')
+  // while(lista.firstChild){
+  //   lista.removeChild(lista.firstChild)
+  // }
+
   document.getElementById('miLista_hechos').innerHTML = ''
   document.getElementById('miLista_archivados').innerHTML = ''
 

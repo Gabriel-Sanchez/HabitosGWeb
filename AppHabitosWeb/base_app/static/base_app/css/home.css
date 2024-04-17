@@ -3,15 +3,23 @@
     margin-right: auto; 
 } */
 
+.item_habito_timer{
+  background-color: #2af58f;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .item_habito{
-    background-color: rgb(103, 222, 80);
+    background-color: #5ff46e;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
   .item_habito_check{
-    background-color: rgb(80, 196, 222);
+    background-color: #65e0f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,7 +30,7 @@
     /* margin: auto; */
     padding: 10px;
     border-radius: 3px;
-    border: 1px solid rgb(121, 121, 121);
+    border: 1px solid rgb(120, 151, 255);
   }
   .boton_checker{
   /* background-color: #50c4de; */
@@ -45,7 +53,9 @@
 }
 .carta_lista:hover{
   cursor: pointer;
-  background-color: rgba(55, 255, 245, 0.711)
+  background-color: rgba(2, 224, 213, 0.534);
+  /* color: white; */
+  box-shadow: white;
 }
 .titulo_habito{
   display: flex;
@@ -214,7 +224,7 @@ button{
 }
 
 button:hover {
-  background-color: #bec4c2; /* Verde al pasar el ratón */
+  background-color: #6bc5f8; /* Verde al pasar el ratón */
 }
 
 #details_lista_hecha{
@@ -471,3 +481,8 @@ summary{
 }
 
 .show {display: block;}
+
+
+.selecters-time{
+  height: 25px;
+}

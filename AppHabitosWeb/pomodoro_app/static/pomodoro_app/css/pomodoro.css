@@ -107,6 +107,9 @@ h2{
 
 }
 
+#Pantalla_completa{
+    display: none;
+}
 
 @media screen and (min-width: 300px) {
 
@@ -179,5 +182,7 @@ h2{
 }
 
 
-
+#Pantalla_completa{
+    display: block;
+}
     }

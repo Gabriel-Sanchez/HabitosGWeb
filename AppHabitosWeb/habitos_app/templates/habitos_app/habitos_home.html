@@ -227,7 +227,7 @@
                 <input class="imput_form" type="hidden" id="objeto_historial" name="objeto_historial">
                 <input class="imput_form" type="hidden" id="objeto_habito_edicion" name="objeto_habito_edicion">
                 <!-- <input id="duracion_historial" type="text"> -->
-                <div class="flex gap-1">
+                <div class="flex gap-1 selecters-time">
                     <select class="text-black" id="hora" name="hora">
                     </select>
                     <br>
@@ -397,6 +397,7 @@
                 generarGraficoDuracionPorAnio(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
                 graficar_semana(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
                 var objetoDatos = document.getElementById("objeto_habito_edicion");
+                actualizar_listas()
                 /*
                 var objetoGuardado = objetoDatos.dataset.objeto;
                 if (objetoGuardado) {

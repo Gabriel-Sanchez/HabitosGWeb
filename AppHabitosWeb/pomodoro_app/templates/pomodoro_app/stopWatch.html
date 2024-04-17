@@ -61,6 +61,10 @@
                 <button id="cerrar">
                     <i id="cerrar_icon" class="material-icons">close</i></button>
             </div>
+
+            <div>
+                <button onclick="pantalla_c()" id="Pantalla_completa"><i class="material-icons">fullscreen</i></button>
+            </div>
             
         </div>
     </div>
@@ -70,6 +74,11 @@
 {% block script %}
 
 <script src="{% static 'pomodoro_app/js/stopwatch.js' %}"></script>
+<script src="{% static 'pomodoro_app/js/botonExit.js' %}"></script>
+
+
+
+
 <script>
 
     

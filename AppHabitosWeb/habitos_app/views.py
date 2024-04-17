@@ -60,7 +60,7 @@ def listar_habitos(Usuario):
     print(listaHabitos)
     fecha_actual = timezone.now()
     habitosenelhistorial_no_hoy = listaHabitos.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False).order_by('orden_n')
-    habitosenelhistorial_hoy = listaHabitos.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False)
+    habitosenelhistorial_hoy = listaHabitos.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False).order_by('orden_n')
     habitosArchivado = listaHabitos.filter(archivado=True)
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]

@@ -199,24 +199,24 @@ function boton_cerrar(){
         gurdar_salir()
 
         clearInterval(intervalo);
-        var boton_pausa_h = document.getElementById("iniciarPausar")
-        var html_ciclos = document.getElementById("ciclos")
-        boton_pausa_h.innerHTML  = '<i class="material-icons">play_arrow</i>';
-                console.log('boton arrow')
-                console.log(this)
-                div_tiempo.style.backgroundColor = 'purple';
-                tiempoRestante = tiempoTrabajo;
-                corriendo = false;
+        // var boton_pausa_h = document.getElementById("iniciarPausar")
+        // var html_ciclos = document.getElementById("ciclos")
+        // boton_pausa_h.innerHTML  = '<i class="material-icons">play_arrow</i>';
+        //         console.log('boton arrow')
+        //         console.log(this)
+        //         div_tiempo.style.backgroundColor = 'purple';
+        //         tiempoRestante = tiempoTrabajo;
+        //         corriendo = false;
                 
-                var minutos = Math.floor(tiempoRestante / 60);
-                var segundos = tiempoRestante % 60;
-                document.getElementById("temporizador").textContent = (minutos < 10 ? "0" : "") +  minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
-                ciclos = ciclos_global
-                console.log(ciclos)
-                html_ciclos.textContent = (ciclos < 10 ? "0" : "") + ciclos
-                console.log('finalizo')
-                reset_pom = true
-                enDescanso = false
+        //         var minutos = Math.floor(tiempoRestante / 60);
+        //         var segundos = tiempoRestante % 60;
+        //         document.getElementById("temporizador").textContent = (minutos < 10 ? "0" : "") +  minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
+        //         ciclos = ciclos_global
+        //         console.log(ciclos)
+        //         html_ciclos.textContent = (ciclos < 10 ? "0" : "") + ciclos
+        //         console.log('finalizo')
+        //         reset_pom = true
+        //         enDescanso = false
 
     });
 }

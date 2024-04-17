@@ -3,7 +3,11 @@ fetch_lista_habitos()
 function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
   
-  var lista = document.getElementById(nombre_lista);
+  // var lista = document.getElementById(nombre_lista);
+   var lista_final = document.getElementById(nombre_lista);
+
+  var lista = document.createDocumentFragment()
+
   
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
@@ -33,6 +37,15 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       var texto_nombre = document.createTextNode(data[index].nombre)
       var texto_numero_racha = document.createTextNode( numero_racha_h)
       var span_racha = document.createElement("span");
+      // span_racha.style.padding = '3px'
+      // span_racha.style.borderRadius = '2px'
+      // span_racha.style.boxShadow = 'inset 10px 10px 20px gray'
+      span_racha.style.webkitTextStroke = '.2px black'
+
+
+      // span_racha.style.backgroundColor = 'black'
+
+
 
       if (Number(numero_racha_h) == 0){
         span_racha.style.color = "orange";
@@ -119,7 +132,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
         })
 
       } else if (data[index].type__numero == 3) {
-        div_item_h.classList.add('item_habito')
+        div_item_h.classList.add('item_habito_timer')
         botn.classList.add('boton_pomodono')
         botn.innerHTML = '<i class="material-icons">timer</i>';
         
@@ -148,6 +161,9 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       })
 
       }
+
+      lista_final.innerHTML = ''
+      lista_final.appendChild(lista)
 }
 
 
