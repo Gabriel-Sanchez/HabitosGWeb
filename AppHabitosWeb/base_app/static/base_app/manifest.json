@@ -1,0 +1,16 @@
+{
+    "name": "Gabitos",
+    "short_name": "Gabits",
+    "theme_color": "#fff",
+    "background_color": "#fff",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/habitos",
+    "icons": [
+        {
+            "src": "icon.ico",
+            "sizes": "256x256",
+            "type" : "image/x-icon"
+        }
+    ]
+}
