@@ -9,6 +9,41 @@
 
 
 {% block head %}
+
+    <!-- cambiar despues por paquete de node -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+     <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/plugins/Tooltip.min.js"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/plugins/Legend.min.js"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/plugins/LegendLite.min.js"></script>
+    <script src="https://unpkg.com/cal-heatmap/dist/plugins/CalendarLabel.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+
+
+    <!-- <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" /> -->
+    
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'base_app/css/home.css'  %}">
+    
+<link rel="stylesheet" href="{% static 'base_app/css/formulario_habito.css'  %}">
+<link rel="stylesheet" href="{% static 'habitos_app/css/grafico_habito.css'  %}">
+<link rel="stylesheet" href="{% static 'base_app/css/grafico.css'  %}">
+
+
 {% endblock head %}
 
 
@@ -16,11 +51,33 @@
 
 
 
+{% if request.user.is_anonymous %}
+<div class="flex flex-col gap-2 justify-center items-center h-screen w-screen" >
+  
+        <a href="{% url 'login' %}">
+          <button type="button" class="flex w-full items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Iniciar sesión
+          </button>
+        </a>
+  
+        <a href="{% url 'signup' %}">
+          <button type="button" class="flex w-full items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Registrarse
+          </button>
+        </a>
+  
+  </div>
+{% else%}
+
 
 
 
 
 <div class="columnas">
+
+ 
+
+
     <div class="columna1">
 
         <div id="ventana1" class="ventana">
@@ -31,61 +88,54 @@
 
 
                     
-                      <div class="">
-                        {% if not request.user.is_anonymous %}
+                      <div class="mt-auto ">
+                    
                           <div class="relative inline-block text-left">
                             <div>
-                              <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 dropbtn" id="options-menu" aria-haspopup="true" aria-expanded="true">
-                                {% if request.user.profile.picture.url != null %}
+                              <button type="button" class="inline-flex m-1 justify-center w-full rounded-md border border-gray-300 shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 dropbtn" id="options-menu" aria-haspopup="true" aria-expanded="true">
+                                <!-- {% if request.user.profile.picture.url != null %}
                                   <img class="h-10" src="{{ request.user.profile.picture.url }}" alt="" loading="lazy"/>
                                 {% else %}
                                   <img class="h-10" src="{% static '..\media\default\user.png' %}" alt="" loading="lazy"/>
-                                {% endif %}
+                                {% endif %} -->
+                                <div class="icon-container mt-1">
+
+                                    <i class="material-icons">more_vert</i>
+                                </div>
                               </button>
                             </div>
-                            <div id="myDropdown" class="dropdown-content origin-top-left absolute left-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div id="myDropdown" class="dropdown-content origin-top-left absolute left-0 w-46 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                               <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                                <a href="{% url 'importarArchivos' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Importar</a>
-                                <a href="{% url 'details_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Mi Perfil</a>
-                                <a href="{% url 'update_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">configurar</a>
+                                  <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="configurar_habito_nuevo()"> Agregar Habito</button>
+                                  <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="ActivarOrdenarLista()"> Ordenar Lista</button> 
+                              
+                                <!-- <a href="{% url 'importarArchivos' %}" class=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Importar</a> -->
+                                <!-- <a href="{% url 'details_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Mi Perfil</a> -->
+                                <a href="{% url 'update_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Configurar cuenta</a>
                                 <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Cerrar sesión</a>
-                              </div>
+                            </div>
                             </div>
                           </div>
-                        {% else %}
-                          <div>
-                            <ul>
-                              <li>
-                                <a href="{% url 'login' %}">
-                                  <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Iniciar sesión
-                                  </button>
-                                </a>
-                              </li>
-                              <li>
-                                <a href="{% url 'signup' %}">
-                                  <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Registrarse
-                                  </button>
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-                        {% endif %}
+                      
+                       
+                     
                       </div>
                     
+                      {% if not request.user.is_anonymous %}
 
-                    <button class="material-icons" onclick="configurar_habito_nuevo()"> add</button>
-                    <button class="material-icons" onclick="ActivarOrdenarLista()"> sort</button>
+                      
+
+                    <!-- <button class="material-icons" onclick="configurar_habito_nuevo()"> add</button>
+                    <button class="material-icons" onclick="ActivarOrdenarLista()"> sort</button> -->
 
                     <h4 id="tiempo_restante"></h4>
                     <h4 id="horas_completadas"></h4>
                     <h4 id="tareas_restantes"></h4>
+
+                    {% endif %}
                 </div>
 
-
-
-
+                {% if not request.user.is_anonymous %}
                 <div class="contenedor-bar mt-1">
 
 
@@ -95,12 +145,12 @@
                     </div>
                 </div>
 
-
+                    {% endif %}
 
             </div>
 
 
-
+            {% if not request.user.is_anonymous %}
 
 
             <div class="detalles_lista">
@@ -118,6 +168,9 @@
                 <ul class="text-black" id="miLista_archivados">
             </details>
             </ul>
+
+            {% endif %}
+
         </div>
 
         <div id="ventana2" class="ventana" style="display: none;">
@@ -179,6 +232,7 @@
 
 
     </div>
+    {% if not request.user.is_anonymous %}
     <div class="columna2">
 
         
@@ -271,14 +325,26 @@
 
 
     </div>
+
+    {% endif %}
 </div>
 
+{% endif %}
 
 {% endblock content %}
 
 
 
 {% block script_sup %}
+
+  
+<script src="{% static 'habitos_app/js/grafico_habito.js' %}"></script>
+<script src="{% static 'habitos_app/js/barra_grafico_habito.js' %}"></script>
+
+<script src="{% static 'base_app/js/lista_habito_script.js' %}"></script>
+<script src="{% static 'base_app/js/time_day.js' %}"></script>
+<script src="{% static 'base_app/js/formulario_habito.js' %}"></script>
+<script src="{% static 'base_app/js/principal.js' %}"></script>
 
 {% comment %} grafico {% endcomment %}
 <script>

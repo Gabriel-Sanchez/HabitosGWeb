@@ -356,16 +356,17 @@ function transformarDatos(idHabito, archivo) {
 //         overflow: "gray"
 //     }
 //    });
-   
-
+   let today = new Date()
+let todayHeatmap = today.toLocaleDateString("es-PA", {timeZone: "America/Panama"})
+console.log(todayHeatmap)
 //    nuevo cal-heatmap
 const calAnio = new CalHeatmap();
 calAnio.paint(
     {
       data: { source: data.data_historial, x: "fecha", y: "duracion" },
       date: { start: new Date(new Date().getFullYear(), 0, 1),    highlight: [
-        new Date(),
-      ], },
+        new Date(todayHeatmap),
+      ], timezone: 'America/Panama' },
       // range: 1,
       range: 12,
       scale: {
@@ -474,7 +475,7 @@ calMes.paint(
     {
       data: { source: data.data_historial, x: "fecha", y: "duracion" },
       date: { start: new Date(),    highlight: [
-        new Date(),
+        new Date(todayHeatmap),
       ], },
       range: 1,
       scale: {

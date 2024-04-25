@@ -37,7 +37,8 @@ def totalMinutosHistorialCompletadosHoy(lista):
             
 def totalMinutosHistorialHoy(listaHoy):
     sumlistaHistorialHab = listaHoy.aggregate(total=Sum(F('work_time') * F('count')))
-    if sumlistaHistorialHab:
+    print(sumlistaHistorialHab)
+    if sumlistaHistorialHab['total'] != None:
         duracionMinutos = sumlistaHistorialHab['total']
         print(sumlistaHistorialHab)
         print(type(sumlistaHistorialHab) )
