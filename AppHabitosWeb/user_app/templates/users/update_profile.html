@@ -1,25 +1,18 @@
+{% extends "base_app/base_app.html" %}
 
 {% load static %}
 
-    <div>
-        {% if form.errors %}
-        {% for field in form %}
-            {% for error in field.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
-        {% endfor %}
-      
-    {% endif %}
-    
-        <h2 class=""> Configuración de cuenta</h2>
+
+{% block content %}
+  
 
 
-        <div style="background-color: white">
+
+
+        <div>
                
-            <div class="">
-                <div class="">Configuración de imagen</div>
+            <div class="flex flex-col justify-center items-center h-screen w-screen gap-4">
+                <!-- <div class="">Configuración de imagen</div>
                 <div class="">
                     <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -44,40 +37,57 @@
                             <button>Guardar cambios</button>
                         </div>
                     </form>
+                </div> -->
+
+
+
+
+ 
+        {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
                 </div>
+            {% endfor %}
+        {% endfor %}
+      
+    {% endif %}
+    
+        <h2 class="text-center"> Configuración de cuenta</h2>
 
 
                 <hr>
 
-                <div class="">
-                    <div class="card-header h5">Configuración de cuenta</div>
+                <div  >
+                    <div class="text-center">Configuración de cuenta</div>
 
                     {% if error_usuario %}
 
                     <div class=""> {{error_usuario}} </div>
                     {% endif %}
 
-                    <div class="card-body">
-                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                    <div class="flex flex-col justify-center items-center ">
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data" class="flex flex-col justify-center items-center gap-2">
                             {% csrf_token %}
 
                             <input value="{{ request.user.username }}" name="username" type="text" id="display_name"
-                                class="form-control mb-3 " placeholder="Nombre de Usuario" required>
+                                class="form-control " placeholder="Nombre de Usuario" required>
                                 
 
                             <input value="{{ request.user.email }}" name="email" type="email" id="user_email"
-                                class="form-control mb-3" placeholder="Dirección de correo electrónico" required>
+                                class="form-control" placeholder="Dirección de correo electrónico" required>
 
-                            <div class="text-center d-grid gap-2 col-6 mx-auto">
-                                <button id="edit-user-account">Guardar cambios</button>
-                            </div>
+                           
+                                <button  class="bg-green-500 hover:bg-green-600 rounded-md w-full" id="edit-user-account">Guardar cambios</button>
+                          
                         </form>
                     </div>
                 </div>
 
                 <div class="">
 
-                    <div class="">Cambiar contraseña</div>
+                    <div class="text-center">Cambiar contraseña</div>
                     <div class="">
 
                         {% if error %}
@@ -85,7 +95,7 @@
                         <div class=""> {{error}} </div>
                         {% endif %}
 
-                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data" class="flex flex-col justify-center items-center gap-2">
                             {% csrf_token %}
 
                             <input type="password" name="currentPass" 
@@ -97,15 +107,32 @@
                             <input type="password" name="confirmPass" 
                                  placeholder="Confirmar nueva contraseña">
 
-                            <div>
+                          
                                 <button 
-                                    class="">Cambiar contraseña</button>
-                            </div>
+                                    class="bg-green-500 hover:bg-green-600 rounded-md w-full">Cambiar contraseña</button>
+                           
 
                         </form>
                     </div>
                 </div>
+
+
+
+                <div class="text-left mt-2">
+
+
+                    <a href="{% url 'habitos_home' %}"  >Volver</a>
+                  </div>
+
+
             </div>
         </div>
     </div>
+
+
+  
+    
+    {% endblock content %}
+
+    
 

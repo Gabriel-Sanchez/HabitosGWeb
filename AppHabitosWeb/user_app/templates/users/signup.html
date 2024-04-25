@@ -1,67 +1,79 @@
+{% extends "base_app/base_app.html" %}
 {% load static %}
 
-<form action="{% url 'signup' %}" method="post">
-  {% csrf_token %}
-
-  <div>
-    {% if error %}
-    <p>{{error}}</p>
-    {% endif %}
 
 
-    <a href="{% url 'habitos_home' %}">regresar</a>
+{% block content %}
+  
 
-    <div>
-      <div>
-        <div>
 
-          <div>
-            <div>
-              <p class="status"></p>
 
-              <div>
+  <section class="flex flex-col  justify-center items-center h-screen" >
+ 
 
-                <h1>Registro</h1>
+   
+    <form action="{% url 'signup' %}" method="post"  >
+      {% csrf_token %}
+    
+   
+        {% if error %}
+        <p>{{error}}</p>
+        {% endif %}
 
-                <div class="row">
-                  <div class="col">
+        <h1 class="text-center mb-2 text-2x1" >Registro</h1>
 
-                    <div>
-                      <input type="text" id="signonname" name="First_name">
-                      <label for="signonname">Nombre</label>
-                    </div>
-                  </div>
-                </div>
+        <div class="flex flex-col gap-2">
 
-                <div class="form-outline form-auth-mdb mb-4">
-                  <input type="email" id="email" name="email">
-                  <label for="email">Correo electronico</label>
-                </div>
-
-                <div class="row">
-                  <div class="col">
-
-                    <div>
-                      <input type="password" id="signonpassword" name="password" autocomplete="off">
-                      <label for="signonpassword">Contraseña</label>
-                    </div>
-                  </div>
-                  <div class="col">
-
-                    <div>
-                      <input type="password" id="password2" name="password_confirmation" autocomplete="off">
-                      <label for="password2">Repita su contraseña</label>
-                    </div>
-                  </div>
-                </div>
-
-                <button class="btn btn-block mb-4 gcolorbuttons" type="submit" value="SIGNUP">Registrarse</button>
-
-              </div>
-            </div>
+        
+          <div class="flex items-center">
+            <label class="w-1/3" for="signonname">Nombre:</label>
+            <input class="w-2/3" type="text" id="signonname" name="First_name"  >
           </div>
-        </div>
+         
+      
+    
+          <div class="flex items-center">
+        <label class="w-1/2" for="email">Correo electronico</label>
+        <input class="w-1/2" type="email" id="email" name="email">
+     
+       </div>
+        
+      
+
+       <div class="flex items-center">
+        <label class="w-1/3" for="signonpassword">Contraseña</label>
+        <input class="w-2/3" type="password" id="signonpassword" name="password" autocomplete="off">
+      
       </div>
+          
+        
+
+      <div class="flex items-center">
+       
+        <label class="w-1/2" for="password2">Repita su contraseña</label>
+        <input class="w-1/2" type="password" id="password2" name="password_confirmation" autocomplete="off">
+      </div>
+        
+     
+
+        <button class="bg-green-500 hover:bg-green-600 rounded-md" type="submit" value="SIGNUP">Registrarse</button>
+
+      
+    
+
     </div>
-  </div>
-</form>
+      
+      </div>
+    </form>
+
+    <div class="text-left mt-2">
+
+
+      <a href="{% url 'habitos_home' %}"  >Volver</a>
+    </div>
+  </section>
+
+
+
+
+  {% endblock content %}
