@@ -233,7 +233,7 @@
 
     </div>
     {% if not request.user.is_anonymous %}
-    <div class="columna2">
+    <div class="columna2" id="columna2-id">
 
         
         <div class="heatmap_principal">
@@ -244,23 +244,27 @@
                 <h4 class="h_total" id="horas_invertidas_habito"></h4>
                 <h4 class="h_total" id="dias_totales_invertidas_habito"></h4>
             </div>
-            
-            <div style="justify-content: center; display: flex;">
 
-                <div class="center_div arriba_e"  >
-                    <button class="botones_nyp" id="minDate-previous_year"> < </button>
-                    <div id="cal-heatmap"></div>
-                    <button class="botones_nyp" id="minDate-next_year">></button>
-                    
+            <div class="desktop_vew">
+
+                <div style="justify-content: center; display: flex;"  >
+    
+                    <div class="center_div arriba_e"  >
+                        <button class="botones_nyp" id="minDate-previous_year"> < </button>
+                        <div id="cal-heatmap"></div>
+                        <button class="botones_nyp" id="minDate-next_year">></button>
+                        
+                    </div>
                 </div>
             </div>
-            <div id="legendY" style="margin-bottom: 5px; float: right;" ></div>
+            
+            <div class="desktop_vew" id="legendY" style="margin-bottom: 5px; float: right;" ></div>
             <div class="center_div">
             </div>
             <div>
                 <div style="justify-content: center; display: flex; height: 170px; width: 350px;">
 
-                    <canvas id="miGrafico"></canvas>
+                    <canvas class="desktop_vew" id="miGrafico"></canvas>
 
                     <div class="center_div">
 
@@ -274,27 +278,27 @@
             <div id="onClick-placeholder">
 
             </div>
-            <div class="text-black flex justify-center flex-col gap-1" id="form_edicion_historial">
+            <div class="text-black flex justify-center flex-col gap-1 justify-between" id="form_edicion_historial">
 
                 <input class="imput_form" type="hidden" id="id_historial_habito" name="id_historial_habito">
                 <input class="imput_form" type="hidden" id="fecha_historial" name="fecha_historial">
                 <input class="imput_form" type="hidden" id="objeto_historial" name="objeto_historial">
                 <input class="imput_form" type="hidden" id="objeto_habito_edicion" name="objeto_habito_edicion">
                 <!-- <input id="duracion_historial" type="text"> -->
-                <div class="flex gap-1 selecters-time">
-                    <select class="text-black" id="hora" name="hora">
+                <div class="flex gap-1 selecters-time ">
+                    <select class="text-black rounded-sm" id="hora" name="hora">
                     </select>
                     <br>
                     <label for="minutos">:</label><br>
-                    <select class="text-black" id="minutos" name="minutos">
+                    <select class="text-black rounded-sm" id="minutos" name="minutos">
                     </select>
                     <br>
                     <label for="segundos">:</label><br>
-                    <select  class="text-black" id="segundos" name="segundos">
+                    <select  class="text-black rounded-sm" id="segundos" name="segundos">
                     </select>
-                    <br><br>
+                   
                 </div>
-                <button class="boton_editarHistorial" id="boton_agregar" onclick="agregarEditarHabito()">Guardar</button>
+                <button class="boton_editarHistorial rounded-sm w-100" id="boton_agregar" onclick="agregarEditarHabito()">Guardar</button>
             </div>
 
         </div>
@@ -305,17 +309,17 @@
 
 
 
-        <div style="justify-content: center; display: flex;">
+        <div class="desktop_vew" style="justify-content: center; display: flex;">
 
 
 
             <div class="center_div"> 
-            <div style="width: 950px; height: 250px;" class="center_div">
+            <div  style="width: 950px; height: 250px;" class="center_div  desktop_vew"  >
                 <div class="button-container">
                 </div>
 
                     <button class="botones_nyp" id="prevButton"> < </button>
-                    <canvas id="myChart"></canvas>
+                    <canvas class="desktop_vew" id="myChart"></canvas>
                     <button class="botones_nyp" id="nextButton">></button>
                 </div>
 
