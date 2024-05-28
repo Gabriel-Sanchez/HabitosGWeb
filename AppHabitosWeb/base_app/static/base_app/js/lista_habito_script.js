@@ -124,6 +124,8 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
         botn.innerHTML = '';
         botn.innerHTML = '<i class="material-icons">check</i>';
         botn.addEventListener('click', function () {
+
+          li.classList.add('oculto')
           
           registrar_Habitos_checker(objeto)
           // actualizar_listas()
@@ -149,6 +151,8 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
       botn_graf.addEventListener('click', function () {
 
+        graficos_display()
+
       definir(objeto)
 
 
@@ -164,6 +168,11 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
       lista_final.innerHTML = ''
       lista_final.appendChild(lista)
+}
+
+function graficos_display(){
+  document.getElementById('columna2-id').style.display  = "block";
+  console.log('columna2  flex')
 }
 
 

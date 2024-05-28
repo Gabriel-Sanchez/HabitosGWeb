@@ -3,6 +3,18 @@
     margin-right: auto; 
 } */
 
+@keyframes fadeout {
+  to{
+    opacity: 0;
+    display: none;
+  }
+  
+}
+
+li.oculto{
+  animation: fadeout .2 forwards;
+}
+
 .item_habito_timer{
   background-color: #2af58f;
 
@@ -100,24 +112,90 @@ ul{
 .columnas {
     display: flex;
     flex-wrap: wrap;
-    height: 100vh; /* Ajusta esto a la altura que prefieras */
+    /* height: 100vh;  */
+    /* Ajusta esto a la altura que prefieras */
   }
   .columna1, .columna2 {
     height: 100%; /* Esto asegura que cada columna tenga una altura definida */
     overflow-y: auto; /* Esto habilita el scroll solo si es necesario */
   }
   .columna1 {
-    width: 500px;
+    width: 100%;
     
   }
   .columna2 {
     flex-grow: 1;
+    display: none;
+
     
+  }
+
+  .desktop_vew{
+    display: none !important;
+  }
+
+  .heatmap_principal{
+    width: 100%;
+    margin-bottom: 10px;
   }
   @media (max-width: 500px) {
     .columna2 {
-      display: none;
+      /* display: none; */
+      width: 100%;
+   
     }
+    .columna1 {
+      width: 100%;
+      
+    }
+
+  
+  }
+
+  @media ( min-width: 700px ){
+
+    .columna2 {
+      /* display: none; */
+      width: 50%;
+      overflow-y: auto;
+      height: 100vh;
+    }
+    .columna1 {
+      width: 50%;
+      height: 100vh;
+      
+    }
+
+    .desktop_vew{
+      display: none !important;
+    }
+
+  }
+
+  @media ( min-width: 900px ){
+
+    .columna2 {
+      /* display: none; */
+      height: 100vh;
+      overflow-y: scroll; 
+    }
+    .columna1 {
+      width: 500px;
+      overflow-y: scroll; 
+      height: 100vh;
+      
+    }
+
+    /* .columnas{
+      overflow-y: scroll;
+    } */
+
+    .desktop_vew{
+      display: flex !important;
+    }
+
+    
+
   }
 
 
@@ -446,8 +524,8 @@ summary{
 
 .boton_editarHistorial{
   background-color: #45a049;
-  padding-left: 3px;
-  padding-right: 3px;
+  /* padding-left: 3px;
+  padding-right: 3px; */
   color: #1e1e1e;
   
 }

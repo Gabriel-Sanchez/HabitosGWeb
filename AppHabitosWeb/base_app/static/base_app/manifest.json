@@ -8,9 +8,14 @@
     "start_url": "/habitos",
     "icons": [
         {
-            "src": "icon.ico",
+            "src": "http://192.168.0.80/media/default/icon-2.webp",
+            "sizes": "256x256"
+        },
+        {
+            "src": " icon.ico",
             "sizes": "256x256",
             "type" : "image/x-icon"
         }
+       
     ]
 }
