@@ -10,19 +10,33 @@ var corriendo = false;
 var reset_pom = false
 var intervalo;
 
-function playSound() {
-    let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let oscillator = audioContext.createOscillator();
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
 
-    oscillator.frequency.value = 440; 
+function playSound(frequency, duration) {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
     oscillator.type = 'sine'; 
-
-    oscillator.connect(audioContext.destination);
+    oscillator.frequency.value = frequency; 
     oscillator.start();
+    
+    gainNode.gain.setValueAtTime(1, audioCtx.currentTime); 
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration); 
+    
+    oscillator.stop(audioCtx.currentTime + duration); 
+}
 
-    setTimeout(function(){
-        oscillator.stop();
-    }, 1000);
+
+function startTimerSound() {
+    playSound(440, 1); 
+}
+
+function endTimerSound() {
+    playSound(880, 1); 
 }
 
 function definirDatosIniciales(objHabito){
@@ -149,10 +163,9 @@ function pomodoro_(){
             var segundos = tiempoRestante % 60;
             document.getElementById("temporizador").textContent = (minutos < 10 ? "0" : "") + minutos + ":" + (segundos < 10 ? "0" : "") + segundos;
             if (tiempoRestante <= 0) {
-                // audio.play();
-                playSound()
                 clearInterval(intervalo);
                 if (enDescanso) {
+                     startTimerSound()
                     tiempoRestante = tiempoTrabajo;
                     // Si estaba en descanso, vuelve al tiempo de trabajo
                     console.log('va a guardar habito Si descanso')
@@ -164,6 +177,7 @@ function pomodoro_(){
                     ciclos--;
                     
                 } else {
+                   endTimerSound()
                     tiempoRestante = tiempoDescanso;
                     console.log('va a guardar habito no descanso')
                     console.log(tiempoRestante)
