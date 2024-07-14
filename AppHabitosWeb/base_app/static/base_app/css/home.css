@@ -152,7 +152,7 @@ ul{
   
   }
 
-  @media ( min-width: 700px ){
+  @media ( min-width: 900px ){
 
     .columna2 {
       /* display: none; */
@@ -172,7 +172,7 @@ ul{
 
   }
 
-  @media ( min-width: 900px ){
+  @media ( min-width: 1200px ){
 
     .columna2 {
       /* display: none; */
