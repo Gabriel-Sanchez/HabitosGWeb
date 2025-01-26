@@ -1,17 +1,17 @@
-fetch_lista_habitos()
+fetch_lista_habitos(true)
 
 function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
   
-  // var lista = document.getElementById(nombre_lista);
-   var lista_final = document.getElementById(nombre_lista);
+  // let lista = document.getElementById(nombre_lista);
+   let lista_final = document.getElementById(nombre_lista);
 
-  var lista = document.createDocumentFragment()
+  let lista = document.createDocumentFragment()
 
   
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
-    var li = document.createElement("li");
+    let li = document.createElement("li");
     li.classList.add('elemento_lista')
     li.id = data[index].orden_n
     
@@ -23,20 +23,20 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
 
 
-      var div_item_h = document.createElement('div')
-      var div_botones = document.createElement('div')
+      let div_item_h = document.createElement('div')
+      let div_botones = document.createElement('div')
       div_botones.classList.add('div_botones')
       li.appendChild(div_item_h)
       lista.appendChild(li);
-      var Nombre_habito = document.createElement('div')
-      var Nombre_habito_h1 = document.createElement('h1')
-      var racha_habito_p = document.createElement('h6')
+      let Nombre_habito = document.createElement('div')
+      let Nombre_habito_h1 = document.createElement('h1')
+      let racha_habito_p = document.createElement('h6')
       Nombre_habito.classList.add('titulo_habito')
       Nombre_habito_h1.classList.add('titulo_habito_texto')
       racha_habito_p.classList.add('racha_habito_texto')
-      var texto_nombre = document.createTextNode(data[index].nombre)
-      var texto_numero_racha = document.createTextNode( numero_racha_h)
-      var span_racha = document.createElement("span");
+      let texto_nombre = document.createTextNode(data[index].nombre)
+      let texto_numero_racha = document.createTextNode( numero_racha_h)
+      let span_racha = document.createElement("span");
       // span_racha.style.padding = '3px'
       // span_racha.style.borderRadius = '2px'
       // span_racha.style.boxShadow = 'inset 10px 10px 20px gray'
@@ -60,7 +60,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       span_racha.appendChild(texto_numero_racha)
       racha_habito_p.appendChild(span_racha)
 
-      var boton_config = document.createElement("button")
+      let boton_config = document.createElement("button")
       boton_config.style.backgroundColor = data[index].color
       // boton_config.innerHTML = '<index class="material-icons">settings</index>';
       boton_config.classList.add('boton_config')
@@ -70,8 +70,8 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
       Nombre_habito.appendChild(racha_habito_p)
       div_item_h.appendChild(boton_config);
       div_item_h.appendChild(Nombre_habito);
-      var botn = document.createElement("button")
-      var botn_graf = document.createElement("button")
+      let botn = document.createElement("button")
+      let botn_graf = document.createElement("button")
 
 
       document.body.append(botn);
@@ -124,13 +124,14 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
         botn.innerHTML = '';
         botn.innerHTML = '<i class="material-icons">check</i>';
         botn.addEventListener('click', function () {
-
-          li.classList.add('oculto')
-          
-          registrar_Habitos_checker(objeto)
-          // actualizar_listas()
-          definir(objeto)
-          
+          console.log('Antes de agregar la clase oculto v3');
+          console.log(li);
+          li.classList.add('oculto') // Agrega la clase inmediatamente
+          console.log('Después de agregar la clase oculto');
+          requestAnimationFrame(() => {
+            registrar_Habitos_checker(objeto); // Llama al método después de renderizar
+            definir(objeto);
+          });
         })
 
       } else if (data[index].type__numero == 3) {
@@ -166,7 +167,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
       }
 
-      lista_final.innerHTML = ''
+       lista_final.innerHTML = ''
       lista_final.appendChild(lista)
 }
 
@@ -176,9 +177,9 @@ function graficos_display(){
 }
 
 
-function fetch_lista_habitos(){
+function fetch_lista_habitos(principal){
 
-        var url = '/habitos/getHabitosR/';
+        let url = '/habitos/getHabitosR/';
         fetch(url)
         .then(function(response) {
             if (!response.ok) {
@@ -188,8 +189,10 @@ function fetch_lista_habitos(){
         })
         .then(function(data) {
             // Maneja la respuesta exitosa
-            // var fragment = document.createDocumentFragment();
-            llenar_lista_habitos('miLista', false, false, data.Habitos_por_hacer)
+            // let fragment = document.createDocumentFragment();
+            if (principal){
+              llenar_lista_habitos('miLista', false, false, data.Habitos_por_hacer)
+            }
             llenar_lista_habitos('miLista_hechos', false, false, data.Habitos_hechos)
             llenar_lista_habitos('miLista_archivados', false, true, data.ListaHArchivados)
 
@@ -212,11 +215,11 @@ function fetch_lista_habitos(){
 
 
 function set_tiempo_restante_Hoy(tiempoRestante){
-  var texto_tiempo_restante = document.getElementById('tiempo_restante')
+  let texto_tiempo_restante = document.getElementById('tiempo_restante')
   texto_tiempo_restante.innerText =  tiempoRestante.Horas + " horas y " + tiempoRestante.Minutos + " minutos";
 }
 function set_numero_restante_Hoy(tiempoRestante){
-  var texto_numeros_restantes = document.getElementById('tareas_restantes')
+  let texto_numeros_restantes = document.getElementById('tareas_restantes')
   texto_numeros_restantes.innerText = tiempoRestante
 }
 
@@ -247,11 +250,11 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
 
 
   
-  var lista = document.getElementById(nombre_lista);
+  let lista = document.getElementById(nombre_lista);
   
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
-    var li = document.createElement("li");
+    let li = document.createElement("li");
     li.classList.add('elemento_lista')
     li.id = data[index].orden_n
     
@@ -263,22 +266,22 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
 
 
 
-      var div_item_h = document.createElement('div')
-      var div_botones = document.createElement('div')
+      let div_item_h = document.createElement('div')
+      let div_botones = document.createElement('div')
       div_botones.classList.add('div_botones')
       li.appendChild(div_item_h)
       lista.appendChild(li);
-      var Nombre_habito = document.createElement('div')
-      var Nombre_habito_h1 = document.createElement('h1')
-      var racha_habito_p = document.createElement('h6')
+      let Nombre_habito = document.createElement('div')
+      let Nombre_habito_h1 = document.createElement('h1')
+      let racha_habito_p = document.createElement('h6')
       Nombre_habito.classList.add('titulo_habito')
       Nombre_habito_h1.classList.add('titulo_habito_texto')
       racha_habito_p.classList.add('racha_habito_texto')
-      var texto_nombre = document.createTextNode(data[index].nombre)
-      var texto_numero_racha = document.createTextNode( numero_racha_h)
+      let texto_nombre = document.createTextNode(data[index].nombre)
+      let texto_numero_racha = document.createTextNode( numero_racha_h)
       racha_habito_p.appendChild(texto_numero_racha)
 
-      var boton_config = document.createElement("button")
+      let boton_config = document.createElement("button")
       boton_config.style.backgroundColor = data[index].color
       //boton_config.innerHTML = '<index class="material-icons">settings</index>';
       boton_config.classList.add('boton_config')
@@ -288,8 +291,8 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
       Nombre_habito.appendChild(racha_habito_p)
       div_item_h.appendChild(boton_config);
       div_item_h.appendChild(Nombre_habito);
-      var botn = document.createElement("button")
-      var botn_graf = document.createElement("button")
+      let botn = document.createElement("button")
+      let botn_graf = document.createElement("button")
 
 
       document.body.append(botn);
@@ -342,11 +345,13 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
         botn.innerHTML = '';
         botn.innerHTML = '<i class="material-icons">check</i>';
         botn.addEventListener('click', function () {
-          
-          registrar_Habitos_checker(objeto)
-          // actualizar_listas()
-          definir(objeto)
-          
+          console.log('Antes de agregar la clase oculto');
+          li.classList.add('oculto'); // Agrega la clase inmediatamente
+          console.log('Después de agregar la clase oculto');
+          requestAnimationFrame(() => {
+            registrar_Habitos_checker(objeto); // Llama al método después de renderizar
+            definir(objeto);
+          });
         })
 
       }

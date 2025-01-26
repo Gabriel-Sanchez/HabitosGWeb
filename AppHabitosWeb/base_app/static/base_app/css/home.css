@@ -11,8 +11,9 @@
   
 }
 
-li.oculto{
-  animation: fadeout .2 forwards;
+.oculto{
+  display: none !important;
+   animation: fadeout .2 forwards; 
 }
 
 .item_habito_timer{

@@ -467,7 +467,7 @@
                 generarGraficoDuracionPorAnio(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
                 graficar_semana(data.objetoHabito['id']+'', data.objetoHabito['objetivo']);
                 var objetoDatos = document.getElementById("objeto_habito_edicion");
-                actualizar_listas()
+                actualizar_listas(true)
                 /*
                 var objetoGuardado = objetoDatos.dataset.objeto;
                 if (objetoGuardado) {
@@ -564,7 +564,7 @@
       })
       .then(function(data){
           console.log(data)
-          actualizar_listas()
+          actualizar_listas(true)
           cambiarVentana('ventana1')
       })
 
@@ -603,7 +603,7 @@
       })
       .then(function(data){
           console.log(data)
-          actualizar_listas()
+          actualizar_listas(true)
           cambiarVentana('ventana1')
           
       })
@@ -651,7 +651,7 @@
                  // Guardar el nuevo array en el archivo JSON
             // fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
             console.log('Registro eliminado')
-            actualizar_listas()
+            actualizar_listas(true)
             cambiarVentana('ventana1')
                 
             })
@@ -713,7 +713,7 @@
                    // Guardar el nuevo array en el archivo JSON
               // fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
               console.log('Registro archivado')
-              actualizar_listas()
+              actualizar_listas(true)
               cambiarVentana('ventana1')
                   
               })
@@ -780,7 +780,7 @@
             ventanaOrdenar = document.getElementById('ventana3')
             ventanalistas.style.display = 'block'
             ventanaOrdenar.style.display = 'none'
-            actualizar_listas()
+            actualizar_listas(true)
             sorteableActivado = !sorteableActivado
             })
           

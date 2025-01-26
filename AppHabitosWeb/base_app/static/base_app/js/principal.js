@@ -238,7 +238,7 @@ function configurar_habito (valor) {
 
 
 
-function actualizar_listas () {
+function actualizar_listas (principal) {
   // document.getElementById('miLista').innerHTML = ''
   // let lista = document.getElementById('miLista')
   // while(lista.firstChild){
@@ -248,7 +248,12 @@ function actualizar_listas () {
   document.getElementById('miLista_hechos').innerHTML = ''
   document.getElementById('miLista_archivados').innerHTML = ''
 
-  fetch_lista_habitos()
+  if (principal){
+    console.log('se hara fetch', principal)
+    fetch_lista_habitos(principal)
+  }else{
+    fetch_lista_habitos()
+  }
 
   // llenar_lista_habitos('miLista_hechos', true, false)
   // llenar_lista_habitos('miLista_archivados', false, true)
