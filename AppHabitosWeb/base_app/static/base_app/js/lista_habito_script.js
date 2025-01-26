@@ -278,8 +278,8 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
       Nombre_habito_h1.classList.add('titulo_habito_texto')
       racha_habito_p.classList.add('racha_habito_texto')
       let texto_nombre = document.createTextNode(data[index].nombre)
-      let texto_numero_racha = document.createTextNode( numero_racha_h)
-      racha_habito_p.appendChild(texto_numero_racha)
+      // let texto_numero_racha = document.createTextNode( numero_racha_h)
+      // racha_habito_p.appendChild(texto_numero_racha)
 
       let boton_config = document.createElement("button")
       boton_config.style.backgroundColor = data[index].color
@@ -298,8 +298,9 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
       document.body.append(botn);
       div_item_h.appendChild(div_botones)
 
-      botn_graf.innerHTML = '<i class="material-icons">calendar_today</i>';
-      document.body.append(botn_graf);
+      botn_graf.classList.add("boton_drag");
+      botn_graf.innerHTML = '<i class="material-icons">drag_indicator</i>';
+
 
 
       // Asignar un valor al botón
@@ -315,7 +316,7 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
 
       let objeto = data[index]
 
-      botn.classList.add('boton_habito')
+     // botn.classList.add('boton_habito')
       botn_graf.classList.add('boton_habito')
       
       boton_config.addEventListener('click', function () {
@@ -327,47 +328,47 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
       
       if (data[index].type__numero == 1) {
         div_item_h.classList.add('item_habito')
-        botn.classList.add('boton_pomodono')
-        botn.innerHTML = '<i class="material-icons">alarm</i>';
+        // botn.classList.add('boton_pomodono')
+        // botn.innerHTML = '<i class="material-icons">alarm</i>';
         
-        botn.addEventListener('click', function () {
+        // botn.addEventListener('click', function () {
           
-          window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
+        //   window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
           
           
-          console.log('a')
-          // mientras
-          // ipcRenderer.send('abrir-ventana-secundaria', objeto)
-        })
+        //   console.log('a')
+        //   // mientras
+        //   // ipcRenderer.send('abrir-ventana-secundaria', objeto)
+        // })
       } else {
         div_item_h.classList.add('item_habito_check')
-        botn.classList.add('boton_checker')
-        botn.innerHTML = '';
-        botn.innerHTML = '<i class="material-icons">check</i>';
-        botn.addEventListener('click', function () {
-          console.log('Antes de agregar la clase oculto');
-          li.classList.add('oculto'); // Agrega la clase inmediatamente
-          console.log('Después de agregar la clase oculto');
-          requestAnimationFrame(() => {
-            registrar_Habitos_checker(objeto); // Llama al método después de renderizar
-            definir(objeto);
-          });
-        })
+        // botn.classList.add('boton_checker')
+        // botn.innerHTML = '';
+        // botn.innerHTML = '<i class="material-icons">check</i>';
+        // botn.addEventListener('click', function () {
+        //   console.log('Antes de agregar la clase oculto');
+        //   li.classList.add('oculto'); // Agrega la clase inmediatamente
+        //   console.log('Después de agregar la clase oculto');
+        //   requestAnimationFrame(() => {
+        //     registrar_Habitos_checker(objeto); // Llama al método después de renderizar
+        //     definir(objeto);
+        //   });
+        // })
 
       }
 
-      botn_graf.addEventListener('click', function () {
+      // botn_graf.addEventListener('click', function () {
 
-      definir(objeto)
+      // definir(objeto)
 
 
       
-      generarGraficoDuracionPorAnio(objeto.id+'', objeto.objetivo);
-      graficar_semana(objeto.id+'', objeto.objetivo);
-      // mientras
+      // generarGraficoDuracionPorAnio(objeto.id+'', objeto.objetivo);
+      // graficar_semana(objeto.id+'', objeto.objetivo);
+      // // mientras
       
-      //mostrar_flechas()
-      })
+      // //mostrar_flechas()
+      // })
 
       }
 resolve()

@@ -41,7 +41,10 @@ function eventos_lista_habitos () {
 
   const lista = document.getElementById('miLista_ParaOrdenar')
   sortable = Sortable.create(lista, {
-    sort: true,
+    handle: '.boton_drag',    // Solo se podrá arrastrar desde elementos con esta clase
+    animation: 150,           // Velocidad de animación
+    ghostClass: 'ghost',
+    //sort: true,
     // Definir el evento onEnd
     onEnd: function (/** Event */evt) {
 
