@@ -1,5 +1,3 @@
-
-
 let elemento = document.querySelector(':root'); // Selecciona el elemento raíz
 let estilo = getComputedStyle(elemento); // Obtiene los estilos computados del elemento
 let colorPrimario = estilo.getPropertyValue('--mi-color-primario'); 
@@ -220,6 +218,13 @@ function configurar_habito (valor) {
   document.getElementById('archivado').value = valor.archivado
   document.getElementById('objetivo').value = valor.objetivo
 
+  // Configurar los días seleccionados
+  const diasSeleccionados = (valor.dias_seleccionados || '1,2,3,4,5,6,7').split(',')
+  const checkboxes = document.querySelectorAll('input[name="dias"]')
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = diasSeleccionados.includes(checkbox.value)
+  })
+
   resetBorderColorsHabit(valor.color)
 
   console.log(valor.orden_n)
@@ -239,7 +244,59 @@ function configurar_habito (valor) {
   }
 }
 
+function guardar_habito_json () {
+  const id = document.getElementById('id').value
+  const nombre = document.getElementById('nombre').value
+  const work_time = document.getElementById('work_time').value
+  const short_break = document.getElementById('short_break').value
+  const count = document.getElementById('count').value
+  const type = document.getElementById('type').value
+  const orden_n = document.getElementById('orden_n').value
+  const color_hab = document.getElementById('color_hab').value
+  const archivado = document.getElementById('archivado').value
+  const objetivo = document.getElementById('objetivo').value
 
+  // Obtener los días seleccionados
+  const diasSeleccionados = Array.from(document.querySelectorAll('input[name="dias"]:checked'))
+    .map(checkbox => checkbox.value)
+    .join(',')
+
+  const data = {
+    id: id,
+    nombre: nombre,
+    work_time: work_time,
+    short_break: short_break,
+    count: count,
+    type: type,
+    orden_n: orden_n,
+    color_hab: color_hab,
+    archivado: archivado,
+    objetivo: objetivo,
+    dias_seleccionados: diasSeleccionados
+  }
+
+  fetch('/habitos/guardar_habito/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      actualizar_listas(true)
+      cambiarVentana('ventana1')
+    } else {
+      alert('Error al guardar el hábito')
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error)
+    alert('Error al guardar el hábito')
+  })
+}
 
 function actualizar_listas (principal) {
   // document.getElementById('miLista').innerHTML = ''
@@ -320,48 +377,79 @@ function calcular_tiempo_restante(hecho, total, tiempo, ciclos) {
 function calcularDiasDeRachaHastaHoy (id, datos, hecho) {
   // Filtrar los datos por id
   const datosFiltrados = datos.filter(d => d.id_habito == id)
+  
+  // Obtener los días seleccionados para este hábito
+  const habito = datos.find(d => d.id_habito == id)
+  const diasSeleccionados = (habito.dias_seleccionados || '1,2,3,4,5,6,7').split(',').map(Number)
 
   // Ordenar los datos por fecha
   datosFiltrados.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-  console.log(datosFiltrados)
 
   // Calcular los días de racha
   let racha = 0
   let hoy = new Date()
-  let hoy_constante = new Date()
   hoy.setHours(0, 0, 0, 0) // Asegurarse de que la hora es medianoche para la comparación de fechas
-
-  hoy_constante = hoy_constante = new Date()
-  hoy_constante.setHours(0, 0, 0, 0) // Asegurarse de que la hora es medianoche para la comparación de fechas
-
-  hoy_racha = false
 
   if (!hecho) {
     hoy.setDate(hoy.getDate() - 1)
   }
 
-  for (let i = datosFiltrados.length - 1; i >= 0; i--) {
-    const fechaActual = new Date(datosFiltrados[i].fecha)
-    fechaActual.setHours(0, 0, 0, 0) // Asegurarse de que la hora es medianoche para la comparación de fechas
-
-    //  if (hoy_constante.getTime() === fechaActual.getTime()){
-    //     racha++;
-    //     console.log('hoy')
-    // }
-
-    // Verificar si hay datos para el día de hoy
-    if (esFechaConsecutiva(fechaActual, hoy)) {
-      racha++
-    } else if (racha > 0) {
-      break // La racha se rompe, ya hemos contado los días consecutivos hasta hoy
-    }
-
-    hoy = restarUnDia(hoy) // Restar un día a la fecha de hoy para la próxima iteración
+  // Función para verificar si un día es un día seleccionado
+  function esDiaSeleccionado(fecha) {
+    const diaSemana = fecha.getDay() || 7 // Convertir 0 (Domingo) a 7
+    return diasSeleccionados.includes(diaSemana)
   }
 
-  if (id == 19) {
-    console.log(id)
-    console.log(racha)
+  // Función para encontrar el siguiente día seleccionado
+  function siguienteDiaSeleccionado(fecha) {
+    let fechaActual = new Date(fecha)
+    fechaActual.setDate(fechaActual.getDate() - 1)
+    
+    while (!esDiaSeleccionado(fechaActual)) {
+      fechaActual.setDate(fechaActual.getDate() - 1)
+    }
+    return fechaActual
+  }
+
+  // Función para verificar si dos fechas son consecutivas considerando solo días seleccionados
+  function sonDiasConsecutivos(fecha1, fecha2) {
+    let fechaTemp = new Date(fecha1)
+    fechaTemp.setDate(fechaTemp.getDate() + 1)
+    
+    while (!esDiaSeleccionado(fechaTemp)) {
+      fechaTemp.setDate(fechaTemp.getDate() + 1)
+    }
+    
+    return fechaTemp.getTime() === fecha2.getTime()
+  }
+
+  // Comenzar desde el último día registrado
+  for (let i = datosFiltrados.length - 1; i >= 0; i--) {
+    const fechaActual = new Date(datosFiltrados[i].fecha)
+    fechaActual.setHours(0, 0, 0, 0)
+
+    // Verificar si la fecha actual es un día seleccionado
+    if (!esDiaSeleccionado(fechaActual)) {
+      continue // Saltar días no seleccionados
+    }
+
+    if (racha === 0) {
+      // Si es el primer día de la racha
+      if (fechaActual.getTime() === hoy.getTime() || 
+          sonDiasConsecutivos(fechaActual, hoy)) {
+        racha = 1
+      }
+    } else {
+      // Verificar si el día actual es consecutivo al día anterior
+      const fechaAnterior = new Date(datosFiltrados[i + 1].fecha)
+      fechaAnterior.setHours(0, 0, 0, 0)
+      
+      if (sonDiasConsecutivos(fechaActual, fechaAnterior)) {
+        racha++
+      } else {
+        break // La racha se rompe
+      }
+    }
   }
 
   return racha

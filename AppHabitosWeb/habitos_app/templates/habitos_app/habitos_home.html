@@ -206,6 +206,18 @@
                         <option value="2">Checker</option>
                         <option value="3">StopWatch</option>
                     </select>
+                    <div class="dias-seleccionados">
+                        <label>Días de la semana:</label>
+                        <div class="dias-checkbox">
+                            <label><input type="checkbox" name="dias" value="1" checked> Lunes</label>
+                            <label><input type="checkbox" name="dias" value="2" checked> Martes</label>
+                            <label><input type="checkbox" name="dias" value="3" checked> Miércoles</label>
+                            <label><input type="checkbox" name="dias" value="4" checked> Jueves</label>
+                            <label><input type="checkbox" name="dias" value="5" checked> Viernes</label>
+                            <label><input type="checkbox" name="dias" value="6" checked> Sábado</label>
+                            <label><input type="checkbox" name="dias" value="7" checked> Domingo</label>
+                        </div>
+                    </div>
                     <div id="colorPalette"></div>
                     <input class="imput_form" type="hidden" id="color_hab" name="color_hab">
                     <input class="imput_form" type="hidden" id="archivado" name="archivado">
@@ -542,11 +554,15 @@
           count: Number(document.getElementById('count').value),
           type: Number(document.getElementById('type').value),
           orden_n: Number(document.getElementById('orden_n').value),
-          color: document.getElementById('color_hab').value,
-          objetivo: Number(document.getElementById('objetivo').value)
+          color: document.getElementById('color_hab').value || 'FFFFFF',
+          objetivo: Number(document.getElementById('objetivo').value),
+          archivado: document.getElementById('archivado').value === 'true',
+          dias_seleccionados: Array.from(document.querySelectorAll('input[name="dias"]:checked'))
+            .map(checkbox => checkbox.value)
+            .join(',')
       };
       
-      url = `/habitos/set_formHabito/${datos.id}`
+      url = '/habitos/guardar_habito/'
       
       fetch(url, {
           method : 'POST',

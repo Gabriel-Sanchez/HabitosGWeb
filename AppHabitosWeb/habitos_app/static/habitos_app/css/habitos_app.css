@@ -1,0 +1,22 @@
+.dias-seleccionados {
+    margin: 10px 0;
+}
+
+.dias-checkbox {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.dias-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.dias-checkbox input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+} 

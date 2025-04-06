@@ -25,36 +25,57 @@ class Habito(models.Model):
     progresion = models.IntegerField(default=0)
     archivado = models.BooleanField(default=False)
     fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listHabitos', null=True)
-    
+    dias_seleccionados = models.CharField(max_length=20, default='1,2,3,4,5,6,7')  # 1=Lunes, 7=Domingo
     
     def __str__(self):
         return self.nombre + '-' + str(self.numero) 
     
     def racha_dias(self):
         fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
+        dias_seleccionados = [int(d) for d in self.dias_seleccionados.split(',')]
         
         dia_hoy = timezone.localtime(timezone.now()).date() 
         
         numero_racha = 0
         if fechas_ordenadas:
             if timezone.localtime(fechas_ordenadas[0].fecha_inicio).date() == dia_hoy:
-                # fecha_anterior =  date.today() + timedelta(days=1)  
-                fecha_anterior =  dia_hoy + timedelta(days=1)  
+                fecha_anterior = dia_hoy + timedelta(days=1)
             else:
-                # fecha_anterior =  date.today()
-                fecha_anterior =  dia_hoy
+                fecha_anterior = dia_hoy
 
         for elemento in fechas_ordenadas:
-            fecha_actual = timezone.localtime( elemento.fecha_inicio ).date()  
-            #print( fecha_anterior , "-" , fecha_actual , '=' , fecha_anterior - fecha_actual == timedelta(days=1))
-            if fecha_anterior - fecha_actual == timedelta(days=1):
-                numero_racha += 1  
-                # print(numero_racha)
+            fecha_actual = timezone.localtime(elemento.fecha_inicio).date()
+            dia_semana_actual = fecha_actual.isoweekday()
+            
+            # Si el día actual no está seleccionado, continuamos con el siguiente
+            if dia_semana_actual not in dias_seleccionados:
+                continue
+                
+            # Calculamos la diferencia de días
+            diferencia_dias = (fecha_anterior - fecha_actual).days
+            
+            # Si la diferencia es 1, es un día consecutivo
+            if diferencia_dias == 1:
+                numero_racha += 1
             else:
-                if numero_racha == 0:
-                    racha_negativa = fecha_anterior - fecha_actual
-                    numero_racha = -racha_negativa.days
-                break  
+                # Si no es consecutivo, verificamos si hay días no seleccionados entre medio
+                dias_intermedios = []
+                for i in range(1, diferencia_dias):
+                    fecha_intermedia = fecha_anterior - timedelta(days=i)
+                    dia_semana_intermedio = fecha_intermedia.isoweekday()
+                    if dia_semana_intermedio in dias_seleccionados:
+                        dias_intermedios.append(fecha_intermedia)
+                
+                # Si hay días seleccionados faltantes, rompemos la racha
+                if dias_intermedios:
+                    if numero_racha == 0:
+                        racha_negativa = fecha_anterior - fecha_actual
+                        numero_racha = -racha_negativa.days
+                    break
+                else:
+                    # Si no hay días seleccionados faltantes, continuamos la racha
+                    numero_racha += 1
+                    
             fecha_anterior = fecha_actual
 
         return numero_racha
@@ -72,7 +93,8 @@ class Habito(models.Model):
             'objetivo': self.objetivo,
             'progresion': self.progresion,
             'archivado': int(self.archivado),
-            'racha': self.racha_dias()
+            'racha': self.racha_dias(),
+            'dias_seleccionados': self.dias_seleccionados
         }
         
     def totalMinutosHabitos(self):

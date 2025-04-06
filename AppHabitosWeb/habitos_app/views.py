@@ -36,32 +36,37 @@ def totalMinutosHistorialCompletadosHoy(lista):
 
             
 def totalMinutosHistorialHoy(listaHoy):
-    sumlistaHistorialHab = listaHoy.aggregate(total=Sum(F('work_time') * F('count')))
-    print(sumlistaHistorialHab)
-    if sumlistaHistorialHab['total'] != None:
-        duracionMinutos = sumlistaHistorialHab['total']
-        print(sumlistaHistorialHab)
-        print(type(sumlistaHistorialHab) )
-        horas = duracionMinutos // 60
-        minutos = duracionMinutos % 60
-        
-        return {
-                "Horas": horas,
-                "Minutos": minutos,
-                }
-    else:
-        return {
-                "Horas": 0,
-                "Minutos": 0,
-                }
+    total_minutos = 0
+    for habito in listaHoy:
+        total_minutos += habito.work_time * habito.count
+    
+    horas = total_minutos // 60
+    minutos = total_minutos % 60
+    
+    return {
+        "Horas": horas,
+        "Minutos": minutos,
+    }
 
 def listar_habitos(Usuario):
     # fecha_actual = date.today()
     listaHabitos = Usuario.listHabitos.all()
     print(listaHabitos)
     fecha_actual = timezone.now()
-    habitosenelhistorial_no_hoy = listaHabitos.exclude(listHabitoHistorial__fecha_inicio__date=fecha_actual).filter(archivado=False).order_by('orden_n')
-    habitosenelhistorial_hoy = listaHabitos.filter(listHabitoHistorial__fecha_inicio__date=fecha_actual, archivado=False).order_by('orden_n')
+    
+    # Obtener el día de la semana actual (1=Lunes, 7=Domingo)
+    dia_semana_actual = fecha_actual.isoweekday()
+    
+    # Filtrar hábitos que se deben mostrar hoy
+    habitos_hoy = []
+    for habito in listaHabitos:
+        dias_seleccionados = [int(d) for d in habito.dias_seleccionados.split(',')]
+        if dia_semana_actual in dias_seleccionados:
+            habitos_hoy.append(habito)
+    
+    # Separar hábitos hechos y no hechos hoy
+    habitosenelhistorial_no_hoy = [h for h in habitos_hoy if not h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual).exists() and not h.archivado]
+    habitosenelhistorial_hoy = [h for h in habitos_hoy if h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual).exists() and not h.archivado]
     habitosArchivado = listaHabitos.filter(archivado=True)
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
@@ -73,10 +78,9 @@ def listar_habitos(Usuario):
     
     varTotalTiempoHabitoHoyRestante = totalMinutosHistorialHoy(habitosenelhistorial_no_hoy)
     varTotalTiempoHabitoHoyCompletado = totalMinutosHistorialCompletadosHoy(listaHistorialHoy)
-    varNumeroTareasRestantes = habitosenelhistorial_no_hoy.count()
+    varNumeroTareasRestantes = len(habitosenelhistorial_no_hoy)
     
     context = {
-        
         'Habitos_por_hacer': habitos_No_hechos_hoy,
         'Habitos_hechos': habitos_hechos_hoy,
         'Tiempo_Restante_Hoy': varTotalTiempoHabitoHoyRestante,
@@ -184,40 +188,56 @@ def getHistorialHabitosBar(request, id_habito):
     return JsonResponse(context, safe=False )
 
 
-def guardar_formulario_Habito(request, id_habito):
-    
+def guardar_habito(request):
     if request.method == 'POST':
-        
-        objetoHabito = Habito.objects.get(id=id_habito)
-        datos = json.loads(request.body)
-       
-        numero_campo = datos['id']
-        nombre = str(datos['nombre']) 
-        work_time = datos['work_time']
-        short_break = datos['short_break']
-        count = datos['count']
-        campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
-        #orden_n = datos['orden_n']
-        color = datos['color']
-        objetivo = datos['objetivo']
+        data = json.loads(request.body)
+        print(data)
+        id = data.get('id')
+        nombre = data.get('nombre')
+        work_time = data.get('work_time')
+        short_break = data.get('short_break')
+        count = data.get('count')
+        type = data.get('type')
+        orden_n = data.get('orden_n')
+        color_hab = data.get('color')
+        archivado = data.get('archivado')
+        objetivo = data.get('objetivo')
+        dias_seleccionados = data.get('dias_seleccionados', '1,2,3,4,5,6,7')  # Valor por defecto si no se proporciona
 
-        objetoHabito.numero=numero_campo
-        objetoHabito.nombre=nombre
-        objetoHabito.work_time=work_time
-        objetoHabito.short_break=short_break
-        objetoHabito.count=count
-        objetoHabito.type=campo_type
-        #objetoHabito.orden_n=orden_n
-        objetoHabito.color=color
-        objetoHabito.objetivo=objetivo
-        
-        objetoHabito.save()
 
-        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
-    else:
-        return JsonResponse({'error': 'Se espera una solicitud POST'})
-    
-    
+
+        if id:
+            habito = Habito.objects.get(id=id)
+            habito.nombre = nombre
+            habito.work_time = work_time
+            habito.short_break = short_break
+            habito.count = count
+            habito.type = TiposHabitos.objects.get(numero=type)
+            habito.orden_n = orden_n
+            habito.color = color_hab
+            habito.archivado = archivado
+            habito.objetivo = objetivo
+            habito.dias_seleccionados = dias_seleccionados
+            habito.save()
+        else:
+            Habito.objects.create(
+                nombre=nombre,
+                work_time=work_time,
+                short_break=short_break,
+                count=count,
+                type=TiposHabitos.objects.get(numero=type),
+                orden_n=orden_n,
+                color=color_hab,
+                archivado=archivado,
+                objetivo=objetivo,
+                dias_seleccionados=dias_seleccionados,
+                fk_user=request.user
+            )
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'})
+
+
 def set_NewHabitoformHabito(request):
     
     if request.method == 'POST':

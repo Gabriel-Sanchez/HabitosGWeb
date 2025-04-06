@@ -8,7 +8,7 @@ urlpatterns = [
     path('getHistorialHabito/<id_habito>',views.getHistorialHabito, name='getHistorialHabito' ),
     path('getHistorialHabitosBar/<id_habito>',views.getHistorialHabito, name='getHistorialHabito' ),
     path('', views.home_habitos, name='habitos_home'),
-    path('set_formHabito/<id_habito>', views.guardar_formulario_Habito, name='guardar_formulario_Habito'),
+    #path('set_formHabito/<id_habito>', views.guardar_formulario_Habito, name='guardar_formulario_Habito'),
     path('set_NewHabitoformHabito/', views.set_NewHabitoformHabito, name='set_NewHabitoformHabito'),
     path('archivarHabito/<id_habito>', views.archivarHabito, name='archivarHabito'),
     path('getOneHistorial/<id_habito>', views.getOneHistorial, name='getOneHistorial'),
@@ -18,4 +18,6 @@ urlpatterns = [
     path('get_listHabitos_Sort/', views.get_listHabitos_Sort, name='get_listHabitos_Sort'),
     path('set_listHabitos_Sort/', views.set_listHabitos_Sort, name='set_listHabitos_Sort'),
     path('importarArchivos/', views.importarArchivos, name='importarArchivos'),
+    path('guardar_habito/', views.guardar_habito, name='guardar_habito'),
+    path('getHistorialHabito/<int:id_habito>', views.getHistorialHabito, name='getHistorialHabito'),
 ]
