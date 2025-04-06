@@ -299,28 +299,15 @@ function guardar_habito_json () {
 }
 
 function actualizar_listas (principal) {
-  // document.getElementById('miLista').innerHTML = ''
-  // let lista = document.getElementById('miLista')
-  // while(lista.firstChild){
-  //   lista.removeChild(lista.firstChild)
-  // }
-
   document.getElementById('miLista_hechos').innerHTML = ''
   document.getElementById('miLista_archivados').innerHTML = ''
 
   if (principal){
     console.log('se hara fetch', principal)
     fetch_lista_habitos(principal)
-  }else{
+  } else {
     fetch_lista_habitos()
   }
-
-  // llenar_lista_habitos('miLista_hechos', true, false)
-  // llenar_lista_habitos('miLista_archivados', false, true)
-  // llenar_lista_habitos('miLista_archivados', true, true)
-  // llenar_lista_habitos('miLista', false, false)
-  console.log('guardar')
-  eventos_lista_habitos()
 }
 
 
