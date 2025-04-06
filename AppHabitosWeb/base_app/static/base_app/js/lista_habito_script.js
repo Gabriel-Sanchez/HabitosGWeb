@@ -5,17 +5,25 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
   let lista = document.createDocumentFragment();
 
   // Ordenar los datos por orden_n antes de crear los elementos
-  data.sort((a, b) => a.orden_n - b.orden_n);
+  data.sort((a, b) => {
+    // Convertir a números para asegurar una comparación numérica correcta
+    const ordenA = parseInt(a.orden_n);
+    const ordenB = parseInt(b.orden_n);
+    return ordenA - ordenB;
+  });
+  
+  // Limpiar la lista existente antes de agregar nuevos elementos
+  lista_final.innerHTML = '';
   
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
     let li = document.createElement("li");
     li.classList.add('elemento_lista')
-    li.id = data[index].orden_n
+    li.id = element.orden_n
     
-    let objStr = JSON.stringify(data[index]);
+    let objStr = JSON.stringify(element);
     li.dataset.obj = objStr;
-    numero_racha_h = data[index].racha
+    numero_racha_h = element.racha
 
     let div_item_h = document.createElement('div')
     let div_botones = document.createElement('div')
@@ -28,7 +36,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     Nombre_habito.classList.add('titulo_habito')
     Nombre_habito_h1.classList.add('titulo_habito_texto')
     racha_habito_p.classList.add('racha_habito_texto')
-    let texto_nombre = document.createTextNode(data[index].nombre)
+    let texto_nombre = document.createTextNode(element.nombre)
     let texto_numero_racha = document.createTextNode( numero_racha_h)
     let span_racha = document.createElement("span");
     span_racha.style.webkitTextStroke = '.2px black'
@@ -47,10 +55,10 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     racha_habito_p.appendChild(span_racha)
 
     let boton_config = document.createElement("button")
-    boton_config.style.backgroundColor = data[index].color
+    boton_config.style.backgroundColor = element.color
     boton_config.classList.add('boton_config')
     Nombre_habito_h1.appendChild(texto_nombre)
-    Nombre_habito_h1.title = data[index].work_time
+    Nombre_habito_h1.title = element.work_time
     Nombre_habito.appendChild(Nombre_habito_h1)
     Nombre_habito.appendChild(racha_habito_p)
     div_item_h.appendChild(boton_config);
@@ -65,17 +73,17 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     document.body.append(botn_graf);
 
     // Asignar un valor al botón
-    botn.value = data[index];
-    botn_graf.value = data[index];
+    botn.value = element;
+    botn_graf.value = element;
     div_botones.appendChild(botn)
     div_botones.appendChild(botn_graf)
 
     div_color = document.createElement('div')
     div_color.classList.add('div_color_habito')
-    div_color.style.backgroundColor = data[index].color
+    div_color.style.backgroundColor = element.color
     div_botones.appendChild(div_color)
 
-    let objeto = data[index]
+    let objeto = element
 
     botn.classList.add('boton_habito')
     botn_graf.classList.add('boton_habito')
@@ -87,7 +95,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     
     div_item_h.classList.add('carta_lista')
     
-    if (data[index].type__numero == 1) {
+    if (element.type__numero == 1) {
       div_item_h.classList.add('item_habito')
       botn.classList.add('boton_pomodono')
       botn.innerHTML = '<i class="material-icons">alarm</i>';
@@ -101,7 +109,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
         // mientras
         // ipcRenderer.send('abrir-ventana-secundaria', objeto)
       })
-    } else if (data[index].type__numero == 2) {
+    } else if (element.type__numero == 2) {
       div_item_h.classList.add('item_habito_check')
       botn.classList.add('boton_checker')
       botn.innerHTML = '';
@@ -117,7 +125,7 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
         });
       })
 
-    } else if (data[index].type__numero == 3) {
+    } else if (element.type__numero == 3) {
       div_item_h.classList.add('item_habito_timer')
       botn.classList.add('boton_pomodono')
       botn.innerHTML = '<i class="material-icons">timer</i>';
@@ -145,7 +153,6 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
 
   }
 
-  lista_final.innerHTML = ''
   lista_final.appendChild(lista)
 }
 
