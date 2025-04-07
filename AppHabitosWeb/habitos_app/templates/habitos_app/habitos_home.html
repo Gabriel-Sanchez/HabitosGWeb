@@ -742,22 +742,14 @@
           }
 
           function saveNewListSort(){
-
             const ids = [];
             const elementos_all = document.getElementById('miLista_ParaOrdenar')
             const elementos_li = elementos_all.children
           
             for (let i = 0; i < elementos_li.length; i++) {
-              // const id = obj[i].id
-          
               const objStr = elementos_li[i].dataset.obj
-          
-              // Convertir la cadena de texto a un objeto
               const obj2 = JSON.parse(objStr)
-          
-              // const index = obj.findIndex(item => item.id === obj2.id)
-              // obj[index].orden_n = Number(array[i].id)
-               console.log(obj2.id, '-', obj2.nombre, '-' , i)
+              console.log(obj2.id, '-', obj2.nombre, '-' , i)
               ids.push(obj2.id);
             }
             
@@ -772,7 +764,7 @@
                     'X-CSRFToken': '{{csrf_token}}' 
                 },
                 body: JSON.stringify(ids)
-            } )
+            })
             .then(function(response){
                 if (!response.ok){
                     throw new Error('error')
@@ -780,35 +772,28 @@
                 return response.json()
             })
             .then(function(data){
-                // console.log(data)
-                // actualizar_listas()
-                // cambiarVentana('ventana1')
-          
-          
-                 // Guardar el nuevo array en el archivo JSON
-            // fs.writeFileSync('data.json', JSON.stringify(jsonData, null, 2), 'utf8')
-            //console.log('Registro archivado')
-            // cambiarVentana('ventana1')
-            
-            sortable.destroy();
-            elementos_all.innerHTML = ''
-            ventanalistas = document.getElementById('ventana1')
-            ventanaOrdenar = document.getElementById('ventana3')
-            ventanalistas.style.display = 'block'
-            ventanaOrdenar.style.display = 'none'
-            actualizar_listas(true)
-            sorteableActivado = !sorteableActivado
+                if (data.status === 'success') {
+                    // Destruir el sortable y limpiar la lista
+                    sortable.destroy();
+                    elementos_all.innerHTML = '';
+                    
+                    // Cambiar las ventanas
+                    ventanalistas = document.getElementById('ventana1')
+                    ventanaOrdenar = document.getElementById('ventana3')
+                    ventanalistas.style.display = 'block'
+                    ventanaOrdenar.style.display = 'none'
+                    
+                    // Actualizar el estado y recargar las listas
+                    sorteableActivado = !sorteableActivado
+                    fetch_lista_habitos(true)
+                } else {
+                    console.error('Error al guardar el orden:', data.message)
+                }
             })
-          
-           
-          }
-
-
-
-
-
-
-
+            .catch(function(error) {
+                console.error('Error:', error)
+            })
+        }
     </script>
 
 

@@ -4,17 +4,10 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
   let lista_final = document.getElementById(nombre_lista);
   let lista = document.createDocumentFragment();
 
-  // Ordenar los datos por orden_n antes de crear los elementos
-  data.sort((a, b) => {
-    // Convertir a números para asegurar una comparación numérica correcta
-    const ordenA = parseInt(a.orden_n);
-    const ordenB = parseInt(b.orden_n);
-    return ordenA - ordenB;
-  });
-  
   // Limpiar la lista existente antes de agregar nuevos elementos
   lista_final.innerHTML = '';
   
+  // Los datos ya vienen ordenados de fetch_lista_habitos
   for (let index = 0; index < data.length; index++) {
     const element = data[index];
     let li = document.createElement("li");
@@ -163,39 +156,46 @@ function graficos_display(){
 
 
 function fetch_lista_habitos(principal){
+    let url = '/habitos/getHabitosR/';
+    fetch(url)
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('La solicitud falló');
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        // Validar y normalizar los datos antes de mostrarlos
+        const normalizarDatos = (lista) => {
+            return lista.map(item => ({
+                ...item,
+                orden_n: typeof item.orden_n === 'number' ? item.orden_n : 0
+            })).sort((a, b) => {
+                const ordenA = parseInt(a.orden_n);
+                const ordenB = parseInt(b.orden_n);
+                return ordenA - ordenB;
+            });
+        };
 
-        let url = '/habitos/getHabitosR/';
-        fetch(url)
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error('La solicitud falló');
-            }
-            return response.json();
-        })
-        .then(function(data) {
-            // Maneja la respuesta exitosa
-            // let fragment = document.createDocumentFragment();
-            if (principal){
-              llenar_lista_habitos('miLista', false, false, data.Habitos_por_hacer)
-            }
-            llenar_lista_habitos('miLista_hechos', false, false, data.Habitos_hechos)
-            llenar_lista_habitos('miLista_archivados', false, true, data.ListaHArchivados)
+        // Normalizar y ordenar los datos para cada lista
+        if (principal) {
+            const habitosPorHacer = normalizarDatos(data.Habitos_por_hacer);
+            llenar_lista_habitos('miLista', false, false, habitosPorHacer);
+        }
+        
+        const habitosHechos = normalizarDatos(data.Habitos_hechos);
+        const habitosArchivados = normalizarDatos(data.ListaHArchivados);
+        
+        llenar_lista_habitos('miLista_hechos', false, false, habitosHechos);
+        llenar_lista_habitos('miLista_archivados', false, true, habitosArchivados);
 
-             // llenar_lista_habitos('miLista_hechos', true, false)
-            // llenar_lista_habitos('miLista_archivados', true, true)
-            // llenar_lista_habitos('miLista', false, false)
-
-
-            set_tiempo_restante_Hoy( data.Tiempo_Restante_Hoy)
-            set_numero_restante_Hoy( data.Numero_Restante_Hoy)
-            actualizar_horas_realizadas(data.Tiempo_completado_Hoy)
-            
-            // lista.appendChild(fragment)
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-        });
-
+        set_tiempo_restante_Hoy(data.Tiempo_Restante_Hoy);
+        set_numero_restante_Hoy(data.Numero_Restante_Hoy);
+        actualizar_horas_realizadas(data.Tiempo_completado_Hoy);
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+    });
 }   
 
 

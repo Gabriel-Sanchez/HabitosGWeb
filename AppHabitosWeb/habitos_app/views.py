@@ -50,7 +50,7 @@ def totalMinutosHistorialHoy(listaHoy):
 
 def listar_habitos(Usuario):
     # fecha_actual = date.today()
-    listaHabitos = Usuario.listHabitos.all()
+    listaHabitos = Usuario.listHabitos.all().order_by('orden_n')
     print(listaHabitos)
     fecha_actual = timezone.now()
     
@@ -67,7 +67,7 @@ def listar_habitos(Usuario):
     # Separar hábitos hechos y no hechos hoy
     habitosenelhistorial_no_hoy = [h for h in habitos_hoy if not h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual).exists() and not h.archivado]
     habitosenelhistorial_hoy = [h for h in habitos_hoy if h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual).exists() and not h.archivado]
-    habitosArchivado = listaHabitos.filter(archivado=True)
+    habitosArchivado = listaHabitos.filter(archivado=True).order_by('orden_n')
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
@@ -465,14 +465,16 @@ def set_listHabitos_Sort(request):
         # Crear una lista de los objetos Habito en el orden correcto
         habitos_ordenados = [habitos_dict[id] for id in habitos_ids]
 
+        # Actualizar el orden_n de manera secuencial
         for i, habito in enumerate(habitos_ordenados):
             habito.orden_n = i
 
+        # Actualizar todos los hábitos de una vez
         Habito.objects.bulk_update(habitos_ordenados, ['orden_n'])
             
-        return JsonResponse({'message': 'Datos recibidos correctamente'})
+        return JsonResponse({'message': 'Datos recibidos correctamente', 'status': 'success'})
     else:
-        return JsonResponse({'message': 'Esta vista solo acepta solicitudes POST'})
+        return JsonResponse({'message': 'Esta vista solo acepta solicitudes POST', 'status': 'error'})
 
 
 
