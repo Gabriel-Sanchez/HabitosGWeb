@@ -208,14 +208,35 @@
                     </select>
                     <div class="dias-seleccionados">
                         <label>Días de la semana:</label>
-                        <div class="dias-checkbox">
-                            <label><input type="checkbox" name="dias" value="1" checked> Lunes</label>
-                            <label><input type="checkbox" name="dias" value="2" checked> Martes</label>
-                            <label><input type="checkbox" name="dias" value="3" checked> Miércoles</label>
-                            <label><input type="checkbox" name="dias" value="4" checked> Jueves</label>
-                            <label><input type="checkbox" name="dias" value="5" checked> Viernes</label>
-                            <label><input type="checkbox" name="dias" value="6" checked> Sábado</label>
-                            <label><input type="checkbox" name="dias" value="7" checked> Domingo</label>
+                        <div class="dias-checkbox flex flex-wrap gap-2 mt-2">
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="1" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">L</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="2" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">M</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="3" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">X</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="4" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">J</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="5" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">V</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="6" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">S</span>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="checkbox" name="dias" value="7" checked class="peer sr-only">
+                                <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-checked:text-white bg-red-500 text-white font-bold transition-colors">D</span>
+                            </label>
                         </div>
                     </div>
                     <div id="colorPalette"></div>
