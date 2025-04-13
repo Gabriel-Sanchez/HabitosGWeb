@@ -231,9 +231,6 @@ function actualizar_horas_realizadas(horasCompletadas){
 function llenar_lista_habitosAOrdenar(nombre_lista, data) {
 
   return new Promise((resolve, reject) => {
-
-
-
   
   let lista = document.getElementById(nombre_lista);
   
@@ -249,114 +246,79 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
     li.dataset.obj = objStr;
     numero_racha_h = data[index].racha
 
+    let div_item_h = document.createElement('div')
+    let div_botones = document.createElement('div')
+    div_botones.classList.add('div_botones')
+    li.appendChild(div_item_h)
+    lista.appendChild(li);
+    let Nombre_habito = document.createElement('div')
+    let Nombre_habito_h1 = document.createElement('h1')
+    let racha_habito_p = document.createElement('h6')
+    Nombre_habito.classList.add('titulo_habito')
+    Nombre_habito_h1.classList.add('titulo_habito_texto')
+    racha_habito_p.classList.add('racha_habito_texto')
+    let texto_nombre = document.createTextNode(data[index].nombre)
 
+    let boton_config = document.createElement("button")
+    boton_config.style.backgroundColor = data[index].color
+    boton_config.classList.add('boton_config')
+    
+    // Agregar botón de editar
+    let boton_editar = document.createElement("button")
+    boton_editar.classList.add('boton_editar')
+    boton_editar.innerHTML = '<i class="material-icons">edit</i>'
+    boton_editar.title = 'Editar hábito'
+    
+    Nombre_habito_h1.appendChild(texto_nombre)
+    Nombre_habito_h1.title = data[index].work_time
+    Nombre_habito.appendChild(Nombre_habito_h1)
+    Nombre_habito.appendChild(racha_habito_p)
+    div_item_h.appendChild(boton_config)
+    div_item_h.appendChild(boton_editar) // Agregar botón de editar
+    div_item_h.appendChild(Nombre_habito)
+    
+    let botn = document.createElement("button")
+    let botn_graf = document.createElement("button")
+    document.body.append(botn)
+    div_item_h.appendChild(div_botones)
 
-      let div_item_h = document.createElement('div')
-      let div_botones = document.createElement('div')
-      div_botones.classList.add('div_botones')
-      li.appendChild(div_item_h)
-      lista.appendChild(li);
-      let Nombre_habito = document.createElement('div')
-      let Nombre_habito_h1 = document.createElement('h1')
-      let racha_habito_p = document.createElement('h6')
-      Nombre_habito.classList.add('titulo_habito')
-      Nombre_habito_h1.classList.add('titulo_habito_texto')
-      racha_habito_p.classList.add('racha_habito_texto')
-      let texto_nombre = document.createTextNode(data[index].nombre)
-      // let texto_numero_racha = document.createTextNode( numero_racha_h)
-      // racha_habito_p.appendChild(texto_numero_racha)
+    botn_graf.classList.add("boton_drag")
+    botn_graf.innerHTML = '<i class="material-icons">drag_indicator</i>'
 
-      let boton_config = document.createElement("button")
-      boton_config.style.backgroundColor = data[index].color
-      //boton_config.innerHTML = '<index class="material-icons">settings</index>';
-      boton_config.classList.add('boton_config')
-      Nombre_habito_h1.appendChild(texto_nombre)
-      Nombre_habito_h1.title = data[index].work_time
-      Nombre_habito.appendChild(Nombre_habito_h1)
-      Nombre_habito.appendChild(racha_habito_p)
-      div_item_h.appendChild(boton_config);
-      div_item_h.appendChild(Nombre_habito);
-      let botn = document.createElement("button")
-      let botn_graf = document.createElement("button")
+    botn.value = data[index]
+    botn_graf.value = data[index]
+    div_botones.appendChild(botn)
+    div_botones.appendChild(botn_graf)
 
+    div_color = document.createElement('div')
+    div_color.classList.add('div_color_habito')
+    div_color.style.backgroundColor = data[index].color
+    div_botones.appendChild(div_color)
 
-      document.body.append(botn);
-      div_item_h.appendChild(div_botones)
+    let objeto = data[index]
 
-      botn_graf.classList.add("boton_drag");
-      botn_graf.innerHTML = '<i class="material-icons">drag_indicator</i>';
-
-
-
-      // Asignar un valor al botón
-      botn.value = data[index];
-      botn_graf.value = data[index];
-      div_botones.appendChild(botn)
-      div_botones.appendChild(botn_graf)
-
-      div_color = document.createElement('div')
-      div_color.classList.add('div_color_habito')
-      div_color.style.backgroundColor = data[index].color
-      div_botones.appendChild(div_color)
-
-      let objeto = data[index]
-
-     // botn.classList.add('boton_habito')
-      botn_graf.classList.add('boton_habito')
-      
-      boton_config.addEventListener('click', function () {
-        configurar_habito(objeto)
-        cambiarVentana('ventana2')
-      })
-      
-      div_item_h.classList.add('carta_lista')
-      
-      if (data[index].type__numero == 1) {
-        div_item_h.classList.add('item_habito')
-        // botn.classList.add('boton_pomodono')
-        // botn.innerHTML = '<i class="material-icons">alarm</i>';
-        
-        // botn.addEventListener('click', function () {
-          
-        //   window.location.href = `/pomodoro/pomo_ven/${objeto.id}`;
-          
-          
-        //   console.log('a')
-        //   // mientras
-        //   // ipcRenderer.send('abrir-ventana-secundaria', objeto)
-        // })
-      } else {
-        div_item_h.classList.add('item_habito_check')
-        // botn.classList.add('boton_checker')
-        // botn.innerHTML = '';
-        // botn.innerHTML = '<i class="material-icons">check</i>';
-        // botn.addEventListener('click', function () {
-        //   console.log('Antes de agregar la clase oculto');
-        //   li.classList.add('oculto'); // Agrega la clase inmediatamente
-        //   console.log('Después de agregar la clase oculto');
-        //   requestAnimationFrame(() => {
-        //     registrar_Habitos_checker(objeto); // Llama al método después de renderizar
-        //     definir(objeto);
-        //   });
-        // })
-
-      }
-
-      // botn_graf.addEventListener('click', function () {
-
-      // definir(objeto)
-
-
-      
-      // generarGraficoDuracionPorAnio(objeto.id+'', objeto.objetivo);
-      // graficar_semana(objeto.id+'', objeto.objetivo);
-      // // mientras
-      
-      // //mostrar_flechas()
-      // })
-
-      }
-resolve()
+    botn_graf.classList.add('boton_habito')
+    
+    boton_config.addEventListener('click', function () {
+      configurar_habito(objeto)
+      cambiarVentana('ventana2')
     })
+    
+    // Agregar evento al botón de editar
+    boton_editar.addEventListener('click', function () {
+      configurar_habito(objeto)
+      cambiarVentana('ventana2')
+    })
+    
+    div_item_h.classList.add('carta_lista')
+    
+    if (data[index].type__numero == 1) {
+      div_item_h.classList.add('item_habito')
+    } else {
+      div_item_h.classList.add('item_habito_check')
+    }
+  }
+  resolve()
+  })
 }
 

@@ -103,6 +103,25 @@
   height: 47px;
 }
 
+.boton_editar {
+  height: 47px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 5px;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.boton_editar:hover {
+  color: #333;
+}
+
+.boton_editar i {
+  font-size: 20px;
+}
+
 ul{
     padding-left: 0;
 }
