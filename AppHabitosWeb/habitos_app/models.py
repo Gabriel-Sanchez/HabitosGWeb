@@ -12,6 +12,24 @@ class TiposHabitos(models.Model):
         return self.nombre
     
 
+class Tag(models.Model):
+    nombre = models.CharField(max_length=50, unique=True)
+    descripcion = models.CharField(max_length=200, blank=True, null=True)
+    color = models.CharField(max_length=7, default='#CCCCCC')
+    fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_tags', null=True)
+    
+    def __str__(self):
+        return self.nombre
+        
+    def obtener_valores(self):
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'descripcion': self.descripcion,
+            'color': self.color
+        }
+    
+
 class Habito(models.Model):
     numero = models.IntegerField()
     nombre = models.CharField(max_length=150)
@@ -26,6 +44,7 @@ class Habito(models.Model):
     archivado = models.BooleanField(default=False)
     fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listHabitos', null=True)
     dias_seleccionados = models.CharField(max_length=20, default='1,2,3,4,5,6,7')  # 1=Lunes, 7=Domingo
+    tags = models.ManyToManyField(Tag, related_name='habitos', blank=True)
     
     def __str__(self):
         return self.nombre + '-' + str(self.numero) 
@@ -81,6 +100,7 @@ class Habito(models.Model):
         return numero_racha
  
     def obtener_valores(self):
+        tag_list = [{"id": tag.id, "nombre": tag.nombre, "color": tag.color} for tag in self.tags.all()]
         return {
             'id': self.id,
             'type__numero': self.type.numero,
@@ -94,7 +114,8 @@ class Habito(models.Model):
             'progresion': self.progresion,
             'archivado': int(self.archivado),
             'racha': self.racha_dias(),
-            'dias_seleccionados': self.dias_seleccionados
+            'dias_seleccionados': self.dias_seleccionados,
+            'tags': tag_list
         }
         
     def totalMinutosHabitos(self):
@@ -173,7 +194,22 @@ class Historial_habitos(models.Model):
             'fecha': self.tranformarTimeZone(self.fecha_inicio).strftime('%Y-%m-%d'),
             'id_habito': self.fk_habito.id,
         }
-        
 
+
+class TagStats(models.Model):
+    """Modelo para almacenar estadísticas de tiempo por tags"""
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='stats')
+    fecha = models.DateField()
+    tiempo_total = models.DurationField(default=timedelta(0))
+    
+    class Meta:
+        unique_together = ('tag', 'fecha')
+        
+    def __str__(self):
+        return f"{self.tag.nombre} - {self.fecha} - {self.tiempo_total}"
+    
+    def tiempo_en_minutos(self):
+        return self.tiempo_total.total_seconds() / 60
+        
         
     

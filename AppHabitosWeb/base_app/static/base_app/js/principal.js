@@ -204,6 +204,17 @@ function cambiarVentana (id) {
 }
 
 function configurar_habito (valor) {
+  cambiarVentana('ventana2')
+  
+  document.getElementById('boton_borrar').style.display = 'inline'
+  if (valor.archivado === 0 || valor.archivado === '0'){
+    document.getElementById('archivar_borrar').style.display = 'inline'
+    document.getElementById('des_archivar_borrar').style.display = 'none'
+  } else {
+    document.getElementById('archivar_borrar').style.display = 'none'
+    document.getElementById('des_archivar_borrar').style.display = 'inline'
+  }
+  
   const titulo = document.getElementById('titulo_habito')
   titulo.innerText = valor.nombre
 
@@ -217,31 +228,39 @@ function configurar_habito (valor) {
   document.getElementById('color_hab').value = valor.color
   document.getElementById('archivado').value = valor.archivado
   document.getElementById('objetivo').value = valor.objetivo
+  
+  // Cargar los tags del hábito
+  if (valor.tags && Array.isArray(valor.tags)) {
+    selectedTagIds = valor.tags.map(tag => tag.id);
+    document.getElementById('tags_seleccionados').value = JSON.stringify(selectedTagIds);
+    actualizarTagsVisuales();
+  } else {
+    selectedTagIds = [];
+    document.getElementById('tags_seleccionados').value = '[]';
+    actualizarTagsVisuales();
+  }
 
-  // Configurar los días seleccionados
-  const diasSeleccionados = (valor.dias_seleccionados || '1,2,3,4,5,6,7').split(',')
-  const checkboxes = document.querySelectorAll('input[name="dias"]')
-  checkboxes.forEach(checkbox => {
-    checkbox.checked = diasSeleccionados.includes(checkbox.value)
-  })
+  // Establecer los días seleccionados
+  const diasSeleccionados = (valor.dias_seleccionados || '1,2,3,4,5,6,7').split(',');
+  // Desmarcar todos primero
+  document.querySelectorAll('input[name="dias"]').forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  // Marcar los que correspondan
+  diasSeleccionados.forEach(dia => {
+    const checkbox = document.querySelector(`input[name="dias"][value="${dia}"]`);
+    if (checkbox) checkbox.checked = true;
+  });
 
+  // Seleccionar el color en la paleta
   resetBorderColorsHabit(valor.color)
-
-  console.log(valor.orden_n)
-
+  
   const button = document.getElementById('boton_agregar')
   button.onclick = function () {
     guardar_habito_json()
   }
-
-  document.getElementById('boton_borrar').style.display = 'block'
-  if (valor.archivado){
-    document.getElementById('des_archivar_borrar').style.display = 'block'
-    document.getElementById('archivar_borrar').style.display = 'none'
-  }else{
-    document.getElementById('des_archivar_borrar').style.display = 'none'
-    document.getElementById('archivar_borrar').style.display = 'block'
-  }
+  
+  console.log(valor.orden_n)
 }
 
 function guardar_habito_json () {
@@ -255,6 +274,7 @@ function guardar_habito_json () {
   const color_hab = document.getElementById('color_hab').value
   const archivado = document.getElementById('archivado').value
   const objetivo = document.getElementById('objetivo').value
+  const tags_seleccionados = JSON.parse(document.getElementById('tags_seleccionados').value || '[]')
 
   // Obtener los días seleccionados
   const diasSeleccionados = Array.from(document.querySelectorAll('input[name="dias"]:checked'))
@@ -272,7 +292,8 @@ function guardar_habito_json () {
     color_hab: color_hab,
     archivado: archivado,
     objetivo: objetivo,
-    dias_seleccionados: diasSeleccionados
+    dias_seleccionados: diasSeleccionados,
+    tags: tags_seleccionados
   }
 
   fetch('/habitos/guardar_habito/', {
@@ -327,6 +348,11 @@ function configurar_habito_nuevo () {
   document.getElementById('color_hab').value = ''
   document.getElementById('archivado').value = ''
   document.getElementById('objetivo').value = ''
+  
+  // Inicializar los tags
+  selectedTagIds = [];
+  document.getElementById('tags_seleccionados').value = '[]';
+  actualizarTagsVisuales();
 
   resetBorderColorsHabit('none')
 
@@ -582,3 +608,51 @@ document.querySelector('.dropbtn').addEventListener('click', function() {
   
   console.log('click')
 });
+
+function agregar_Nuevo_habito_js () {
+  const numero_campo = Math.floor(Math.random() * 1000)
+  const nombre_campo = document.getElementById('nombre').value
+  const work_time_campo = document.getElementById('work_time').value
+  const short_break_campo = document.getElementById('short_break').value
+  const count_campo = document.getElementById('count').value
+  const type_campo = document.getElementById('type').value
+  const color_campo = document.getElementById('color_hab').value
+  const objetivo_campo = document.getElementById('objetivo').value
+  const tags_seleccionados = JSON.parse(document.getElementById('tags_seleccionados').value || '[]')
+  
+  // Obtener los días seleccionados
+  const diasSeleccionados = Array.from(document.querySelectorAll('input[name="dias"]:checked'))
+    .map(checkbox => checkbox.value)
+    .join(',')
+
+  const data = {
+    id: numero_campo,
+    nombre: nombre_campo,
+    work_time: work_time_campo,
+    short_break: short_break_campo,
+    count: count_campo,
+    type: type_campo,
+    color: color_campo,
+    objetivo: objetivo_campo,
+    dias_seleccionados: diasSeleccionados,
+    tags: tags_seleccionados
+  }
+
+  fetch('/habitos/set_NewHabitoformHabito/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data)
+      actualizar_listas(true)
+      cambiarVentana('ventana1')
+    })
+    .catch((error) => {
+      console.error('Error:', error)
+    })
+}

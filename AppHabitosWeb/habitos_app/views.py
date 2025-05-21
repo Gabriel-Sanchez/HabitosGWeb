@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Habito, Historial_habitos, TiposHabitos
+from .models import Habito, Historial_habitos, TiposHabitos, Tag, TagStats
 from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
@@ -105,39 +105,42 @@ def home_habitos(request):
 
 def check_habito(request, habito):
     
-    objeto_habito = Habito.objects.get(id = habito)
-    # fecha_actual = datetime.now()
-    fecha_actual = timezone.now()
-    
-    duracion_campo = timedelta(hours=0, minutes=objeto_habito.work_time, seconds=0)
-    descanso_campo = timedelta(hours=0, minutes=0, seconds=0)
-    
-    # fecha_hora_fin = timezone.make_aware(datetime.strptime(f'{csv_fecha} {csv_end_timer}', '%Y-%m-%d %H:%M:%S'))
-    hayHistorial = Historial_habitos.objects.filter(fk_habito=objeto_habito, fecha_inicio__date = fecha_actual)
-    if hayHistorial:
-        elHistorial = hayHistorial.first()
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        print(datos)
+        id_habito = habito
         
-        oldDuracion = elHistorial.duracion
-        newDuracion = duracion_campo
-        finishduracion = oldDuracion + newDuracion
+        habitoAcompletar = Habito.objects.get(id= id_habito)
+        print('habitoAcompletar')
+        print(habitoAcompletar)
+        fechaInicio = timezone.make_aware(datetime.strptime(datos['fechaInicio'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+        print('fechaInicio')
+        print(fechaInicio)
+        fechaFin = timezone.make_aware(datetime.strptime(datos['fechaFin'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+        print('fechaFin')
+        print(fechaFin)
+        duracion = fechaFin - fechaInicio
+        print('duracion')
+        print(duracion)
+        duracionDescanso = timedelta(minutes=datos['duracionDescanso'])
+        print('duracionDescanso')
+        print(duracionDescanso)
         
-        elHistorial.duracion = finishduracion
-        elHistorial.save()
+        Historial_habitos.objects.create(
+            fk_habito_id=id_habito, 
+            fecha_inicio=fechaInicio, 
+            fecha_fin=fechaFin, 
+            duracion=duracion, 
+            duracion_descanso=duracionDescanso, 
+            )
+        
+        # Actualizar estadísticas de tag
+        fecha_local = timezone.localtime(fechaInicio).date()
+        actualizar_estadisticas_tag(habitoAcompletar, duracion, fecha_local)
+        
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
-        
-        Historial_habitos.objects.create(    
-                                        fk_habito = objeto_habito,
-                                            fecha_inicio = fecha_actual,
-                                            fecha_fin = fecha_actual,
-                                            duracion = duracion_campo,
-                                            duracion_descanso = descanso_campo
-        )
-    
-    # print(habito)
-    context = {
-        'mensaje': 'bien'
-    }
-    return JsonResponse(context, safe=False)
+        return JsonResponse({'error': 'Se espera una solicitud POST'})
 
 
 def getHabitosOnly(request):
@@ -203,6 +206,7 @@ def guardar_habito(request):
         archivado = data.get('archivado')
         objetivo = data.get('objetivo')
         dias_seleccionados = data.get('dias_seleccionados', '1,2,3,4,5,6,7')  # Valor por defecto si no se proporciona
+        tag_ids = data.get('tags', [])  # Lista de IDs de tags
 
 
 
@@ -219,8 +223,14 @@ def guardar_habito(request):
             habito.objetivo = objetivo
             habito.dias_seleccionados = dias_seleccionados
             habito.save()
+            
+            # Actualizar tags
+            habito.tags.clear()
+            if tag_ids:
+                tags = Tag.objects.filter(id__in=tag_ids)
+                habito.tags.add(*tags)
         else:
-            Habito.objects.create(
+            habito = Habito.objects.create(
                 nombre=nombre,
                 work_time=work_time,
                 short_break=short_break,
@@ -233,6 +243,11 @@ def guardar_habito(request):
                 dias_seleccionados=dias_seleccionados,
                 fk_user=request.user
             )
+            
+            # Agregar tags al nuevo hábito
+            if tag_ids:
+                tags = Tag.objects.filter(id__in=tag_ids)
+                habito.tags.add(*tags)
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
@@ -251,6 +266,7 @@ def set_NewHabitoformHabito(request):
         campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
         color = datos['color']
         objetivo = datos['objetivo']
+        tag_ids = datos.get('tags', [])  # Lista de IDs de tags
         
         ultimo_valor_mas_alto = Habito.objects.aggregate(max_valor_mas_alto=Max('orden_n'))['max_valor_mas_alto']
         if ultimo_valor_mas_alto is None:
@@ -270,6 +286,11 @@ def set_NewHabitoformHabito(request):
             objetivo=objetivo,
             fk_user=request.user
         )
+        
+        # Agregar tags al nuevo hábito
+        if tag_ids:
+            tags = Tag.objects.filter(id__in=tag_ids)
+            habito.tags.add(*tags)
 
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
@@ -617,3 +638,145 @@ def importarArchivos(request):
         #     print(row)
 
     return render(request,'habitos_app/form_archivos.html')
+
+# Nuevas vistas para la gestión de tags
+
+def get_tags(request):
+    """Obtener todos los tags del usuario actual"""
+    if request.user.is_authenticated:
+        tags = Tag.objects.filter(fk_user=request.user)
+        tags_list = [tag.obtener_valores() for tag in tags]
+        return JsonResponse({'tags': tags_list})
+    return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+
+def crear_tag(request):
+    """Crear un nuevo tag"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            data = json.loads(request.body)
+            nombre = data.get('nombre')
+            descripcion = data.get('descripcion', '')
+            color = data.get('color', '#CCCCCC')
+            
+            tag = Tag.objects.create(
+                nombre=nombre,
+                descripcion=descripcion,
+                color=color,
+                fk_user=request.user
+            )
+            
+            return JsonResponse({'status': 'success', 'tag': tag.obtener_valores()})
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+def editar_tag(request, tag_id):
+    """Editar un tag existente"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            data = json.loads(request.body)
+            nombre = data.get('nombre')
+            descripcion = data.get('descripcion', '')
+            color = data.get('color', '#CCCCCC')
+            
+            try:
+                tag = Tag.objects.get(id=tag_id, fk_user=request.user)
+                tag.nombre = nombre
+                tag.descripcion = descripcion
+                tag.color = color
+                tag.save()
+                
+                return JsonResponse({'status': 'success', 'tag': tag.obtener_valores()})
+            except Tag.DoesNotExist:
+                return JsonResponse({'error': 'Tag no encontrado'}, status=404)
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+def eliminar_tag(request, tag_id):
+    """Eliminar un tag"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                tag = Tag.objects.get(id=tag_id, fk_user=request.user)
+                tag.delete()
+                return JsonResponse({'status': 'success'})
+            except Tag.DoesNotExist:
+                return JsonResponse({'error': 'Tag no encontrado'}, status=404)
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+def get_habitos_por_tag(request, tag_id):
+    """Obtener todos los hábitos asociados a un tag específico"""
+    if request.user.is_authenticated:
+        try:
+            tag = Tag.objects.get(id=tag_id, fk_user=request.user)
+            habitos = tag.habitos.filter(fk_user=request.user)
+            habitos_list = [habito.obtener_valores() for habito in habitos]
+            return JsonResponse({'habitos': habitos_list, 'tag': tag.obtener_valores()})
+        except Tag.DoesNotExist:
+            return JsonResponse({'error': 'Tag no encontrado'}, status=404)
+    return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+
+def get_estadisticas_tag(request, tag_id):
+    """Obtener estadísticas de tiempo por tag"""
+    if request.user.is_authenticated:
+        try:
+            tag = Tag.objects.get(id=tag_id, fk_user=request.user)
+            habitos = tag.habitos.filter(fk_user=request.user)
+            
+            # Estadísticas generales
+            total_tiempo = timedelta(0)
+            total_sesiones = 0
+            
+            historial_por_fecha = {}
+            
+            for habito in habitos:
+                historial = Historial_habitos.objects.filter(fk_habito=habito)
+                for registro in historial:
+                    total_tiempo += registro.duracion
+                    total_sesiones += 1
+                    
+                    fecha_str = registro.tranformarTimeZone(registro.fecha_inicio).strftime('%Y-%m-%d')
+                    if fecha_str not in historial_por_fecha:
+                        historial_por_fecha[fecha_str] = timedelta(0)
+                    historial_por_fecha[fecha_str] += registro.duracion
+            
+            # Convertir a formato presentable
+            tiempo_total_segundos = total_tiempo.total_seconds()
+            horas = int(tiempo_total_segundos // 3600)
+            minutos = int((tiempo_total_segundos % 3600) // 60)
+            
+            # Convertir historial por fecha a minutos para visualización
+            historial_formato = [
+                {'fecha': fecha, 'minutos': round(duracion.total_seconds() / 60, 1)}
+                for fecha, duracion in historial_por_fecha.items()
+            ]
+            
+            # Ordenar por fecha
+            historial_formato.sort(key=lambda x: x['fecha'])
+            
+            return JsonResponse({
+                'tag': tag.obtener_valores(),
+                'estadisticas': {
+                    'tiempo_total': {
+                        'horas': horas,
+                        'minutos': minutos
+                    },
+                    'sesiones_total': total_sesiones,
+                    'historial': historial_formato
+                }
+            })
+        except Tag.DoesNotExist:
+            return JsonResponse({'error': 'Tag no encontrado'}, status=404)
+    return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+
+# Actualizar estadísticas de tag después de registrar un hábito
+def actualizar_estadisticas_tag(habito, duracion, fecha):
+    """Actualizar las estadísticas de tags después de registrar un hábito"""
+    if habito.tags.exists():
+        for tag in habito.tags.all():
+            tag_stat, created = TagStats.objects.get_or_create(
+                tag=tag,
+                fecha=fecha
+            )
+            tag_stat.tiempo_total += duracion
+            tag_stat.save()

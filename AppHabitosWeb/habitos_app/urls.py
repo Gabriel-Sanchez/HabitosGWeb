@@ -20,4 +20,12 @@ urlpatterns = [
     path('importarArchivos/', views.importarArchivos, name='importarArchivos'),
     path('guardar_habito/', views.guardar_habito, name='guardar_habito'),
     path('getHistorialHabito/<int:id_habito>', views.getHistorialHabito, name='getHistorialHabito'),
+    
+    # URLs de tags
+    path('tags/', views.get_tags, name='get_tags'),
+    path('tags/crear/', views.crear_tag, name='crear_tag'),
+    path('tags/editar/<int:tag_id>/', views.editar_tag, name='editar_tag'),
+    path('tags/eliminar/<int:tag_id>/', views.eliminar_tag, name='eliminar_tag'),
+    path('tags/<int:tag_id>/habitos/', views.get_habitos_por_tag, name='get_habitos_por_tag'),
+    path('tags/<int:tag_id>/estadisticas/', views.get_estadisticas_tag, name='get_estadisticas_tag'),
 ]
