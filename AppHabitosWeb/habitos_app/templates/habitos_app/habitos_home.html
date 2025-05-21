@@ -193,6 +193,10 @@
                     <input class="imput_form" type="hidden" id="id" name="id">
                     <input class="imput_form" type="hidden" id="orden_n" name="orden_n">
                     <input class="imput_form" type="text" id="nombre" name="nombre">
+                    
+                    <label for="comentarios">Comentarios:</label>
+                    <textarea class="imput_form" id="comentarios" name="comentarios" rows="3" placeholder="Agrega detalles sobre este hábito..."></textarea>
+                    
                     <label for="work_time">Work Time:</label>
                     <input class="imput_form" type="number" id="work_time" name="work_time">
                     <label for="short_break">Short Break:</label>
@@ -641,6 +645,7 @@ function getCookie(name) {
         var datos = {
           id: Number(document.getElementById('id').value),
           nombre: document.getElementById('nombre').value,
+          comentarios: document.getElementById('comentarios').value,
           work_time: Number(document.getElementById('work_time').value),
           short_break: Number(document.getElementById('short_break').value),
           count: Number(document.getElementById('count').value),
@@ -685,6 +690,7 @@ function getCookie(name) {
         var datos = {
           id: Number(document.getElementById('id').value),
           nombre: document.getElementById('nombre').value,
+          comentarios: document.getElementById('comentarios').value,
           work_time: Number(document.getElementById('work_time').value),
           short_break: Number(document.getElementById('short_break').value),
           count: Number(document.getElementById('count').value),

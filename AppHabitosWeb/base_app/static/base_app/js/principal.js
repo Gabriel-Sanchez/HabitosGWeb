@@ -220,6 +220,7 @@ function configurar_habito (valor) {
 
   document.getElementById('id').value = valor.id
   document.getElementById('nombre').value = valor.nombre
+  document.getElementById('comentarios').value = valor.comentarios || ''
   document.getElementById('work_time').value = valor.work_time
   document.getElementById('short_break').value = valor.short_break
   document.getElementById('count').value = valor.count
@@ -266,6 +267,7 @@ function configurar_habito (valor) {
 function guardar_habito_json () {
   const id = document.getElementById('id').value
   const nombre = document.getElementById('nombre').value
+  const comentarios = document.getElementById('comentarios').value
   const work_time = document.getElementById('work_time').value
   const short_break = document.getElementById('short_break').value
   const count = document.getElementById('count').value
@@ -284,6 +286,7 @@ function guardar_habito_json () {
   const data = {
     id: id,
     nombre: nombre,
+    comentarios: comentarios,
     work_time: work_time,
     short_break: short_break,
     count: count,
@@ -340,6 +343,7 @@ function configurar_habito_nuevo () {
 
   document.getElementById('id').value = ''
   document.getElementById('nombre').value = ''
+  document.getElementById('comentarios').value = ''
   document.getElementById('work_time').value = ''
   document.getElementById('short_break').value = ''
   document.getElementById('count').value = ''
@@ -612,6 +616,7 @@ document.querySelector('.dropbtn').addEventListener('click', function() {
 function agregar_Nuevo_habito_js () {
   const numero_campo = Math.floor(Math.random() * 1000)
   const nombre_campo = document.getElementById('nombre').value
+  const comentarios_campo = document.getElementById('comentarios').value
   const work_time_campo = document.getElementById('work_time').value
   const short_break_campo = document.getElementById('short_break').value
   const count_campo = document.getElementById('count').value
@@ -628,6 +633,7 @@ function agregar_Nuevo_habito_js () {
   const data = {
     id: numero_campo,
     nombre: nombre_campo,
+    comentarios: comentarios_campo,
     work_time: work_time_campo,
     short_break: short_break_campo,
     count: count_campo,

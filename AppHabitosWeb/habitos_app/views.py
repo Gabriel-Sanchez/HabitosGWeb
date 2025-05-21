@@ -197,6 +197,7 @@ def guardar_habito(request):
         print(data)
         id = data.get('id')
         nombre = data.get('nombre')
+        comentarios = data.get('comentarios', '')
         work_time = data.get('work_time')
         short_break = data.get('short_break')
         count = data.get('count')
@@ -208,11 +209,10 @@ def guardar_habito(request):
         dias_seleccionados = data.get('dias_seleccionados', '1,2,3,4,5,6,7')  # Valor por defecto si no se proporciona
         tag_ids = data.get('tags', [])  # Lista de IDs de tags
 
-
-
         if id:
             habito = Habito.objects.get(id=id)
             habito.nombre = nombre
+            habito.comentarios = comentarios
             habito.work_time = work_time
             habito.short_break = short_break
             habito.count = count
@@ -232,6 +232,7 @@ def guardar_habito(request):
         else:
             habito = Habito.objects.create(
                 nombre=nombre,
+                comentarios=comentarios,
                 work_time=work_time,
                 short_break=short_break,
                 count=count,
@@ -260,6 +261,7 @@ def set_NewHabitoformHabito(request):
        
         numero_campo = datos['id']
         nombre = str(datos['nombre']) 
+        comentarios = datos.get('comentarios', '')
         work_time = datos['work_time']
         short_break = datos['short_break']
         count = datos['count']
@@ -277,6 +279,7 @@ def set_NewHabitoformHabito(request):
         habito = Habito.objects.create(
             numero=numero_campo,
             nombre=nombre,
+            comentarios=comentarios,
             work_time=work_time,
             short_break=short_break,
             count=count,

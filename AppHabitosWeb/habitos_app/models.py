@@ -33,6 +33,7 @@ class Tag(models.Model):
 class Habito(models.Model):
     numero = models.IntegerField()
     nombre = models.CharField(max_length=150)
+    comentarios = models.TextField(blank=True, null=True)
     work_time = models.IntegerField()
     short_break = models.IntegerField()
     count = models.IntegerField()
@@ -105,6 +106,7 @@ class Habito(models.Model):
             'id': self.id,
             'type__numero': self.type.numero,
             'nombre': self.nombre,
+            'comentarios': self.comentarios or '',
             'work_time': self.work_time,
             'short_break': self.short_break,
             'count': self.count,
