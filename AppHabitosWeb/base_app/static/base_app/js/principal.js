@@ -175,23 +175,38 @@ function registrar_Habitos_checker(habito_obj) {
   console.log(habito_obj)
   id_habito = habito_obj.id + ''
 
+  const fechaInicio = new Date()
+  const fechaFin = new Date()
+  const duracionDescanso = 0
+
+  const datos = {
+    fechaInicio: fechaInicio.toISOString(),
+    fechaFin: fechaFin.toISOString(),
+    duracionDescanso: duracionDescanso
+  }
+
   var url = `/habitos/setHistory/${habito_obj.id}`
 
-  fetch(url)
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify(datos)
+  })
   .then(function(response){
-
     if (!response.ok) {
       throw new Error('fallo')
     }
-
     return response.json()
-
   })
   .then(function(data){
-
     console.log(data)
     actualizar_listas()
-
+  })
+  .catch(function(error) {
+    console.error('Error:', error)
   })
 }
 
