@@ -1,0 +1,24 @@
+.tags-selection {
+    margin: 10px 0;
+}
+
+.tags-selection label {
+    display: inline-block;
+    margin: 4px;
+}
+
+.tags-selection span {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tags-selection input[type="checkbox"]:checked + span {
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Rest of existing CSS */ 

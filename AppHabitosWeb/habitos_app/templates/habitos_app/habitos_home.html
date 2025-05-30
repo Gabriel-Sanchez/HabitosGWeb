@@ -211,17 +211,18 @@
                         <option value="2">Checker</option>
                         <option value="3">StopWatch</option>
                     </select>
-                    
-                    <label for="tags">Tags:</label>
-                    <div class="tags-container">
+                    <div class="tags-section mt-4">
+                        <label>Tags:</label>
                         <div id="selected-tags" class="flex flex-wrap gap-2 mt-2">
-                            <!-- Aquí se mostrarán los tags seleccionados -->
+                            <!-- Selected tags will be displayed here -->
                         </div>
                         <div class="flex items-center mt-2">
-                            <button type="button" class="bg-blue-500 text-white px-2 py-1 rounded text-sm" onclick="mostrarVentanaGestionTags()">Gestionar Tags</button>
+                            <button type="button" class="bg-blue-500 text-white px-2 py-1 rounded text-sm" onclick="mostrarVentanaGestionTags()">
+                                Gestionar Tags
+                            </button>
                         </div>
+                        <input type="hidden" id="tags_seleccionados" name="tags_seleccionados" value="[]">
                     </div>
-                    
                     <div class="dias-seleccionados">
                         <label>Días de la semana:</label>
                         <div class="dias-checkbox flex flex-wrap gap-2 mt-2">
@@ -258,7 +259,6 @@
                     <div id="colorPalette"></div>
                     <input class="imput_form" type="hidden" id="color_hab" name="color_hab">
                     <input class="imput_form" type="hidden" id="archivado" name="archivado">
-                    <input class="imput_form" type="hidden" id="tags_seleccionados" name="tags_seleccionados" value="[]">
                     <button id="boton_agregar" onclick="guardar_habito_json()">Guardar</button>
                 </div>
             </div>
@@ -288,10 +288,9 @@
                 <label for="tag_descripcion">Descripción:</label>
                 <input class="imput_form" type="text" id="tag_descripcion" name="tag_descripcion">
                 <label for="tag_color">Color:</label>
-                <div id="tag_colorPalette" class="mt-2"></div>
-                <input class="imput_form" type="hidden" id="tag_color" name="tag_color" value="#CCCCCC">
+                <input class="imput_form" type="color" id="tag_color" name="tag_color" value="#CCCCCC">
                 <div class="flex gap-2 mt-3">
-                    <button id="btn-guardar-tag" onclick="guardarTag()">Guardar</button>
+                    <button onclick="guardarTag()">Guardar</button>
                     <button onclick="cancelarFormularioTag()">Cancelar</button>
                 </div>
             </div>
@@ -641,7 +640,6 @@ function getCookie(name) {
 
 <script>
     function guardar_habito_json () {
-
         var datos = {
           id: Number(document.getElementById('id').value),
           nombre: document.getElementById('nombre').value,
@@ -657,7 +655,7 @@ function getCookie(name) {
           dias_seleccionados: Array.from(document.querySelectorAll('input[name="dias"]:checked'))
             .map(checkbox => checkbox.value)
             .join(','),
-          tags_seleccionados: document.getElementById('tags_seleccionados').value
+          tags: JSON.parse(document.getElementById('tags_seleccionados').value || '[]')
       };
       
       url = '/habitos/guardar_habito/'
@@ -915,3 +913,36 @@ function getCookie(name) {
     
   
 {% endblock script %}
+
+<!-- Add this before the closing body tag -->
+<div id="ventanaGestionTags" class="ventana" style="display: none;">
+    <div class="botones_superior">
+        <button class="material-icons" onclick="cerrarVentanaGestionTags()">arrow_back</button>
+        <button class="material-icons" onclick="mostrarFormularioTag()">add</button>
+    </div>
+    <h2>Gestión de Tags</h2>
+    
+    <!-- Formulario para crear/editar tags -->
+    <div id="form-tag" style="display: none;" class="contenedor_formulario text-black">
+        <h3 id="titulo-form-tag">Crear nuevo tag</h3>
+        <input type="hidden" id="tag_id" name="tag_id">
+        <label for="tag_nombre">Nombre:</label>
+        <input class="imput_form" type="text" id="tag_nombre" name="tag_nombre">
+        <label for="tag_descripcion">Descripción:</label>
+        <input class="imput_form" type="text" id="tag_descripcion" name="tag_descripcion">
+        <label for="tag_color">Color:</label>
+        <input class="imput_form" type="color" id="tag_color" name="tag_color" value="#CCCCCC">
+        <div class="flex gap-2 mt-3">
+            <button onclick="guardarTag()">Guardar</button>
+            <button onclick="cancelarFormularioTag()">Cancelar</button>
+        </div>
+    </div>
+    
+    <!-- Lista de tags disponibles -->
+    <div id="lista-tags" class="mt-4">
+        <h3>Tags disponibles</h3>
+        <div id="tags-container" class="flex flex-wrap gap-2 mt-2">
+            <!-- Los tags se cargarán dinámicamente aquí -->
+        </div>
+    </div>
+</div>
