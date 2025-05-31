@@ -176,8 +176,10 @@ function registrar_Habitos_checker(habito_obj) {
   id_habito = habito_obj.id + ''
 
   const fechaInicio = new Date()
-  const fechaFin = new Date()
-  const duracionDescanso = 0
+  // Set fechaFin to be work_time minutes after fechaInicio
+  const fechaFin = new Date(fechaInicio.getTime() + (habito_obj.work_time * 60 * 1000))
+  // Send short_break as minutes for duracionDescanso
+  const duracionDescanso = Number(habito_obj.short_break)
 
   const datos = {
     fechaInicio: fechaInicio.toISOString(),
