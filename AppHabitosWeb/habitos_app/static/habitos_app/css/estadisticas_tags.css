@@ -44,24 +44,43 @@
     background: transparent !important;
 }
 
-.filter-group select {
-    border: 2px solid var(--mi-color-terciario);
-    border-radius: 8px;
-    padding: 8px 12px;
-    transition: all 0.3s ease;
-    background-color: rgb(28, 29, 40) !important;
-    color: #f0f8ff !important;
+/* FORZAR ESTILOS ESPECÍFICOS PARA LOS DROPDOWNS */
+#ventana5 .filter-group select,
+#ventana5 #tag-filter,
+#ventana5 #periodo-filter {
+    border: 2px solid var(--mi-color-terciario) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    transition: all 0.3s ease !important;
+    background-color: #ffffff !important; /* Fondo completamente blanco */
+    color: #000000 !important; /* Texto completamente negro */
+    font-weight: 500 !important;
 }
 
-.filter-group select:focus {
-    border-color: var(--mi-color-secundario);
-    box-shadow: 0 0 0 3px rgba(73, 201, 79, 0.3);
-    outline: none;
+#ventana5 .filter-group select:focus,
+#ventana5 #tag-filter:focus,
+#ventana5 #periodo-filter:focus {
+    border-color: var(--mi-color-secundario) !important;
+    box-shadow: 0 0 0 3px rgba(73, 201, 79, 0.3) !important;
+    outline: none !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 
-.filter-group select option {
-    background-color: rgb(28, 29, 40) !important;
-    color: #f0f8ff !important;
+/* FORZAR ESTILOS PARA LAS OPCIONES DEL DROPDOWN */
+#ventana5 .filter-group select option,
+#ventana5 #tag-filter option,
+#ventana5 #periodo-filter option {
+    background-color: #ffffff !important; /* Fondo blanco para opciones */
+    color: #000000 !important; /* Texto negro para opciones */
+    font-weight: 500 !important;
+}
+
+/* ASEGURAR QUE NO HAYA INTERFERENCIAS */
+#ventana5 select,
+#ventana5 select * {
+    background: #ffffff !important;
+    color: #000000 !important;
 }
 
 /* Tarjetas de resumen - COLOR DEL HOVER ORIGINAL COMO PERMANENTE */
