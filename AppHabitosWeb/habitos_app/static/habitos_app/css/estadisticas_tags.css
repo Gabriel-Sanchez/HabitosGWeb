@@ -1,0 +1,380 @@
+/**
+ * Estilos para la ventana de estadísticas por tags
+ * Ventana completamente nueva que oculta el contenido principal
+ */
+
+/* Ventana principal de estadísticas - VENTANA NUEVA COMPLETA */
+#ventana5 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(52, 53, 65) !important; /* Fondo sólido que cubre todo */
+    color: #f0f8ff !important;
+    z-index: 9999; /* Z-index muy alto para estar por encima de todo */
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* Asegurar que TODO el contenido de ventana5 sea oscuro */
+#ventana5 * {
+    background-color: transparent !important;
+    color: #f0f8ff !important;
+}
+
+/* Filtros - FONDO OSCURO FORZADO */
+.filtros-estadisticas {
+    background: rgb(35, 36, 48) !important;
+    border-radius: 12px;
+    border: 2px solid var(--mi-color-cuaternario);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 16px !important;
+    margin-bottom: 2rem !important;
+}
+
+.filter-group {
+    min-width: 150px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #f0f8ff !important;
+    background: transparent !important;
+}
+
+.filter-group select {
+    border: 2px solid var(--mi-color-terciario);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+    background-color: rgb(28, 29, 40) !important;
+    color: #f0f8ff !important;
+}
+
+.filter-group select:focus {
+    border-color: var(--mi-color-secundario);
+    box-shadow: 0 0 0 3px rgba(73, 201, 79, 0.3);
+    outline: none;
+}
+
+.filter-group select option {
+    background-color: rgb(28, 29, 40) !important;
+    color: #f0f8ff !important;
+}
+
+/* Tarjetas de resumen - COLOR DEL HOVER ORIGINAL COMO PERMANENTE */
+.estadisticas-resumen {
+    margin-bottom: 2rem;
+    background: transparent !important;
+}
+
+.stat-card {
+    border-radius: 12px;
+    background: rgb(35, 36, 48) !important; /* Forzar color oscuro */
+    border: 2px solid var(--mi-color-primario);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Sin efectos hover - siempre con el color del hover anterior */
+}
+
+.stat-card h3 {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #4dd0e1 !important;
+    background: transparent !important;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #f0f8ff !important;
+    background: transparent !important;
+}
+
+/* Gráficos - COLOR DEL HOVER ORIGINAL COMO PERMANENTE */
+.graficos-container {
+    gap: 1.5rem;
+    background: transparent !important;
+}
+
+.grafico-card {
+    border-radius: 12px;
+    background: rgb(35, 36, 48) !important; /* Forzar color oscuro */
+    border: 2px solid var(--mi-color-primario);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Sin efectos hover - siempre con el color del hover anterior */
+}
+
+.grafico-card h3 {
+    color: #f0f8ff !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--mi-color-terciario);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    background: transparent !important;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: transparent !important;
+}
+
+.chart-container canvas {
+    border-radius: 8px;
+}
+
+/* Tabla detallada - COLOR DEL HOVER ORIGINAL COMO PERMANENTE */
+.tabla-detallada {
+    border-radius: 12px;
+    background: rgb(35, 36, 48) !important; /* Forzar color oscuro */
+    border: 2px solid var(--mi-color-primario);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Sin efectos hover en la tarjeta - siempre con el color del hover anterior */
+}
+
+.tabla-detallada h3 {
+    color: #f0f8ff !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--mi-color-terciario);
+    padding-bottom: 12px;
+    background: transparent !important;
+}
+
+/* Forzar colores oscuros en todas las tarjetas */
+#ventana5 .stat-card,
+#ventana5 .grafico-card,
+#ventana5 .tabla-detallada {
+    background-color: rgb(35, 36, 48) !important;
+    color: #f0f8ff !important;
+}
+
+/* Asegurar que los textos sean visibles */
+#ventana5 .stat-card *,
+#ventana5 .grafico-card *,
+#ventana5 .tabla-detallada * {
+    color: #f0f8ff !important;
+    background: transparent !important;
+}
+
+#ventana5 .stat-card h3,
+#ventana5 .grafico-card h3,
+#ventana5 .tabla-detallada h3 {
+    color: #4dd0e1 !important;
+    background: transparent !important;
+}
+
+#tabla-stats-tags {
+    border-radius: 8px;
+    overflow: hidden;
+    background: transparent !important;
+}
+
+#tabla-stats-tags th {
+    background: var(--mi-color-primario) !important;
+    color: #f0f8ff !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+#tabla-stats-tags td {
+    border-bottom: 1px solid var(--mi-color-terciario);
+    transition: background-color 0.2s ease;
+    color: #f0f8ff !important;
+    background: transparent !important;
+}
+
+/* Solo las filas de la tabla tienen hover, no la tarjeta completa */
+#tabla-stats-tags tbody tr:hover {
+    background-color: rgb(28, 29, 40) !important;
+}
+
+/* Badges de tendencia */
+.bg-green-100 {
+    background-color: rgba(73, 201, 79, 0.6) !important;
+}
+
+.text-green-800 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.bg-red-100 {
+    background-color: rgba(220, 38, 127, 0.6) !important;
+}
+
+.text-red-800 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.bg-gray-100 {
+    background-color: rgba(0, 150, 162, 0.6) !important;
+}
+
+.text-gray-800 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Botones */
+#ventana5 .botones_superior {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10001;
+    background: transparent !important;
+}
+
+#ventana5 .botones_superior button {
+    background: var(--mi-color-primario) !important;
+    border: 2px solid var(--mi-color-terciario);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #f0f8ff !important;
+}
+
+#ventana5 .botones_superior button:hover {
+    background: var(--mi-color-secundario) !important;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-color: var(--mi-color-cuaternario);
+}
+
+#aplicar-filtros {
+    background: var(--mi-color-cuaternario) !important;
+    border: none;
+    color: #f0f8ff !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#aplicar-filtros:hover {
+    background: var(--mi-color-secundario) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Título principal */
+#ventana5 h2 {
+    color: #4dd0e1 !important;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    margin-top: 60px;
+    background: transparent !important;
+}
+
+/* Asegurar que todos los divs y containers sean transparentes */
+#ventana5 div,
+#ventana5 .flex,
+#ventana5 .grid,
+#ventana5 .overflow-x-auto {
+    background: transparent !important;
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.grafico-card,
+.tabla-detallada {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+.grafico-card:nth-child(1) { animation-delay: 0.5s; }
+.grafico-card:nth-child(2) { animation-delay: 0.6s; }
+.grafico-card:nth-child(3) { animation-delay: 0.7s; }
+.grafico-card:nth-child(4) { animation-delay: 0.8s; }
+
+/* Colores por tag */
+.tag-color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    border: 2px solid var(--mi-color-terciario);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #ventana5 {
+        padding: 15px;
+    }
+    
+    .filtros-estadisticas {
+        padding: 16px;
+    }
+    
+    .filtros-estadisticas .flex {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .estadisticas-resumen {
+        grid-template-columns: 1fr;
+    }
+    
+    .graficos-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    #ventana5 h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabla-detallada {
+        font-size: 0.875rem;
+    }
+    
+    #tabla-stats-tags th,
+    #tabla-stats-tags td {
+        padding: 8px 4px;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+} 

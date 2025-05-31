@@ -28,4 +28,8 @@ urlpatterns = [
     path('tags/eliminar/<int:tag_id>/', views.eliminar_tag, name='eliminar_tag'),
     path('tags/<int:tag_id>/habitos/', views.get_habitos_por_tag, name='get_habitos_por_tag'),
     path('tags/<int:tag_id>/estadisticas/', views.get_estadisticas_tag, name='get_estadisticas_tag'),
+    
+    # URLs para estadísticas por tags
+    path('get_tags/', views.get_tags, name='get_tags_ajax'),
+    path('get_estadisticas_tags/', views.get_estadisticas_tags, name='get_estadisticas_tags'),
 ]

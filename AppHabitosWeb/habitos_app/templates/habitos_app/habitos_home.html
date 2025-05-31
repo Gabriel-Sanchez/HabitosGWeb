@@ -43,6 +43,7 @@
 <link rel="stylesheet" href="{% static 'habitos_app/css/grafico_habito.css'  %}">
 <link rel="stylesheet" href="{% static 'base_app/css/grafico.css'  %}">
 <link rel="stylesheet" href="{% static 'base_app/css/tags.css'  %}">
+<link rel="stylesheet" href="{% static 'habitos_app/css/estadisticas_tags.css'  %}">
 
 
 {% endblock head %}
@@ -108,7 +109,8 @@
                             <div id="myDropdown" class="dropdown-content origin-top-left absolute left-0 w-46 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                               <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                                   <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="configurar_habito_nuevo()"> Agregar Habito</button>
-                                  <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="ActivarOrdenarLista()"> Ordenar Lista</button> 
+                                  <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="ActivarOrdenarLista()"> Ordenar Lista</button>
+                                  <button class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" onclick="mostrarEstadisticasTags()"> Estadísticas por Tags</button>
                               
                                 <!-- <a href="{% url 'importarArchivos' %}" class=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Importar</a> -->
                                 <!-- <a href="{% url 'details_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Mi Perfil</a> -->
@@ -320,6 +322,123 @@
             </div>
         </div>
 
+        <!-- Nueva ventana para estadísticas por tags -->
+        <div id="ventana5" class="ventana" style="display: none;">
+            <div class="botones_superior">
+                <button class="material-icons" onclick="cambiarVentana('ventana1')">arrow_back</button>
+                <button class="material-icons" onclick="exportarEstadisticasTags()">download</button>
+                <button class="material-icons" onclick="refrescarEstadisticasTags()">refresh</button>
+            </div>
+            
+            <h2 class="text-center mb-4">📊 Estadísticas por Tags</h2>
+            
+            <!-- Filtros y controles -->
+            <div class="filtros-estadisticas mb-4 p-4 bg-gray-100 rounded">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <div class="filter-group">
+                        <label for="tag-filter" class="block text-sm font-medium text-gray-700">Filtrar por Tag:</label>
+                        <select id="tag-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-black">
+                            <option value="">Todos los tags</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="periodo-filter" class="block text-sm font-medium text-gray-700">Período:</label>
+                        <select id="periodo-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-black">
+                            <option value="7">Últimos 7 días</option>
+                            <option value="30" selected>Últimos 30 días</option>
+                            <option value="90">Últimos 90 días</option>
+                            <option value="365">Último año</option>
+                            <option value="all">Todo el tiempo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button id="aplicar-filtros" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen de estadísticas principales -->
+            <div class="estadisticas-resumen grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold text-gray-700">Total de Tiempo</h3>
+                    <p id="total-tiempo-tags" class="text-2xl font-bold text-blue-600">0h 0m</p>
+                </div>
+                <div class="stat-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold text-gray-700">Tag Más Activo</h3>
+                    <p id="tag-mas-activo" class="text-2xl font-bold text-green-600">-</p>
+                </div>
+                <div class="stat-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold text-gray-700">Día Más Productivo</h3>
+                    <p id="dia-mas-productivo" class="text-2xl font-bold text-orange-600">-</p>
+                </div>
+                <div class="stat-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold text-gray-700">Promedio Diario</h3>
+                    <p id="promedio-diario-tags" class="text-2xl font-bold text-purple-600">0h 0m</p>
+                </div>
+            </div>
+
+            <!-- Gráficos principales -->
+            <div class="graficos-container grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Gráfico de distribución por tags -->
+                <div class="grafico-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold mb-3">Distribución de Tiempo por Tags</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="grafico-distribucion-tags"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de tendencia temporal -->
+                <div class="grafico-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold mb-3">Tendencia Temporal por Tags</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="grafico-tendencia-tags"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de comparación diaria -->
+                <div class="grafico-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold mb-3">Comparación Diaria</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="grafico-comparacion-diaria"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de regularidad -->
+                <div class="grafico-card bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-semibold mb-3">Regularidad de Hábitos</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="grafico-regularidad"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla detallada -->
+            <div class="tabla-detallada bg-white p-4 rounded shadow">
+                <h3 class="text-lg font-semibold mb-3">Detalles por Tag</h3>
+                <div class="overflow-x-auto">
+                    <table id="tabla-stats-tags" class="min-w-full table-auto">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tag</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiempo Total</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sesiones</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Promedio/Sesión</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último Uso</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tendencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-stats-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
 
 
 
@@ -464,6 +583,7 @@ function getCookie(name) {
 <script src="{% static 'base_app/js/formulario_habito.js' %}"></script>
 <script src="{% static 'base_app/js/tags_manager.js' %}"></script>
 <script src="{% static 'base_app/js/principal.js' %}"></script>
+<script src="{% static 'habitos_app/js/estadisticas_tags.js' %}"></script>
 
 {% comment %} grafico {% endcomment %}
 <script>
@@ -918,6 +1038,21 @@ function getCookie(name) {
           llenarDesplegable('hora', 23);
           llenarDesplegable('minutos', 59);
           llenarDesplegable('segundos', 59);
+          
+          // Función para mostrar estadísticas por tags
+          function mostrarEstadisticasTags() {
+              cambiarVentana('ventana5');
+              cargarEstadisticasTags();
+          }
+          
+          // Función para cargar estadísticas por tags
+          function cargarEstadisticasTags() {
+              console.log('Cargando estadísticas por tags...');
+              // Esta función se implementará en el archivo estadisticas_tags.js
+              if (typeof inicializarEstadisticasTags === 'function') {
+                  inicializarEstadisticasTags();
+              }
+          }
     </script>
     
   

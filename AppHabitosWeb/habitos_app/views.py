@@ -774,12 +774,324 @@ def get_estadisticas_tag(request, tag_id):
 
 # Actualizar estadísticas de tag después de registrar un hábito
 def actualizar_estadisticas_tag(habito, duracion, fecha):
-    """Actualizar las estadísticas de tags después de registrar un hábito"""
-    if habito.tags.exists():
+    """
+    Actualiza las estadísticas de tags cuando se registra un hábito
+    """
+    for tag in habito.tags.all():
+        tag_stat, created = TagStats.objects.get_or_create(
+            tag=tag,
+            fecha=fecha,
+            defaults={'tiempo_total': timedelta(0)}
+        )
+        tag_stat.tiempo_total += duracion
+        tag_stat.save()
+
+
+def get_estadisticas_tags(request):
+    """
+    Obtiene estadísticas completas de todos los tags del usuario
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            tag_id = data.get('tag', '')
+            periodo = data.get('periodo', 30)
+            
+            # Calcular fecha de inicio según el período
+            fecha_fin = timezone.now().date()
+            if periodo == 'all':
+                fecha_inicio = None
+            else:
+                dias = int(periodo)
+                fecha_inicio = fecha_fin - timedelta(days=dias)
+            
+            # Obtener todos los tags del usuario
+            tags_usuario = Tag.objects.filter(fk_user=request.user)
+            
+            # Filtrar por tag específico si se especifica
+            if tag_id:
+                tags_usuario = tags_usuario.filter(id=tag_id)
+            
+            # Obtener estadísticas generales
+            resumen = calcular_resumen_tags(request.user, fecha_inicio, fecha_fin, tag_id)
+            
+            # Obtener distribución por tags
+            distribucion_tags = calcular_distribucion_tags(request.user, fecha_inicio, fecha_fin, tag_id)
+            
+            # Obtener tendencia temporal
+            tendencia_temporal = calcular_tendencia_temporal(request.user, fecha_inicio, fecha_fin, tag_id)
+            
+            # Obtener comparación diaria
+            comparacion_diaria = calcular_comparacion_diaria(request.user, fecha_inicio, fecha_fin, tag_id)
+            
+            # Obtener datos de regularidad
+            regularidad = calcular_regularidad(request.user, fecha_inicio, fecha_fin, tag_id)
+            
+            response_data = {
+                'resumen': resumen,
+                'distribucionTags': distribucion_tags,
+                'tendenciaTemporal': tendencia_temporal,
+                'comparacionDiaria': comparacion_diaria,
+                'regularidad': regularidad,
+                'success': True
+            }
+            
+            return JsonResponse(response_data)
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+def calcular_resumen_tags(usuario, fecha_inicio, fecha_fin, tag_id=None):
+    """Calcula el resumen general de estadísticas por tags"""
+    from django.db.models import Sum, Count, Avg
+    
+    # Filtrar hábitos del usuario
+    habitos = Habito.objects.filter(fk_user=usuario)
+    
+    if tag_id:
+        habitos = habitos.filter(tags__id=tag_id)
+    
+    # Filtrar historial por fechas
+    historial_query = Historial_habitos.objects.filter(
+        fk_habito__in=habitos
+    )
+    
+    if fecha_inicio:
+        historial_query = historial_query.filter(
+            fecha_inicio__date__gte=fecha_inicio,
+            fecha_inicio__date__lte=fecha_fin
+        )
+    
+    # Calcular tiempo total
+    tiempo_total_segundos = historial_query.aggregate(
+        total=Sum('duracion')
+    )['total']
+    
+    if tiempo_total_segundos:
+        tiempo_total_segundos = tiempo_total_segundos.total_seconds()
+        horas_total = int(tiempo_total_segundos // 3600)
+        minutos_total = int((tiempo_total_segundos % 3600) // 60)
+    else:
+        horas_total = 0
+        minutos_total = 0
+    
+    # Tag más activo
+    tag_stats = {}
+    for habito in habitos:
         for tag in habito.tags.all():
-            tag_stat, created = TagStats.objects.get_or_create(
-                tag=tag,
-                fecha=fecha
+            tag_tiempo = historial_query.filter(
+                fk_habito=habito
+            ).aggregate(total=Sum('duracion'))['total']
+            
+            if tag_tiempo:
+                tiempo_segundos = tag_tiempo.total_seconds()
+                if tag.nombre not in tag_stats:
+                    tag_stats[tag.nombre] = 0
+                tag_stats[tag.nombre] += tiempo_segundos
+    
+    tag_mas_activo = max(tag_stats.keys(), key=lambda k: tag_stats[k]) if tag_stats else '-'
+    
+    # Día más productivo
+    dias_productivos = historial_query.values(
+        'fecha_inicio__date'
+    ).annotate(
+        tiempo_dia=Sum('duracion')
+    ).order_by('-tiempo_dia')
+    
+    dia_mas_productivo = dias_productivos.first()
+    dia_mas_productivo = dia_mas_productivo['fecha_inicio__date'] if dia_mas_productivo else None
+    
+    # Promedio diario
+    dias_totales = (fecha_fin - fecha_inicio).days + 1 if fecha_inicio else 365
+    promedio_segundos_dia = tiempo_total_segundos / dias_totales if tiempo_total_segundos else 0
+    horas_promedio = int(promedio_segundos_dia // 3600)
+    minutos_promedio = int((promedio_segundos_dia % 3600) // 60)
+    
+    return {
+        'tiempoTotal': {
+            'horas': horas_total,
+            'minutos': minutos_total
+        },
+        'tagMasActivo': tag_mas_activo,
+        'diaMasProductivo': dia_mas_productivo.isoformat() if dia_mas_productivo else None,
+        'promedioDiario': {
+            'horas': horas_promedio,
+            'minutos': minutos_promedio
+        }
+    }
+
+
+def calcular_distribucion_tags(usuario, fecha_inicio, fecha_fin, tag_id=None):
+    """Calcula la distribución de tiempo por tags"""
+    from django.db.models import Sum
+    
+    # Obtener todos los tags del usuario
+    tags = Tag.objects.filter(fk_user=usuario)
+    if tag_id:
+        tags = tags.filter(id=tag_id)
+    
+    distribucion = []
+    
+    for tag in tags:
+        # Obtener hábitos con este tag
+        habitos_tag = Habito.objects.filter(
+            fk_user=usuario,
+            tags=tag
+        )
+        
+        # Calcular tiempo total para este tag
+        historial_query = Historial_habitos.objects.filter(
+            fk_habito__in=habitos_tag
+        )
+        
+        if fecha_inicio:
+            historial_query = historial_query.filter(
+                fecha_inicio__date__gte=fecha_inicio,
+                fecha_inicio__date__lte=fecha_fin
             )
-            tag_stat.tiempo_total += duracion
-            tag_stat.save()
+        
+        tiempo_total = historial_query.aggregate(
+            total=Sum('duracion')
+        )['total']
+        
+        if tiempo_total:
+            minutos_total = int(tiempo_total.total_seconds() / 60)
+            
+            # Contar sesiones
+            sesiones = historial_query.count()
+            
+            # Calcular promedio por sesión
+            promedio_sesion = minutos_total / sesiones if sesiones > 0 else 0
+            
+            # Último uso
+            ultimo_historial = historial_query.order_by('-fecha_inicio').first()
+            ultimo_uso = ultimo_historial.fecha_inicio.date() if ultimo_historial else None
+            
+            distribucion.append({
+                'tag': tag.nombre,
+                'tiempo': minutos_total,
+                'color': tag.color,
+                'sesiones': sesiones,
+                'promedioSesion': round(promedio_sesion, 1),
+                'ultimoUso': ultimo_uso.isoformat() if ultimo_uso else None,
+                'tendencia': 'Estable'  # TODO: Calcular tendencia real
+            })
+    
+    return sorted(distribucion, key=lambda x: x['tiempo'], reverse=True)
+
+
+def calcular_tendencia_temporal(usuario, fecha_inicio, fecha_fin, tag_id=None):
+    """Calcula la tendencia temporal de los tags"""
+    from datetime import timedelta
+    from django.db.models import Sum
+    
+    if not fecha_inicio:
+        fecha_inicio = fecha_fin - timedelta(days=30)
+    
+    # Generar lista de fechas
+    fechas = []
+    fecha_actual = fecha_inicio
+    while fecha_actual <= fecha_fin:
+        fechas.append(fecha_actual.isoformat())
+        fecha_actual += timedelta(days=1)
+    
+    # Obtener tags
+    tags = Tag.objects.filter(fk_user=usuario)
+    if tag_id:
+        tags = tags.filter(id=tag_id)
+    
+    datasets = []
+    
+    for tag in tags[:5]:  # Limitar a 5 tags para legibilidad
+        data = []
+        
+        for fecha_str in fechas:
+            fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+            
+            # Calcular tiempo para este tag en esta fecha
+            tiempo_dia = Historial_habitos.objects.filter(
+                fk_habito__tags=tag,
+                fk_habito__fk_user=usuario,
+                fecha_inicio__date=fecha_obj
+            ).aggregate(
+                total=Sum('duracion')
+            )['total']
+            
+            minutos = int(tiempo_dia.total_seconds() / 60) if tiempo_dia else 0
+            data.append(minutos)
+        
+        datasets.append({
+            'label': tag.nombre,
+            'data': data,
+            'backgroundColor': tag.color,
+            'borderColor': tag.color
+        })
+    
+    return {
+        'labels': fechas,
+        'datasets': datasets
+    }
+
+
+def calcular_comparacion_diaria(usuario, fecha_inicio, fecha_fin, tag_id=None):
+    """Calcula la comparación por días de la semana"""
+    from django.db.models import Sum, Avg
+    
+    dias_semana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    
+    # Obtener hábitos
+    habitos = Habito.objects.filter(fk_user=usuario)
+    if tag_id:
+        habitos = habitos.filter(tags__id=tag_id)
+    
+    # Calcular promedio por día de la semana
+    data_dias = []
+    
+    for dia_num in range(7):  # 0=Lunes, 6=Domingo
+        historial_dia = Historial_habitos.objects.filter(
+            fk_habito__in=habitos,
+            fecha_inicio__week_day=dia_num + 2  # Django usa 1=Domingo, 2=Lunes
+        )
+        
+        if fecha_inicio:
+            historial_dia = historial_dia.filter(
+                fecha_inicio__date__gte=fecha_inicio,
+                fecha_inicio__date__lte=fecha_fin
+            )
+        
+        tiempo_promedio = historial_dia.aggregate(
+            promedio=Avg('duracion')
+        )['promedio']
+        
+        minutos_promedio = int(tiempo_promedio.total_seconds() / 60) if tiempo_promedio else 0
+        data_dias.append(minutos_promedio)
+    
+    return {
+        'labels': dias_semana,
+        'datasets': [{
+            'label': 'Tiempo promedio (minutos)',
+            'data': data_dias,
+            'backgroundColor': 'rgba(59, 130, 246, 0.8)'
+        }]
+    }
+
+
+def calcular_regularidad(usuario, fecha_inicio, fecha_fin, tag_id=None):
+    """Calcula la regularidad de los hábitos por tags"""
+    # Esta es una implementación simplificada
+    # En una implementación real, calcularías la regularidad basada en:
+    # - Días consecutivos de práctica
+    # - Variación en tiempo de práctica
+    # - Constancia a lo largo del tiempo
+    
+    return {
+        'labels': ['Muy Regular', 'Regular', 'Irregular', 'Muy Irregular'],
+        'data': [40, 35, 20, 5],
+        'backgroundColor': ['#10B981', '#F59E0B', '#EF4444', '#6B7280']
+    }
