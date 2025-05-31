@@ -2,7 +2,37 @@
 let allTags = []; // Todos los tags disponibles
 let selectedTagIds = []; // IDs de tags seleccionados para el hábito actual
 
-// Mostrar la ventana de gestión de tags
+/**
+ * Función para establecer los tags seleccionados (usada al editar un hábito)
+ * @param {Array} tagIds - Array de IDs de tags a seleccionar
+ */
+function setSelectedTags(tagIds) {
+    selectedTagIds = [...tagIds]; // Clonar el array
+    document.getElementById('tags_seleccionados').value = JSON.stringify(selectedTagIds);
+    
+    // Si ya tenemos los tags cargados, actualizar la visualización
+    if (allTags.length > 0) {
+        actualizarTagsVisuales();
+    } else {
+        // Si no están cargados, cargarlos y luego actualizar
+        cargarTags().then(() => {
+            actualizarTagsVisuales();
+        });
+    }
+}
+
+/**
+ * Función para limpiar los tags seleccionados (usada al crear un nuevo hábito)
+ */
+function limpiarTagsSeleccionados() {
+    selectedTagIds = [];
+    document.getElementById('tags_seleccionados').value = '[]';
+    actualizarTagsVisuales();
+}
+
+/**
+ * Mostrar la ventana de gestión de tags
+ */
 function mostrarVentanaGestionTags() {
     // Guardar los tags seleccionados actualmente
     selectedTagIds = JSON.parse(document.getElementById('tags_seleccionados').value || '[]');
@@ -16,7 +46,7 @@ function mostrarVentanaGestionTags() {
 
 // Cargar los tags desde el servidor
 function cargarTags() {
-    fetch('/habitos/tags/', {
+    return fetch('/habitos/tags/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -30,9 +60,11 @@ function cargarTags() {
             renderizarTags();
             renderizarTagsParaSeleccion();
         }
+        return data;
     })
     .catch(error => {
         console.error('Error al cargar tags:', error);
+        throw error;
     });
 }
 
@@ -314,6 +346,11 @@ function eliminarTag(tagId) {
         console.error('Error:', error);
         alert('Error al eliminar el tag');
     });
+}
+
+// Cerrar la ventana de gestión de tags
+function cerrarVentanaGestionTags() {
+    cambiarVentana('ventana2');
 }
 
 // Cargar tags al iniciar la aplicación

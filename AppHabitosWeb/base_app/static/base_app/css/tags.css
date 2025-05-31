@@ -1,111 +1,142 @@
 /* Estilos para la gestión de tags */
 
-.tags-container {
-    margin-bottom: 15px;
+.tag-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tag-actions button {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #333;
+}
+
+.tag-actions button:hover {
+    background: white;
+}
+
+.tag-select-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tag-select-item:hover {
+    opacity: 0.8;
+}
+
+.tag-select-item.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 .tag-badge {
     display: inline-block;
-    border-radius: 4px;
-    padding: 3px 8px;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    margin: 2px;
+    border-radius: 12px;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 500;
 }
 
-.tag-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 4px;
-    padding: 5px 10px;
-    margin-bottom: 8px;
-}
-
-.tag-actions {
-    display: flex;
-    gap: 5px;
-}
-
-.tag-select-item {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.tag-select-item:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
-
-/* Estilos para la ventana de gestión de tags */
-#ventana4 {
-    padding: 15px;
-}
-
-#form-tag {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-#form-tag h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
-#tag_colorPalette {
+/* Paleta de colores para tags */
+.color-palette {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 4px;
     margin-top: 8px;
-    margin-bottom: 15px;
 }
 
-#tag_colorPalette .color {
-    width: 24px;
-    height: 24px;
+.color-palette .color {
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.2s;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease;
 }
 
-#tag_colorPalette .color:hover {
+.color-palette .color:hover {
     transform: scale(1.1);
 }
 
-/* Botones en la interfaz de tags */
-#btn-guardar-tag, #btn-aplicar-tags {
-    background-color: #4299e1;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+.color-palette .color.selected {
+    border-color: #000;
+    transform: scale(1.1);
 }
 
-#btn-guardar-tag:hover, #btn-aplicar-tags:hover {
-    background-color: #3182ce;
+/* Ventana de gestión de tags */
+#ventana4 {
+    background: var(--mi-color-secundario);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-/* Secciones en la ventana de gestión de tags */
-#lista-tags, #seleccion-tags {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 15px;
+#ventana4 h2 {
+    color: var(--mi-color-primario);
     margin-bottom: 20px;
 }
 
-#lista-tags h3, #seleccion-tags h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: bold;
+#ventana4 h3 {
+    color: var(--mi-color-terciario);
+    margin-bottom: 12px;
+}
+
+/* Sección de tags seleccionados */
+#selected-tags {
+    min-height: 40px;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Botones de gestión */
+.botones_superior {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.botones_superior button {
+    background: var(--mi-color-cuaternario);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.botones_superior button:hover {
+    background: var(--mi-color-primario);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .color-palette .color {
+        width: 24px;
+        height: 24px;
+    }
+    
+    #ventana4 {
+        padding: 16px;
+        margin: 8px;
+    }
 } 

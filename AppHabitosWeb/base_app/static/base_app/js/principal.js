@@ -242,6 +242,20 @@ function configurar_habito (valor) {
     checkbox.checked = diasSeleccionados.includes(checkbox.value)
   })
 
+  // Configurar los tags seleccionados
+  if (valor.tags && Array.isArray(valor.tags)) {
+    const tagIds = valor.tags.map(tag => tag.id)
+    document.getElementById('tags_seleccionados').value = JSON.stringify(tagIds)
+    if (typeof setSelectedTags === 'function') {
+      setSelectedTags(tagIds)
+    }
+  } else {
+    document.getElementById('tags_seleccionados').value = '[]'
+    if (typeof limpiarTagsSeleccionados === 'function') {
+      limpiarTagsSeleccionados()
+    }
+  }
+
   resetBorderColorsHabit(valor.color)
 
   console.log(valor.orden_n)
@@ -278,6 +292,9 @@ function guardar_habito_json () {
     .map(checkbox => checkbox.value)
     .join(',')
 
+  // Obtener los tags seleccionados
+  const tagsSeleccionados = JSON.parse(document.getElementById('tags_seleccionados').value || '[]')
+
   const data = {
     id: id,
     nombre: nombre,
@@ -289,7 +306,8 @@ function guardar_habito_json () {
     color_hab: color_hab,
     archivado: archivado,
     objetivo: objetivo,
-    dias_seleccionados: diasSeleccionados
+    dias_seleccionados: diasSeleccionados,
+    tags: tagsSeleccionados
   }
 
   fetch('/habitos/guardar_habito/', {
@@ -344,6 +362,22 @@ function configurar_habito_nuevo () {
   document.getElementById('color_hab').value = ''
   document.getElementById('archivado').value = ''
   document.getElementById('objetivo').value = ''
+
+  // Limpiar los checkboxes de días
+  document.querySelectorAll('input[name="dias"]').forEach(checkbox => {
+    checkbox.checked = false
+  })
+
+  // Limpiar los tags seleccionados
+  if (typeof limpiarTagsSeleccionados === 'function') {
+    limpiarTagsSeleccionados()
+  } else {
+    document.getElementById('tags_seleccionados').value = '[]'
+    const container = document.getElementById('selected-tags')
+    if (container) {
+      container.innerHTML = '<span class="text-gray-500">No hay tags seleccionados</span>'
+    }
+  }
 
   resetBorderColorsHabit('none')
 

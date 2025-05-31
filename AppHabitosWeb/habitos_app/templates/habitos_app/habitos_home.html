@@ -289,6 +289,15 @@
                 <input class="imput_form" type="text" id="tag_descripcion" name="tag_descripcion">
                 <label for="tag_color">Color:</label>
                 <input class="imput_form" type="color" id="tag_color" name="tag_color" value="#CCCCCC">
+                
+                <!-- Paleta de colores para tags -->
+                <div class="mt-2">
+                    <label>Seleccionar color:</label>
+                    <div id="tag_colorPalette" class="color-palette mt-1">
+                        <!-- Los colores se cargarán dinámicamente aquí -->
+                    </div>
+                </div>
+                
                 <div class="flex gap-2 mt-3">
                     <button onclick="guardarTag()">Guardar</button>
                     <button onclick="cancelarFormularioTag()">Cancelar</button>
@@ -932,6 +941,15 @@ function getCookie(name) {
         <input class="imput_form" type="text" id="tag_descripcion" name="tag_descripcion">
         <label for="tag_color">Color:</label>
         <input class="imput_form" type="color" id="tag_color" name="tag_color" value="#CCCCCC">
+        
+        <!-- Paleta de colores para tags -->
+        <div class="mt-2">
+            <label>Seleccionar color:</label>
+            <div id="tag_colorPalette" class="color-palette mt-1">
+                <!-- Los colores se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+        
         <div class="flex gap-2 mt-3">
             <button onclick="guardarTag()">Guardar</button>
             <button onclick="cancelarFormularioTag()">Cancelar</button>
