@@ -426,11 +426,20 @@ function calcularDiasDeRachaHastaHoy (id, datos, hecho) {
 
   // Calcular los días de racha
   let racha = 0
+  // Crear fecha de hoy en zona horaria local y normalizarla
   let hoy = new Date()
   hoy.setHours(0, 0, 0, 0) // Asegurarse de que la hora es medianoche para la comparación de fechas
 
   if (!hecho) {
     hoy.setDate(hoy.getDate() - 1)
+  }
+
+  // Función para crear fecha local desde string YYYY-MM-DD
+  function crearFechaLocal(fechaString) {
+    const [year, month, day] = fechaString.split('-').map(Number)
+    const fecha = new Date(year, month - 1, day) // month - 1 porque los meses en JS van de 0-11
+    fecha.setHours(0, 0, 0, 0)
+    return fecha
   }
 
   // Función para verificar si un día es un día seleccionado
@@ -464,8 +473,8 @@ function calcularDiasDeRachaHastaHoy (id, datos, hecho) {
 
   // Comenzar desde el último día registrado
   for (let i = datosFiltrados.length - 1; i >= 0; i--) {
-    const fechaActual = new Date(datosFiltrados[i].fecha)
-    fechaActual.setHours(0, 0, 0, 0)
+    // Usar la función crearFechaLocal para asegurar consistencia
+    const fechaActual = crearFechaLocal(datosFiltrados[i].fecha)
 
     // Verificar si la fecha actual es un día seleccionado
     if (!esDiaSeleccionado(fechaActual)) {
@@ -480,8 +489,7 @@ function calcularDiasDeRachaHastaHoy (id, datos, hecho) {
       }
     } else {
       // Verificar si el día actual es consecutivo al día anterior
-      const fechaAnterior = new Date(datosFiltrados[i + 1].fecha)
-      fechaAnterior.setHours(0, 0, 0, 0)
+      const fechaAnterior = crearFechaLocal(datosFiltrados[i + 1].fecha)
       
       if (sonDiasConsecutivos(fechaActual, fechaAnterior)) {
         racha++

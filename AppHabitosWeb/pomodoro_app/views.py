@@ -32,15 +32,16 @@ def set_Inicio_Habito(request):
         datos = json.loads(request.body)
         id_habito = int(datos['id_habito']) 
         
-        fecha_actual = timezone.now()
+        fecha_actual_utc = timezone.now()
+        fecha_actual_date = timezone.localtime(fecha_actual_utc).date()
 
-        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual, fk_habito__id=id_habito)
+        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual_date, fk_habito__id=id_habito)
 
         if not objetoHistoralHabito.exists():
             
             obj_id_habito = Habito.objects.get(id = id_habito)
-            fecha_hora_inicio = fecha_actual
-            fecha_hora_fin = fecha_actual
+            fecha_hora_inicio = fecha_actual_utc
+            fecha_hora_fin = fecha_actual_utc
             duracion_campo = timedelta(hours=0, minutes=0, seconds=0)
             d_descanso = timedelta(hours=0, minutes=0, seconds=0)
             
@@ -67,17 +68,18 @@ def set_tiempo_Habito(request):
         print('Datos recibidos:', datos)
         id_habito = int(datos['id_habito']) 
         
-        fecha_actual = timezone.now()
+        fecha_actual_utc = timezone.now()
+        fecha_actual_date = timezone.localtime(fecha_actual_utc).date()
         # fecha_actual = datetime.now()
         print(id_habito)
         
-        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual, fk_habito__id=id_habito)
+        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual_date, fk_habito__id=id_habito)
 
         if objetoHistoralHabito.exists():
             
             objetoHistoralHabito = objetoHistoralHabito.first()
  
-            fecha_hora_fin = fecha_actual
+            fecha_hora_fin = fecha_actual_utc
             old_duracion_campo = objetoHistoralHabito.duracion
             new_duracion_campo= timedelta(hours=0, minutes=0, seconds=int(datos['tiempo_habito']) )
             duracion_campo = old_duracion_campo + new_duracion_campo
@@ -100,17 +102,18 @@ def set_descanso_Habito(request):
         print('Datos recibidos:', datos)
         id_habito = int(datos['id_habito']) 
         
-        fecha_actual = timezone.now()
+        fecha_actual_utc = timezone.now()
+        fecha_actual_date = timezone.localtime(fecha_actual_utc).date()
         # fecha_actual = datetime.now()
         print(id_habito)
         
-        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual, fk_habito__id=id_habito)
+        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual_date, fk_habito__id=id_habito)
 
         if objetoHistoralHabito.exists():
             
             objetoHistoralHabito = objetoHistoralHabito.first()
             
-            fecha_hora_fin = fecha_actual
+            fecha_hora_fin = fecha_actual_utc
             old_d_descanso = objetoHistoralHabito.duracion_descanso 
             new_d_descanso = timedelta(hours=0, minutes=0, seconds=int(datos['tiempo_descanso']) )
             d_descanso = old_d_descanso + new_d_descanso
@@ -135,16 +138,17 @@ def set_fin_Habito(request):
         print('Datos recibidos:', datos)
         id_habito = int(datos['id_habito']) 
         
-        fecha_actual = timezone.now()
+        fecha_actual_utc = timezone.now()
+        fecha_actual_date = timezone.localtime(fecha_actual_utc).date()
         print(id_habito)
         
-        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual, fk_habito__id=id_habito)
+        objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual_date, fk_habito__id=id_habito)
 
         if objetoHistoralHabito.exists():
             
             objetoHistoralHabito = objetoHistoralHabito.first()
             
-            fecha_hora_fin = fecha_actual
+            fecha_hora_fin = fecha_actual_utc
          
             objetoHistoralHabito.fecha_fin=fecha_hora_fin 
             objetoHistoralHabito.save()
