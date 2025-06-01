@@ -113,10 +113,10 @@ def check_habito(request, habito):
         habitoAcompletar = Habito.objects.get(id= id_habito)
         print('habitoAcompletar')
         print(habitoAcompletar)
-        fechaInicio = timezone.make_aware(datetime.strptime(datos['fechaInicio'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+        fechaInicio = timezone.make_aware(datetime.strptime(datos['fechaInicio'], '%Y-%m-%dT%H:%M:%S'))
         print('fechaInicio')
         print(fechaInicio)
-        fechaFin = timezone.make_aware(datetime.strptime(datos['fechaFin'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+        fechaFin = timezone.make_aware(datetime.strptime(datos['fechaFin'], '%Y-%m-%dT%H:%M:%S'))
         print('fechaFin')
         print(fechaFin)
         duracion = fechaFin - fechaInicio

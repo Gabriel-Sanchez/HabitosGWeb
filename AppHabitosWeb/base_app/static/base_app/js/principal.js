@@ -181,9 +181,10 @@ function registrar_Habitos_checker(habito_obj) {
   // Send short_break as minutes for duracionDescanso
   const duracionDescanso = Number(habito_obj.short_break)
 
+  // Usar formato de fecha local en lugar de UTC (ISO string)
   const datos = {
-    fechaInicio: fechaInicio.toISOString(),
-    fechaFin: fechaFin.toISOString(),
+    fechaInicio: fechaInicio.toLocaleString('sv-SE').replace(' ', 'T'),
+    fechaFin: fechaFin.toLocaleString('sv-SE').replace(' ', 'T'),
     duracionDescanso: duracionDescanso
   }
 
