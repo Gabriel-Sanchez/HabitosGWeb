@@ -23,12 +23,23 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     div_botones.classList.add('div_botones')
     li.appendChild(div_item_h)
     lista.appendChild(li);
+    
     let Nombre_habito = document.createElement('div')
     let Nombre_habito_h1 = document.createElement('h1')
     let racha_habito_p = document.createElement('h6')
+    
+    // Crear contenedor intermedio para racha
+    let racha_container = document.createElement('div')
+    racha_container.classList.add('racha-container')
+    
+    // Crear contenedor para tags (siempre presente para consistencia)
+    let tags_container = document.createElement('div')
+    tags_container.classList.add('habito-tags-container')
+    
     Nombre_habito.classList.add('titulo_habito')
     Nombre_habito_h1.classList.add('titulo_habito_texto')
     racha_habito_p.classList.add('racha_habito_texto')
+    
     let texto_nombre = document.createTextNode(element.nombre)
     let texto_numero_racha = document.createTextNode( numero_racha_h)
     let span_racha = document.createElement("span");
@@ -52,8 +63,30 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     boton_config.classList.add('boton_config')
     Nombre_habito_h1.appendChild(texto_nombre)
     Nombre_habito_h1.title = element.work_time
+    
+    // Estructura: nombre, racha centrada, y tags
     Nombre_habito.appendChild(Nombre_habito_h1)
-    Nombre_habito.appendChild(racha_habito_p)
+    
+    // Contenedor de racha pegado a la derecha
+    racha_container.appendChild(racha_habito_p)
+    Nombre_habito.appendChild(racha_container)
+    
+    // Agregar tags si existen, si no, mantener espacio para consistencia
+    if (element.tags && element.tags.length > 0) {
+      element.tags.forEach(tag => {
+        let tag_badge = document.createElement('span')
+        tag_badge.classList.add('habito-tag-badge')
+        tag_badge.textContent = tag.nombre
+        tag_badge.style.backgroundColor = tag.color
+        // Determinar color del texto basado en el color de fondo
+        const brightness = getBrightness(tag.color)
+        tag_badge.style.color = brightness > 128 ? '#000' : '#fff'
+        tags_container.appendChild(tag_badge)
+      })
+    }
+    // Siempre agregar el contenedor de tags para mantener consistencia visual
+    Nombre_habito.appendChild(tags_container)
+    
     div_item_h.appendChild(boton_config);
     div_item_h.appendChild(Nombre_habito);
     let botn = document.createElement("button")
@@ -198,6 +231,61 @@ function fetch_lista_habitos(principal){
     });
 }   
 
+function actualizar_listas(principal){
+    let url = '/habitos/getHabitosR/';
+    fetch(url)
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('La solicitud falló');
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        console.log('Datos recibidos:', data);
+        
+        // Validar y normalizar los datos antes de mostrarlos
+        const normalizarDatos = (lista) => {
+            if (!Array.isArray(lista)) {
+                console.warn('Lista no es un array:', lista);
+                return [];
+            }
+            return lista.map(item => ({
+                ...item,
+                orden_n: typeof item.orden_n === 'number' ? item.orden_n : 0
+            })).sort((a, b) => {
+                const ordenA = parseInt(a.orden_n);
+                const ordenB = parseInt(b.orden_n);
+                return ordenA - ordenB;
+            });
+        };
+
+        // Normalizar y ordenar los datos para cada lista
+        if (principal) {
+            const habitosPorHacer = normalizarDatos(data.Habitos_por_hacer);
+            llenar_lista_habitos('miLista', false, false, habitosPorHacer);
+        }
+        
+        const habitosHechos = normalizarDatos(data.Habitos_hechos);
+        const habitosArchivados = normalizarDatos(data.ListaHArchivados);
+        
+        llenar_lista_habitos('miLista_hechos', false, false, habitosHechos);
+        llenar_lista_habitos('miLista_archivados', false, true, habitosArchivados);
+
+        // Actualizar estadísticas solo si están disponibles
+        if (data.Tiempo_Restante_Hoy) {
+            set_tiempo_restante_Hoy(data.Tiempo_Restante_Hoy);
+        }
+        if (data.Numero_Restante_Hoy !== undefined) {
+            set_numero_restante_Hoy(data.Numero_Restante_Hoy);
+        }
+        if (data.Tiempo_completado_Hoy) {
+            actualizar_horas_realizadas(data.Tiempo_completado_Hoy);
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+    });
+}
 
 function set_tiempo_restante_Hoy(tiempoRestante){
   let texto_tiempo_restante = document.getElementById('tiempo_restante')
@@ -320,5 +408,31 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
   }
   resolve()
   })
+}
+
+// Función auxiliar para calcular el brillo de un color
+function getBrightness(hexColor) {
+  // Asegurar que el color tenga el formato correcto
+  if (!hexColor || hexColor.length < 6) {
+    return 128; // Valor por defecto
+  }
+  
+  // Añadir # si no lo tiene
+  if (!hexColor.startsWith('#')) {
+    hexColor = '#' + hexColor;
+  }
+  
+  // Convertir hex a RGB
+  const r = parseInt(hexColor.substr(1, 2), 16);
+  const g = parseInt(hexColor.substr(3, 2), 16);
+  const b = parseInt(hexColor.substr(5, 2), 16);
+  
+  // Validar que los valores sean números válidos
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    return 128; // Valor por defecto
+  }
+  
+  // Calcular brillo usando la fórmula de luminancia
+  return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
