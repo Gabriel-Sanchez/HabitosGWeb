@@ -227,6 +227,7 @@ function configurar_habito (valor) {
 
   document.getElementById('id').value = valor.id
   document.getElementById('nombre').value = valor.nombre
+  document.getElementById('comentarios').value = valor.comentarios || ''
   document.getElementById('work_time').value = valor.work_time
   document.getElementById('short_break').value = valor.short_break
   document.getElementById('count').value = valor.count
@@ -279,6 +280,7 @@ function configurar_habito (valor) {
 function guardar_habito_json () {
   const id = document.getElementById('id').value
   const nombre = document.getElementById('nombre').value
+  const comentarios = document.getElementById('comentarios').value
   const work_time = document.getElementById('work_time').value
   const short_break = document.getElementById('short_break').value
   const count = document.getElementById('count').value
@@ -299,6 +301,7 @@ function guardar_habito_json () {
   const data = {
     id: id,
     nombre: nombre,
+    comentarios: comentarios,
     work_time: work_time,
     short_break: short_break,
     count: count,
@@ -355,6 +358,7 @@ function configurar_habito_nuevo () {
 
   document.getElementById('id').value = ''
   document.getElementById('nombre').value = ''
+  document.getElementById('comentarios').value = ''
   document.getElementById('work_time').value = ''
   document.getElementById('short_break').value = ''
   document.getElementById('count').value = ''
