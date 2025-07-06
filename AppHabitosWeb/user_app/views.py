@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
 from .models import Profile
-from .forms import ProfileForm, ProfileFormImage, ProfileFormPass,ProfileFormUserE
+from .forms import ProfileForm, ProfileFormImage, ProfileFormPass,ProfileFormUserE, ProfileFormFinDia
 
 from django.db.utils import IntegrityError
+from django.http import JsonResponse
 
 
 def update_profile(request):
@@ -84,12 +85,43 @@ def update_profile(request):
 
             print(FormUserE.cleaned_data)
             return redirect('habitos_home')
+            
+        # Manejar configuración de fin de día
+        FormFinDia = ProfileFormFinDia(request.POST)
+        if FormFinDia.is_valid():
+            data = FormFinDia.cleaned_data
+            
+            profile.fin_dia = data['fin_dia']
+            profile.save()
+            
+            print(FormFinDia.cleaned_data)
+            return redirect('habitos_home')
     else:
         form = ProfileForm()
 
     return render(request=request, template_name='users/update_profile.html',
     context={'profile': profile, 'user': request.user, 'form':form} )
 
+
+@login_required
+def get_user_config(request):
+    """Obtener la configuración del usuario en formato JSON"""
+    try:
+        profile = Profile.objects.get(user=request.user)
+        return JsonResponse({
+            'fin_dia': profile.fin_dia.strftime('%H:%M'),
+            'status': 'success'
+        })
+    except Profile.DoesNotExist:
+        return JsonResponse({
+            'fin_dia': '23:59',  # valor por defecto
+            'status': 'success'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'status': 'error'
+        })
 
 
 def details_profile(request):

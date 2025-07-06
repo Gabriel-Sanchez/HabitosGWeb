@@ -287,6 +287,28 @@ function actualizar_listas(principal){
     });
 }
 
+// Variable global para almacenar la configuración del usuario
+let userConfigEndOfDay = null;
+
+// Función para obtener la configuración del usuario
+async function obtenerConfiguracionUsuarioTiempo() {
+    try {
+        const response = await fetch('/users/api/user-config/');
+        const data = await response.json();
+        if (data.status === 'success') {
+            userConfigEndOfDay = data.fin_dia;
+        } else {
+            userConfigEndOfDay = '23:59'; // valor por defecto
+        }
+    } catch (error) {
+        console.error('Error al obtener configuración del usuario:', error);
+        userConfigEndOfDay = '23:59'; // valor por defecto
+    }
+}
+
+// Inicializar la configuración del usuario al cargar la página
+obtenerConfiguracionUsuarioTiempo();
+
 function set_tiempo_restante_Hoy(tiempoRestante){
   let texto_tiempo_restante = document.getElementById('tiempo_restante');
   
@@ -296,14 +318,35 @@ function set_tiempo_restante_Hoy(tiempoRestante){
     return;
   }
   
-  // Calcular las horas restantes del día
+  // Calcular las horas restantes del día usando la hora configurada del usuario
   let ahora = new Date();
   let finDelDia = new Date();
-  finDelDia.setHours(23, 59, 59, 999);
+  
+  // Usar la hora configurada del usuario
+  let horaFinDia = userConfigEndOfDay ? userConfigEndOfDay : '23:59';
+  let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
+  
+  finDelDia.setHours(horaFin, minutoFin, 59, 999);
+  
+  // Si ya pasó la hora configurada, usar el final del día actual
+  if (ahora > finDelDia) {
+    finDelDia.setHours(23, 59, 59, 999);
+  }
   
   let milisegundosRestantes = finDelDia.getTime() - ahora.getTime();
   let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
   let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
+  
+  // Calcular el porcentaje del día que ha pasado
+  let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
+  let totalMinutosDia = horaFin * 60 + minutoFin;
+  
+  // Si el tiempo actual es después de la hora configurada, usar el día completo
+  if (totalMinutosHoy > totalMinutosDia) {
+    totalMinutosDia = 24 * 60; // 24 horas completas
+  }
+  
+  let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
   
   // Asegurar que sean números válidos
   let horas = parseInt(tiempoRestante.Horas) || 0;
@@ -325,23 +368,23 @@ function set_tiempo_restante_Hoy(tiempoRestante){
       `${excesoHoras}h ${excesoMinutos}m de exceso` : 
       `${excesoMinutos}m de exceso`;
     
-         texto_tiempo_restante.innerHTML = `
-       <div style="color: #ff6b6b; font-weight: bold;">${textoBase}</div>
-       <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
-         Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día
-       </div>
-       <div style="font-size: 0.7em; color: #ff6b6b; font-weight: bold;">
-         ${textoExceso}
-       </div>
-     `;
+    texto_tiempo_restante.innerHTML = `
+      <div style="color: #ff6b6b; font-weight: bold;">${textoBase}</div>
+      <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
+        Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día (${(100 - porcentajeDiaPasado).toFixed(1)}%)
+      </div>
+      <div style="font-size: 0.7em; color: #ff6b6b; font-weight: bold;">
+        ${textoExceso}
+      </div>
+    `;
   } else {
     // Tiempo normal
-         texto_tiempo_restante.innerHTML = `
-       <div style="font-weight: bold;">${textoBase}</div>
-       <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
-         Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día
-       </div>
-     `;
+    texto_tiempo_restante.innerHTML = `
+      <div style="font-weight: bold;">${textoBase}</div>
+      <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
+        Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día (${(100 - porcentajeDiaPasado).toFixed(1)}%)
+      </div>
+    `;
   }
 }
 function set_numero_restante_Hoy(tiempoRestante){

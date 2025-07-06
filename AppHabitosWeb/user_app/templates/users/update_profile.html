@@ -86,6 +86,35 @@
                 </div>
 
                 <div class="">
+                    <div class="text-center">Configuración de fin de día</div>
+                    <div class="flex flex-col justify-center items-center">
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data" class="flex flex-col justify-center items-center gap-2">
+                            {% csrf_token %}
+                            
+                            <div class="flex flex-col items-center gap-2">
+                                <label for="fin_dia" class="text-sm text-gray-600">Hora de fin del día:</label>
+                                <input 
+                                    type="time" 
+                                    name="fin_dia" 
+                                    id="fin_dia" 
+                                    value="{{ profile.fin_dia|time:'H:i' }}"
+                                    class="form-control" 
+                                    required
+                                    step="60"
+                                >
+                                <small class="text-gray-500 text-center">
+                                    Esta hora se usará para calcular el tiempo restante del día
+                                </small>
+                            </div>
+                            
+                            <button class="bg-blue-500 hover:bg-blue-600 rounded-md w-full text-white px-4 py-2">
+                                Guardar configuración
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="">
 
                     <div class="text-center">Cambiar contraseña</div>
                     <div class="">
