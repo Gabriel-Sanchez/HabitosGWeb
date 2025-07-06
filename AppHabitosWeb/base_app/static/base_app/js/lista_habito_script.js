@@ -306,15 +306,63 @@ async function obtenerConfiguracionUsuarioTiempo() {
     }
 }
 
+// Función para actualizar la barra de progreso con información básica del día
+function actualizarBarraProgresoBásica() {
+    let textoProgreso = document.querySelector('.progress-text');
+    let tiempoRestante = document.getElementById('tiempo_restante');
+    
+    if (!textoProgreso) return;
+    
+    let ahora = new Date();
+    let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
+    
+    // Usar la hora configurada del usuario
+    let horaFinDia = userConfigEndOfDay ? userConfigEndOfDay : '23:59';
+    let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
+    let totalMinutosDia = horaFin * 60 + minutoFin;
+    
+    // Si el tiempo actual es después de la hora configurada, usar el día completo
+    if (totalMinutosHoy > totalMinutosDia) {
+        totalMinutosDia = 24 * 60; // 24 horas completas
+    }
+    
+    let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
+    
+    // Calcular tiempo restante del día
+    let finDelDia = new Date();
+    finDelDia.setHours(horaFin, minutoFin, 59, 999);
+    
+    // Si ya pasó la hora configurada, usar el final del día actual
+    if (ahora > finDelDia) {
+        finDelDia.setHours(23, 59, 59, 999);
+    }
+    
+    let milisegundosRestantes = finDelDia.getTime() - ahora.getTime();
+    let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
+    let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
+    
+    // Solo porcentaje en la barra
+    textoProgreso.textContent = `${porcentajeDiaPasado.toFixed(1)}%`;
+    
+    // Información detallada arriba
+    if (tiempoRestante) {
+        tiempoRestante.innerHTML = `Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día`;
+    }
+}
+
 // Inicializar la configuración del usuario al cargar la página
-obtenerConfiguracionUsuarioTiempo();
+obtenerConfiguracionUsuarioTiempo().then(() => {
+    actualizarBarraProgresoBásica();
+});
 
 function set_tiempo_restante_Hoy(tiempoRestante){
-  let texto_tiempo_restante = document.getElementById('tiempo_restante');
+  let textoProgreso = document.querySelector('.progress-text');
+  let elemento_tiempo_restante = document.getElementById('tiempo_restante');
   
   // Verificar que los datos sean válidos
   if (!tiempoRestante || typeof tiempoRestante.Horas === 'undefined' || typeof tiempoRestante.Minutos === 'undefined') {
-    texto_tiempo_restante.innerHTML = '<div>Sin datos</div>';
+    // Si no hay datos válidos, mostrar información básica del día
+    actualizarBarraProgresoBásica();
     return;
   }
   
@@ -356,35 +404,37 @@ function set_tiempo_restante_Hoy(tiempoRestante){
   let tiempoHabitosEnMinutos = (horas * 60) + minutos;
   let horasRestantesDelDiaEnMinutos = (horasRestantesDelDia * 60) + minutosRestantesDelDia;
   
-  let textoBase = horas + "h " + minutos + "m";
+  let textoHabitos = `${horas}h ${minutos}m`;
+  let textoTiempoRestante = `${horasRestantesDelDia}h ${minutosRestantesDelDia}m`;
   
-  if (tiempoHabitosEnMinutos > horasRestantesDelDiaEnMinutos) {
-    // Hay más trabajo que tiempo disponible
-    let excesoEnMinutos = tiempoHabitosEnMinutos - horasRestantesDelDiaEnMinutos;
-    let excesoHoras = Math.floor(excesoEnMinutos / 60);
-    let excesoMinutos = excesoEnMinutos % 60;
-    
-    let textoExceso = excesoHoras > 0 ? 
-      `${excesoHoras}h ${excesoMinutos}m de exceso` : 
-      `${excesoMinutos}m de exceso`;
-    
-    texto_tiempo_restante.innerHTML = `
-      <div style="color: #ff6b6b; font-weight: bold;">${textoBase}</div>
-      <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
-        Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día (${(100 - porcentajeDiaPasado).toFixed(1)}%)
-      </div>
-      <div style="font-size: 0.7em; color: #ff6b6b; font-weight: bold;">
-        ${textoExceso}
-      </div>
-    `;
-  } else {
-    // Tiempo normal
-    texto_tiempo_restante.innerHTML = `
-      <div style="font-weight: bold;">${textoBase}</div>
-      <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
-        Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día (${(100 - porcentajeDiaPasado).toFixed(1)}%)
-      </div>
-    `;
+  // Solo porcentaje en la barra
+  if (textoProgreso) {
+    textoProgreso.textContent = `${porcentajeDiaPasado.toFixed(1)}%`;
+  }
+  
+  // Información detallada arriba
+  if (elemento_tiempo_restante) {
+    if (tiempoHabitosEnMinutos > horasRestantesDelDiaEnMinutos) {
+      // Hay más trabajo que tiempo disponible
+      let excesoEnMinutos = tiempoHabitosEnMinutos - horasRestantesDelDiaEnMinutos;
+      let excesoHoras = Math.floor(excesoEnMinutos / 60);
+      let excesoMinutos = excesoEnMinutos % 60;
+      
+      let textoExceso = excesoHoras > 0 ? 
+        `${excesoHoras}h ${excesoMinutos}m de exceso` : 
+        `${excesoMinutos}m de exceso`;
+      
+      elemento_tiempo_restante.innerHTML = `
+        <div style="color: #d32f2f; font-weight: bold;">${textoHabitos} pendientes</div>
+        <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} del día (${textoExceso})</div>
+      `;
+    } else {
+      // Tiempo normal
+      elemento_tiempo_restante.innerHTML = `
+        <div style="font-weight: bold;">${textoHabitos} pendientes</div>
+        <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} del día</div>
+      `;
+    }
   }
 }
 function set_numero_restante_Hoy(tiempoRestante){

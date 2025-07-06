@@ -1,6 +1,5 @@
 // Obtén el elemento progress
 let barraProgreso = document.querySelector('progress');
-let textoProgreso = document.querySelector('.progress-text');
 let userEndOfDay = null;
 
 // Función para obtener la configuración del usuario
@@ -36,13 +35,11 @@ function Calcula_porcentaje_dia(){
     // Calcula el porcentaje del día que ha pasado
     let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
 
-    // Actualiza el valor de la barra de progreso
-    barraProgreso.value = porcentajeDiaPasado;
-
-    // Actualiza el texto con el porcentaje del día que ha pasado
-    textoProgreso.textContent = porcentajeDiaPasado.toFixed(2) + '% del día';
-
-    dia_porcentaje = document.getElementById('porcentaje_dia')
+    // Actualiza solo el valor de la barra de progreso
+    // El texto será controlado por lista_habito_script.js
+    if (barraProgreso) {
+        barraProgreso.value = porcentajeDiaPasado;
+    }
 }
 
 // Inicializar la configuración del usuario al cargar la página
