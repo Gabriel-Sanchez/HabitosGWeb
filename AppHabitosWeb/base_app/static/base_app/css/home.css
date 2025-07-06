@@ -400,10 +400,11 @@ summary{
 }
 
 #tiempo_restante{
-  height: 40px;
-  width: 220px;
+  min-height: 50px;
+  width: 250px;
   /* Utilizar un diseño Flexbox */
   display: flex;
+  flex-direction: column;
   
   /* Centrar los elementos verticalmente */
   align-items: center;
@@ -412,6 +413,9 @@ summary{
   justify-content: center;
   background-color: #525467;
   margin: 0;
+  padding: 8px 5px;
+  box-sizing: border-box;
+  text-align: center;
 }
 #horas_completadas{
   height: 40px;

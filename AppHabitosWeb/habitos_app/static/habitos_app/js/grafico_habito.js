@@ -1,4 +1,3 @@
-
 // const CalHeatMap = require('cal-heatmap');
 // const { duration } = require('moment');
 
@@ -179,11 +178,34 @@ function mostrar_datos(dateBase, nb, idHabito){
  
  document.getElementById('form_edicion_historial').style.display = 'none'
  
+ // Obtener el objeto del hábito para los botones de tipos
+ let habitoObj = null;
+ if (nb !== null && objeto_habito) {
+   habitoObj = objeto_habito;
+ } else {
+   // Si no hay datos históricos, obtener el objeto del hábito desde el valor_completo global
+   habitoObj = valor_completo;
+ }
+ 
+ // Generar solo el botón checker para el día seleccionado del heatmap
+ let botonesHabito = '';
+ if (habitoObj) {
+   botonesHabito = `
+   <div class="botones-tipos-habito" style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
+     <button class="boton_editarHistorial rounded-sm pl-4 pr-4 pt-1 pb-1 heatmap-checker-btn" onclick="registrar_Habitos_checker_heatmap_fecha('${fecha}', ${habitoObj.id})">
+       <i class="material-icons" style="font-size: 16px; vertical-align: middle;">check</i>
+       Marcar como completado
+     </button>
+   </div>
+   `;
+ }
+ 
  document.getElementById('onClick-placeholder').innerHTML = `
  
  <!-- <b>${date}</b>  -->
  <br/> <b>${resultado}</b> <br/>
  
+ ${botonesHabito}
  
  <button class="boton_editarHistorial rounded-sm pl-4 pr-4 pt-1 pb-1" id="boton_visibleEdicionHistorial" onclick="visibleEdicionHistorial()">Editar</button>
  
@@ -359,8 +381,26 @@ function transformarDatos(idHabito, archivo) {
    let today = new Date()
 let todayHeatmap = today.toLocaleDateString("es-PA", {timeZone: "America/Panama"})
 console.log(todayHeatmap)
+
+// Destruir instancias anteriores si existen
+if (window.calAnioInstance) {
+    try {
+        window.calAnioInstance.destroy();
+    } catch (e) {
+        console.log('Error al destruir calAnio anterior:', e);
+    }
+}
+if (window.calMesInstance) {
+    try {
+        window.calMesInstance.destroy();
+    } catch (e) {
+        console.log('Error al destruir calMes anterior:', e);
+    }
+}
+
 //    nuevo cal-heatmap
 const calAnio = new CalHeatmap();
+window.calAnioInstance = calAnio;
 calAnio.paint(
     {
       data: { source: data.data_historial, x: "fecha", y: "duracion" },
@@ -471,6 +511,7 @@ nextButton.addEventListener('click', function(e) {
 
 
 const calMes = new CalHeatmap();
+window.calMesInstance = calMes;
 calMes.paint(
     {
       data: { source: data.data_historial, x: "fecha", y: "duracion" },
@@ -581,6 +622,32 @@ function definir(value) {
          document.getElementById('mes_habito').innerHTML = "";
 
          document.getElementById('header').innerText = value.nombre;
+         
+         // Agregar botones de tipos de hábito debajo del título (para fecha actual)
+         let botones_tipos_header = document.getElementById('botones-tipos-header');
+         if (!botones_tipos_header) {
+             // Crear el contenedor de botones si no existe
+             botones_tipos_header = document.createElement('div');
+             botones_tipos_header.id = 'botones-tipos-header';
+             botones_tipos_header.className = 'botones-tipos-habito';
+             botones_tipos_header.style.cssText = 'display: flex; gap: 10px; margin-top: 10px; justify-content: center; flex-wrap: wrap;';
+             document.getElementById('header').parentNode.insertBefore(botones_tipos_header, document.getElementById('header').nextSibling);
+         }
+         
+         botones_tipos_header.innerHTML = `
+             <button class="boton-tipo-habito boton-pomodoro" onclick="window.location.href='/pomodoro/pomo_ven/${value.id}'" style="background-color: #ff6b6b; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                 <i class="material-icons" style="font-size: 16px; vertical-align: middle;">alarm</i>
+                 Pomodoro
+             </button>
+             <button class="boton-tipo-habito boton-checker" onclick="registrar_Habitos_checker_heatmap_actual(${value.id})" style="background-color: #4ecdc4; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                 <i class="material-icons" style="font-size: 16px; vertical-align: middle;">check</i>
+                 Checker
+             </button>
+             <button class="boton-tipo-habito boton-stopwatch" onclick="window.location.href='/pomodoro/stopWatch/${value.id}'" style="background-color: #45b7d1; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                 <i class="material-icons" style="font-size: 16px; vertical-align: middle;">timer</i>
+                 StopWatch
+             </button>
+         `;
 
          valor_completo = value
          document.getElementById('onClick-placeholder').innerHTML = ''
@@ -774,6 +841,169 @@ let datosObjetivo = etiquetas.map(() => valorObjetivo);
 function visibleEdicionHistorial(){
   document.getElementById('boton_visibleEdicionHistorial').style.display = 'none'
   document.getElementById('form_edicion_historial').style.display = 'flex'
+}
+
+// Función para registrar hábitos checker desde el heatmap para una fecha específica
+function registrar_Habitos_checker_heatmap_fecha(fecha, id_habito) {
+    console.log('Registrando hábito checker desde heatmap para fecha:', fecha, 'ID:', id_habito);
+    
+    // Obtener el objeto del hábito desde valor_completo
+    let habito_obj = valor_completo;
+    
+    if (!habito_obj || habito_obj.id !== id_habito) {
+        console.error('No se pudo obtener el objeto del hábito');
+        alert('Error: No se pudo obtener la información del hábito.');
+        return;
+    }
+    
+    // Crear una versión personalizada del objeto para la fecha específica
+    let datos_personalizados = {
+        id_habito: id_habito,
+        fecha: fecha,
+        work_time: habito_obj.work_time,
+        short_break: habito_obj.short_break
+    };
+    
+    // Llamar a la función de registro personalizada para fecha específica
+    registrar_Habitos_checker_fecha_especifica(datos_personalizados);
+}
+
+// Función para registrar hábitos checker para la fecha actual (botones debajo del título)
+function registrar_Habitos_checker_heatmap_actual(id_habito) {
+    console.log('Registrando hábito checker para fecha actual con ID:', id_habito);
+    
+    // Obtener el objeto del hábito desde valor_completo
+    let habito_obj = valor_completo;
+    
+    if (!habito_obj || habito_obj.id !== id_habito) {
+        console.error('No se pudo obtener el objeto del hábito');
+        alert('Error: No se pudo obtener la información del hábito.');
+        return;
+    }
+    
+    // Llamar a la función principal de registro (fecha actual)
+    if (typeof registrar_Habitos_checker === 'function') {
+        registrar_Habitos_checker(habito_obj);
+        
+        // Actualizar las listas principales inmediatamente como en la lista normal
+        setTimeout(() => {
+            console.log('Actualizando listas después del registro del hábito:', habito_obj.id);
+            if (typeof actualizar_listas === 'function') {
+                actualizar_listas(true);
+                console.log('actualizar_listas ejecutada');
+            } else if (typeof fetch_lista_habitos === 'function') {
+                console.log('Usando fetch_lista_habitos como alternativa');
+                fetch_lista_habitos(true);
+            } else {
+                console.error('Ninguna función de actualización de listas está disponible');
+                // Forzar recarga de la página como último recurso
+                window.location.reload();
+            }
+            
+            // Refrescar el heatmap para mostrar el nuevo registro
+            transformarDatos(habito_obj.id, 'historial_habitos.csv');
+            
+            // Actualizar también los gráficos de barras
+            if (typeof graficar_semana === 'function' && habito_obj.objetivo) {
+                graficar_semana(habito_obj.id + '', habito_obj.objetivo);
+                console.log('Gráfico semanal actualizado');
+            }
+            
+            // Actualizar también el gráfico anual (myChart)
+            if (typeof generarGraficoDuracionPorAnio === 'function' && habito_obj.objetivo) {
+                generarGraficoDuracionPorAnio(habito_obj.id + '', habito_obj.objetivo);
+                console.log('Gráfico anual (myChart) actualizado');
+            }
+        }, 1000); // Aumentado el tiempo para asegurar que el backend procese
+        
+    } else {
+        console.error('La función registrar_Habitos_checker no está disponible');
+        alert('Error: No se pudo registrar el hábito. La función no está disponible.');
+    }
+}
+
+// Función para registrar hábito checker en una fecha específica
+function registrar_Habitos_checker_fecha_especifica(datos) {
+    console.log('Registrando para fecha específica:', datos);
+    
+    const fechaInicio = new Date(datos.fecha + 'T00:00:00');
+    const fechaFin = new Date(fechaInicio.getTime() + (datos.work_time * 60 * 1000));
+    const duracionDescanso = Number(datos.short_break);
+
+    const datosEnvio = {
+        fechaInicio: fechaInicio.toLocaleString('sv-SE').replace(' ', 'T'),
+        fechaFin: fechaFin.toLocaleString('sv-SE').replace(' ', 'T'),
+        duracionDescanso: duracionDescanso
+    };
+
+    var url = `/habitos/setHistory/${datos.id_habito}`;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(datosEnvio)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('fallo');
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        console.log('Registro exitoso:', data);
+        
+        // Actualizar ambos después de un delay adecuado
+        setTimeout(() => {
+            // Actualizar las listas principales si es para hoy
+            let fechaHoy = new Date().toISOString().split('T')[0];
+            console.log('Fecha de registro:', datos.fecha, 'Fecha de hoy:', fechaHoy);
+            
+            if (datos.fecha === fechaHoy) {
+                if (typeof actualizar_listas === 'function') {
+                    console.log('Actualizando listas para hábito registrado hoy');
+                    actualizar_listas(true);
+                } else if (typeof fetch_lista_habitos === 'function') {
+                    console.log('Usando fetch_lista_habitos como alternativa para fecha de hoy');
+                    fetch_lista_habitos(true);
+                } else {
+                    console.error('Ninguna función de actualización disponible para fecha de hoy');
+                }
+            }
+            
+            // Refrescar el heatmap para mostrar el nuevo registro
+            transformarDatos(datos.id_habito, 'historial_habitos.csv');
+            
+            // Actualizar también los gráficos de barras si es para el hábito actual
+            if (typeof graficar_semana === 'function' && valor_completo && valor_completo.objetivo) {
+                graficar_semana(datos.id_habito + '', valor_completo.objetivo);
+                console.log('Gráfico semanal actualizado para fecha específica');
+            }
+            
+            // Actualizar también el gráfico anual (myChart)
+            if (typeof generarGraficoDuracionPorAnio === 'function' && valor_completo && valor_completo.objetivo) {
+                generarGraficoDuracionPorAnio(datos.id_habito + '', valor_completo.objetivo);
+                console.log('Gráfico anual (myChart) actualizado para fecha específica');
+            }
+        }, 1000);
+        
+        // Mensaje temporal que desaparece en 1 segundo
+        let mensaje = document.createElement('div');
+        mensaje.innerText = 'Registrado para ' + datos.fecha;
+        mensaje.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #4ecdc4; color: white; padding: 10px 15px; border-radius: 4px; z-index: 1000; font-size: 14px;';
+        document.body.appendChild(mensaje);
+        setTimeout(() => {
+            if (mensaje.parentNode) {
+                mensaje.parentNode.removeChild(mensaje);
+            }
+        }, 1500);
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Error al registrar el hábito');
+    });
 }
 
 

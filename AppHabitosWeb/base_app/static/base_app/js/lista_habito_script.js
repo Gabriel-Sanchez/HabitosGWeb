@@ -288,8 +288,61 @@ function actualizar_listas(principal){
 }
 
 function set_tiempo_restante_Hoy(tiempoRestante){
-  let texto_tiempo_restante = document.getElementById('tiempo_restante')
-  texto_tiempo_restante.innerText =  tiempoRestante.Horas + " horas y " + tiempoRestante.Minutos + " minutos";
+  let texto_tiempo_restante = document.getElementById('tiempo_restante');
+  
+  // Verificar que los datos sean válidos
+  if (!tiempoRestante || typeof tiempoRestante.Horas === 'undefined' || typeof tiempoRestante.Minutos === 'undefined') {
+    texto_tiempo_restante.innerHTML = '<div>Sin datos</div>';
+    return;
+  }
+  
+  // Calcular las horas restantes del día
+  let ahora = new Date();
+  let finDelDia = new Date();
+  finDelDia.setHours(23, 59, 59, 999);
+  
+  let milisegundosRestantes = finDelDia.getTime() - ahora.getTime();
+  let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
+  let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
+  
+  // Asegurar que sean números válidos
+  let horas = parseInt(tiempoRestante.Horas) || 0;
+  let minutos = parseInt(tiempoRestante.Minutos) || 0;
+  
+  // Convertir tiempo restante de hábitos a minutos totales
+  let tiempoHabitosEnMinutos = (horas * 60) + minutos;
+  let horasRestantesDelDiaEnMinutos = (horasRestantesDelDia * 60) + minutosRestantesDelDia;
+  
+  let textoBase = horas + "h " + minutos + "m";
+  
+  if (tiempoHabitosEnMinutos > horasRestantesDelDiaEnMinutos) {
+    // Hay más trabajo que tiempo disponible
+    let excesoEnMinutos = tiempoHabitosEnMinutos - horasRestantesDelDiaEnMinutos;
+    let excesoHoras = Math.floor(excesoEnMinutos / 60);
+    let excesoMinutos = excesoEnMinutos % 60;
+    
+    let textoExceso = excesoHoras > 0 ? 
+      `${excesoHoras}h ${excesoMinutos}m de exceso` : 
+      `${excesoMinutos}m de exceso`;
+    
+         texto_tiempo_restante.innerHTML = `
+       <div style="color: #ff6b6b; font-weight: bold;">${textoBase}</div>
+       <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
+         Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día
+       </div>
+       <div style="font-size: 0.7em; color: #ff6b6b; font-weight: bold;">
+         ${textoExceso}
+       </div>
+     `;
+  } else {
+    // Tiempo normal
+         texto_tiempo_restante.innerHTML = `
+       <div style="font-weight: bold;">${textoBase}</div>
+       <div style="font-size: 0.7em; color: #ccc; margin-top: 2px;">
+         Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día
+       </div>
+     `;
+  }
 }
 function set_numero_restante_Hoy(tiempoRestante){
   let texto_numeros_restantes = document.getElementById('tareas_restantes')
