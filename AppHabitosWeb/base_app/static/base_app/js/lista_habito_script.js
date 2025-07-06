@@ -308,10 +308,7 @@ async function obtenerConfiguracionUsuarioTiempo() {
 
 // Función para actualizar la barra de progreso con información básica del día
 function actualizarBarraProgresoBásica() {
-    let textoProgreso = document.querySelector('.progress-text');
     let tiempoRestante = document.getElementById('tiempo_restante');
-    
-    if (!textoProgreso) return;
     
     let ahora = new Date();
     let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
@@ -326,8 +323,6 @@ function actualizarBarraProgresoBásica() {
         totalMinutosDia = 24 * 60; // 24 horas completas
     }
     
-    let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
-    
     // Calcular tiempo restante del día
     let finDelDia = new Date();
     finDelDia.setHours(horaFin, minutoFin, 59, 999);
@@ -341,9 +336,6 @@ function actualizarBarraProgresoBásica() {
     let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
     let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
     
-    // Solo porcentaje en la barra
-    textoProgreso.textContent = `${porcentajeDiaPasado.toFixed(1)}%`;
-    
     // Información detallada arriba
     if (tiempoRestante) {
         tiempoRestante.innerHTML = `Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día`;
@@ -356,7 +348,6 @@ obtenerConfiguracionUsuarioTiempo().then(() => {
 });
 
 function set_tiempo_restante_Hoy(tiempoRestante){
-  let textoProgreso = document.querySelector('.progress-text');
   let elemento_tiempo_restante = document.getElementById('tiempo_restante');
   
   // Verificar que los datos sean válidos
@@ -385,17 +376,6 @@ function set_tiempo_restante_Hoy(tiempoRestante){
   let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
   let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
   
-  // Calcular el porcentaje del día que ha pasado
-  let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
-  let totalMinutosDia = horaFin * 60 + minutoFin;
-  
-  // Si el tiempo actual es después de la hora configurada, usar el día completo
-  if (totalMinutosHoy > totalMinutosDia) {
-    totalMinutosDia = 24 * 60; // 24 horas completas
-  }
-  
-  let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
-  
   // Asegurar que sean números válidos
   let horas = parseInt(tiempoRestante.Horas) || 0;
   let minutos = parseInt(tiempoRestante.Minutos) || 0;
@@ -406,11 +386,6 @@ function set_tiempo_restante_Hoy(tiempoRestante){
   
   let textoHabitos = `${horas}h ${minutos}m`;
   let textoTiempoRestante = `${horasRestantesDelDia}h ${minutosRestantesDelDia}m`;
-  
-  // Solo porcentaje en la barra
-  if (textoProgreso) {
-    textoProgreso.textContent = `${porcentajeDiaPasado.toFixed(1)}%`;
-  }
   
   // Información detallada arriba
   if (elemento_tiempo_restante) {
@@ -436,11 +411,23 @@ function set_tiempo_restante_Hoy(tiempoRestante){
       `;
     }
   }
+  
+  // Guardar el tiempo restante para el cálculo del progreso
+  ultimoTiempoRestante = tiempoRestante;
+  
+  // Actualizar la barra de progreso de las tareas si tenemos ambos datos
+  if (ultimasHorasCompletadas && ultimoTiempoRestante && typeof actualizarProgresoTareas === 'function') {
+    actualizarProgresoTareas(ultimasHorasCompletadas, ultimoTiempoRestante);
+  }
 }
 function set_numero_restante_Hoy(tiempoRestante){
   let texto_numeros_restantes = document.getElementById('tareas_restantes')
   texto_numeros_restantes.innerText = tiempoRestante
 }
+
+// Variables globales para almacenar los datos para el cálculo de progreso
+let ultimasHorasCompletadas = null;
+let ultimoTiempoRestante = null;
 
 function actualizar_horas_realizadas(horasCompletadas){
 
@@ -459,6 +446,14 @@ function actualizar_horas_realizadas(horasCompletadas){
 
     console.log(`Duración total: ${horas} horas, ${minutos} minutos y ${segundos} segundos`);
     horas_completadas.innerText = `${horas}:${minutos}:${segundos}`
+    
+    // Guardar las horas completadas para el cálculo del progreso
+    ultimasHorasCompletadas = horasCompletadas;
+    
+    // Actualizar la barra de progreso de las tareas si tenemos ambos datos
+    if (ultimasHorasCompletadas && ultimoTiempoRestante && typeof actualizarProgresoTareas === 'function') {
+        actualizarProgresoTareas(ultimasHorasCompletadas, ultimoTiempoRestante);
+    }
 }
 
 

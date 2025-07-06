@@ -140,11 +140,18 @@
 
                 {% if not request.user.is_anonymous %}
                 <div class="contenedor-bar mt-1">
-
-
+                    <!-- Barra de progreso del día -->
                     <div class="progress-bar">
-                        <progress value="0" max="100"></progress>
-                        <div class="progress-text">0%</div>
+                        <progress id="progress-dia" value="0" max="100"></progress>
+                        <div class="progress-text">0% del día</div>
+                    </div>
+                </div>
+                
+                <div class="contenedor-bar mt-1">
+                    <!-- Barra de progreso de las tareas -->
+                    <div class="progress-bar">
+                        <progress id="progress-tareas" value="0" max="100"></progress>
+                        <div class="progress-text progress-text-tareas">0% tareas</div>
                     </div>
                 </div>
 

@@ -401,7 +401,9 @@ summary{
 
 #tiempo_restante{
   min-height: 50px;
-  width: 250px;
+  width: auto;
+  min-width: 250px;
+  max-width: 400px;
   /* Utilizar un diseño Flexbox */
   display: flex;
   flex-direction: column;
@@ -413,9 +415,11 @@ summary{
   justify-content: center;
   background-color: #525467;
   margin: 0;
-  padding: 8px 5px;
+  padding: 8px 10px;
   box-sizing: border-box;
   text-align: center;
+  white-space: nowrap;
+  overflow: visible;
 }
 #horas_completadas{
   height: 40px;
@@ -565,7 +569,7 @@ summary{
                 align-items: center;
                 font-size: 0.9em;
                 color: black;
-               
+                pointer-events: none;
               }
               .contenedor-bar{
                 margin-left: 10px;
@@ -614,7 +618,7 @@ summary{
   display: none;
   position: absolute;
   min-width: 160px;
-  z-index: 1;
+  z-index: 1000;
   right: 0;
 }
 
@@ -630,4 +634,46 @@ summary{
 
 .selecters-time{
   height: 25px;
+}
+
+/* Color específico para la barra de progreso del día */
+#progress-dia {
+    accent-color: #4caf50 !important; /* Color verde */
+}
+
+/* Pseudoelementos específicos del navegador para progress del día */
+#progress-dia::-webkit-progress-bar {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+#progress-dia::-webkit-progress-value {
+    background-color: #4caf50; /* Color verde */
+    border-radius: 10px;
+}
+
+#progress-dia::-moz-progress-bar {
+    background-color: #4caf50; /* Color verde para Firefox */
+    border-radius: 10px;
+}
+
+/* Color específico para la barra de progreso de tareas */
+#progress-tareas {
+    accent-color: #00bcd4 !important; /* Color celeste/cyan */
+}
+
+/* Pseudoelementos específicos del navegador para progress */
+#progress-tareas::-webkit-progress-bar {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+#progress-tareas::-webkit-progress-value {
+    background-color: #00bcd4; /* Color celeste */
+    border-radius: 10px;
+}
+
+#progress-tareas::-moz-progress-bar {
+    background-color: #00bcd4; /* Color celeste para Firefox */
+    border-radius: 10px;
 }
