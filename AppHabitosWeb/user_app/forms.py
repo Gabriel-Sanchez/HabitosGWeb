@@ -16,7 +16,16 @@ class ProfileFormUserE(forms.Form):
     username = forms.CharField(max_length=100, required=True)
     email = forms.CharField(max_length=100, required=True)
 
-class ProfileFormFinDia(forms.Form):
+class ProfileFormHorarioDia(forms.Form):
+    inicio_dia = forms.TimeField(
+        required=True,
+        widget=forms.TimeInput(attrs={
+            'type': 'time',
+            'class': 'form-control',
+            'step': '60'  # solo horas y minutos
+        }),
+        help_text="Hora de inicio del día para cálculos de tiempo"
+    )
     fin_dia = forms.TimeField(
         required=True,
         widget=forms.TimeInput(attrs={

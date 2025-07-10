@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
 from .models import Profile
-from .forms import ProfileForm, ProfileFormImage, ProfileFormPass,ProfileFormUserE, ProfileFormFinDia
+from .forms import ProfileForm, ProfileFormImage, ProfileFormPass,ProfileFormUserE, ProfileFormHorarioDia
 
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -86,15 +86,16 @@ def update_profile(request):
             print(FormUserE.cleaned_data)
             return redirect('habitos_home')
             
-        # Manejar configuración de fin de día
-        FormFinDia = ProfileFormFinDia(request.POST)
-        if FormFinDia.is_valid():
-            data = FormFinDia.cleaned_data
+        # Manejar configuración de horario del día
+        FormHorarioDia = ProfileFormHorarioDia(request.POST)
+        if FormHorarioDia.is_valid():
+            data = FormHorarioDia.cleaned_data
             
+            profile.inicio_dia = data['inicio_dia']
             profile.fin_dia = data['fin_dia']
             profile.save()
             
-            print(FormFinDia.cleaned_data)
+            print(FormHorarioDia.cleaned_data)
             return redirect('habitos_home')
     else:
         form = ProfileForm()
@@ -109,11 +110,13 @@ def get_user_config(request):
     try:
         profile = Profile.objects.get(user=request.user)
         return JsonResponse({
+            'inicio_dia': profile.inicio_dia.strftime('%H:%M'),
             'fin_dia': profile.fin_dia.strftime('%H:%M'),
             'status': 'success'
         })
     except Profile.DoesNotExist:
         return JsonResponse({
+            'inicio_dia': '00:00',  # valor por defecto
             'fin_dia': '23:59',  # valor por defecto
             'status': 'success'
         })

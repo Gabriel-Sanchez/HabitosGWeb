@@ -287,7 +287,8 @@ function actualizar_listas(principal){
     });
 }
 
-// Variable global para almacenar la configuración del usuario
+// Variables globales para almacenar la configuración del usuario
+let userConfigStartOfDay = null;
 let userConfigEndOfDay = null;
 
 // Función para obtener la configuración del usuario
@@ -296,12 +297,15 @@ async function obtenerConfiguracionUsuarioTiempo() {
         const response = await fetch('/users/api/user-config/');
         const data = await response.json();
         if (data.status === 'success') {
+            userConfigStartOfDay = data.inicio_dia;
             userConfigEndOfDay = data.fin_dia;
         } else {
+            userConfigStartOfDay = '00:00'; // valor por defecto
             userConfigEndOfDay = '23:59'; // valor por defecto
         }
     } catch (error) {
         console.error('Error al obtener configuración del usuario:', error);
+        userConfigStartOfDay = '00:00'; // valor por defecto
         userConfigEndOfDay = '23:59'; // valor por defecto
     }
 }
@@ -311,34 +315,47 @@ function actualizarBarraProgresoBásica() {
     let tiempoRestante = document.getElementById('tiempo_restante');
     
     let ahora = new Date();
-    let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
+    let minutosActuales = ahora.getHours() * 60 + ahora.getMinutes();
     
-    // Usar la hora configurada del usuario
+    // Usar el horario configurado del usuario
+    let horaInicioDia = userConfigStartOfDay ? userConfigStartOfDay : '00:00';
     let horaFinDia = userConfigEndOfDay ? userConfigEndOfDay : '23:59';
+    
+    let [horaInicio, minutoInicio] = horaInicioDia.split(':').map(Number);
     let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
-    let totalMinutosDia = horaFin * 60 + minutoFin;
     
-    // Si el tiempo actual es después de la hora configurada, usar el día completo
-    if (totalMinutosHoy > totalMinutosDia) {
-        totalMinutosDia = 24 * 60; // 24 horas completas
+    let minutosInicio = horaInicio * 60 + minutoInicio;
+    let minutosFin = horaFin * 60 + minutoFin;
+    
+    // Verificar si estamos dentro del horario del día
+    if (minutosActuales < minutosInicio) {
+        // Antes del inicio del día
+        let minutosHastaInicio = minutosInicio - minutosActuales;
+        let horasHastaInicio = Math.floor(minutosHastaInicio / 60);
+        let minutosRestantesHastaInicio = minutosHastaInicio % 60;
+        
+        if (tiempoRestante) {
+            tiempoRestante.innerHTML = `El día inicia en ${horasHastaInicio}h ${minutosRestantesHastaInicio}m (${horaInicioDia})`;
+        }
+        return;
     }
     
-    // Calcular tiempo restante del día
-    let finDelDia = new Date();
-    finDelDia.setHours(horaFin, minutoFin, 59, 999);
-    
-    // Si ya pasó la hora configurada, usar el final del día actual
-    if (ahora > finDelDia) {
-        finDelDia.setHours(23, 59, 59, 999);
+    if (minutosActuales > minutosFin) {
+        // Después del fin del día
+        if (tiempoRestante) {
+            tiempoRestante.innerHTML = `El día ha terminado (horario: ${horaInicioDia} - ${horaFinDia})`;
+        }
+        return;
     }
     
-    let milisegundosRestantes = finDelDia.getTime() - ahora.getTime();
-    let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
-    let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
+    // Dentro del horario del día - calcular tiempo restante
+    let minutosRestantesDelDia = minutosFin - minutosActuales;
+    let horasRestantesDelDia = Math.floor(minutosRestantesDelDia / 60);
+    let minutosRestantes = minutosRestantesDelDia % 60;
     
     // Información detallada arriba
     if (tiempoRestante) {
-        tiempoRestante.innerHTML = `Quedan ${horasRestantesDelDia}h ${minutosRestantesDelDia}m del día`;
+        tiempoRestante.innerHTML = `Quedan ${horasRestantesDelDia}h ${minutosRestantes}m del día (hasta ${horaFinDia})`;
     }
 }
 
@@ -357,24 +374,29 @@ function set_tiempo_restante_Hoy(tiempoRestante){
     return;
   }
   
-  // Calcular las horas restantes del día usando la hora configurada del usuario
+  // Calcular las horas restantes del día usando el horario configurado del usuario
   let ahora = new Date();
-  let finDelDia = new Date();
+  let minutosActuales = ahora.getHours() * 60 + ahora.getMinutes();
   
-  // Usar la hora configurada del usuario
+  // Usar el horario configurado del usuario
+  let horaInicioDia = userConfigStartOfDay ? userConfigStartOfDay : '00:00';
   let horaFinDia = userConfigEndOfDay ? userConfigEndOfDay : '23:59';
+  
+  let [horaInicio, minutoInicio] = horaInicioDia.split(':').map(Number);
   let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
   
-  finDelDia.setHours(horaFin, minutoFin, 59, 999);
+  let minutosInicio = horaInicio * 60 + minutoInicio;
+  let minutosFin = horaFin * 60 + minutoFin;
   
-  // Si ya pasó la hora configurada, usar el final del día actual
-  if (ahora > finDelDia) {
-    finDelDia.setHours(23, 59, 59, 999);
+  let horasRestantesDelDia = 0;
+  let minutosRestantesDelDia = 0;
+  
+  // Calcular tiempo restante solo si estamos dentro del horario del día
+  if (minutosActuales >= minutosInicio && minutosActuales <= minutosFin) {
+    let minutosRestantes = minutosFin - minutosActuales;
+    horasRestantesDelDia = Math.floor(minutosRestantes / 60);
+    minutosRestantesDelDia = minutosRestantes % 60;
   }
-  
-  let milisegundosRestantes = finDelDia.getTime() - ahora.getTime();
-  let horasRestantesDelDia = Math.floor(milisegundosRestantes / (1000 * 60 * 60));
-  let minutosRestantesDelDia = Math.floor((milisegundosRestantes % (1000 * 60 * 60)) / (1000 * 60));
   
   // Asegurar que sean números válidos
   let horas = parseInt(tiempoRestante.Horas) || 0;
@@ -387,9 +409,20 @@ function set_tiempo_restante_Hoy(tiempoRestante){
   let textoHabitos = `${horas}h ${minutos}m`;
   let textoTiempoRestante = `${horasRestantesDelDia}h ${minutosRestantesDelDia}m`;
   
+  // Obtener horario para mostrar en la información
+  let horaInicioConfig = userConfigStartOfDay ? userConfigStartOfDay : '00:00';
+  let horaFinConfig = userConfigEndOfDay ? userConfigEndOfDay : '23:59';
+  
   // Información detallada arriba
   if (elemento_tiempo_restante) {
-    if (tiempoHabitosEnMinutos > horasRestantesDelDiaEnMinutos) {
+    // Verificar si estamos fuera del horario del día
+    if (horasRestantesDelDia === 0 && minutosRestantesDelDia === 0) {
+      elemento_tiempo_restante.innerHTML = `
+        <div style="font-weight: bold;">${textoHabitos} pendientes</div>
+        <div style="font-size: 0.9em; color: #666;">Fuera del horario (${horaInicioConfig} - ${horaFinConfig})</div>
+      `;
+    }
+    else if (tiempoHabitosEnMinutos > horasRestantesDelDiaEnMinutos && horasRestantesDelDiaEnMinutos > 0) {
       // Hay más trabajo que tiempo disponible
       let excesoEnMinutos = tiempoHabitosEnMinutos - horasRestantesDelDiaEnMinutos;
       let excesoHoras = Math.floor(excesoEnMinutos / 60);
@@ -399,16 +432,16 @@ function set_tiempo_restante_Hoy(tiempoRestante){
         `${excesoHoras}h ${excesoMinutos}m de exceso` : 
         `${excesoMinutos}m de exceso`;
       
-      elemento_tiempo_restante.innerHTML = `
-        <div style="color: #d32f2f; font-weight: bold;">${textoHabitos} pendientes</div>
-        <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} del día (${textoExceso})</div>
-      `;
+              elemento_tiempo_restante.innerHTML = `
+          <div style="color: #d32f2f; font-weight: bold;">${textoHabitos} pendientes</div>
+          <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} (hasta ${horaFinConfig}) - ${textoExceso}</div>
+        `;
     } else {
       // Tiempo normal
-      elemento_tiempo_restante.innerHTML = `
-        <div style="font-weight: bold;">${textoHabitos} pendientes</div>
-        <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} del día</div>
-      `;
+              elemento_tiempo_restante.innerHTML = `
+          <div style="font-weight: bold;">${textoHabitos} pendientes</div>
+          <div style="font-size: 0.9em;">Quedan ${textoTiempoRestante} del día (hasta ${horaFinConfig})</div>
+        `;
     }
   }
   

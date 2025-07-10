@@ -1,6 +1,7 @@
 // Obtén los elementos progress
 let barraProgresoDia = document.querySelector('#progress-dia');
 let barraProgresoTareas = document.querySelector('#progress-tareas');
+let userStartOfDay = null;
 let userEndOfDay = null;
 
 // Función para obtener la configuración del usuario
@@ -9,32 +10,49 @@ async function obtenerConfiguracionUsuario() {
         const response = await fetch('/users/api/user-config/');
         const data = await response.json();
         if (data.status === 'success') {
+            userStartOfDay = data.inicio_dia;
             userEndOfDay = data.fin_dia;
         } else {
+            userStartOfDay = '00:00'; // valor por defecto
             userEndOfDay = '23:59'; // valor por defecto
         }
     } catch (error) {
         console.error('Error al obtener configuración del usuario:', error);
+        userStartOfDay = '00:00'; // valor por defecto
         userEndOfDay = '23:59'; // valor por defecto
     }
 }
 
 function Calcula_porcentaje_dia(){
     let ahora = new Date();
-    let totalMinutosHoy = ahora.getHours() * 60 + ahora.getMinutes();
+    let minutosActuales = ahora.getHours() * 60 + ahora.getMinutes();
     
-    // Usar la hora configurada del usuario
+    // Usar el horario configurado del usuario
+    let horaInicioDia = userStartOfDay ? userStartOfDay : '00:00';
     let horaFinDia = userEndOfDay ? userEndOfDay : '23:59';
-    let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
-    let totalMinutosDia = horaFin * 60 + minutoFin;
     
-    // Si el tiempo actual es después de la hora configurada, usar el día completo
-    if (totalMinutosHoy > totalMinutosDia) {
-        totalMinutosDia = 24 * 60; // 24 horas completas
+    let [horaInicio, minutoInicio] = horaInicioDia.split(':').map(Number);
+    let [horaFin, minutoFin] = horaFinDia.split(':').map(Number);
+    
+    let minutosInicio = horaInicio * 60 + minutoInicio;
+    let minutosFin = horaFin * 60 + minutoFin;
+    
+    // Calcular duración total del día personalizado
+    let duracionDiaMinutos = minutosFin - minutosInicio;
+    
+    // Si la hora actual está antes del inicio del día, progreso 0%
+    if (minutosActuales < minutosInicio) {
+        porcentajeDiaPasado = 0;
     }
-
-    // Calcula el porcentaje del día que ha pasado
-    let porcentajeDiaPasado = (totalMinutosHoy / totalMinutosDia) * 100;
+    // Si la hora actual está después del fin del día, progreso 100%
+    else if (minutosActuales > minutosFin) {
+        porcentajeDiaPasado = 100;
+    }
+    // Calcular progreso dentro del rango personalizado
+    else {
+        let minutosTranscurridos = minutosActuales - minutosInicio;
+        porcentajeDiaPasado = (minutosTranscurridos / duracionDiaMinutos) * 100;
+    }
 
     // Actualiza solo el valor de la barra de progreso del día
     if (barraProgresoDia) {
@@ -44,7 +62,7 @@ function Calcula_porcentaje_dia(){
     // Actualizar el texto de la barra del día
     let textoDia = document.querySelector('.progress-text');
     if (textoDia) {
-        textoDia.textContent = `${porcentajeDiaPasado.toFixed(1)}% del día`;
+        textoDia.textContent = `${porcentajeDiaPasado.toFixed(1)}% del día (${horaInicioDia}-${horaFinDia})`;
     }
 }
 
