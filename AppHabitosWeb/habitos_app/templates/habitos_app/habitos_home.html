@@ -215,11 +215,14 @@
                     <label for="objetivo">Objetivo:</label>
                     <input class="imput_form" type="number" id="objetivo" name="objetivo">
                     <label for="type">Type:</label>
-                    <select class="imput_form" id="type" name="type">
-                        <option value="1">Pomodoro</option>
-                        <option value="2">Checker</option>
-                        <option value="3">StopWatch</option>
-                    </select>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <select class="imput_form" id="type" name="type">
+                            <option value="1">Pomodoro</option>
+                            <option value="2">Checker</option>
+                            <option value="3">StopWatch</option>
+                        </select>
+                        <span id="tipo-tiempo-label" class="tipo-tiempo-label" style="font-size: 0.9em; color: #666; font-weight: bold;"></span>
+                    </div>
                     <div class="tags-section mt-4">
                         <label>Tags:</label>
                         <div id="selected-tags" class="flex flex-wrap gap-2 mt-2">

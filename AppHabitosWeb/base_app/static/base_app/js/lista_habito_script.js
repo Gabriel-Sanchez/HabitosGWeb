@@ -27,10 +27,46 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     let Nombre_habito = document.createElement('div')
     let Nombre_habito_h1 = document.createElement('h1')
     let racha_habito_p = document.createElement('h6')
-    
+
+    // Crear contenedor para el tiempo configurado como etiqueta
+    let tiempo_container = document.createElement('div')
+    tiempo_container.classList.add('tiempo-configurado-container')
+    tiempo_container.style.display = 'flex'
+    tiempo_container.style.flexDirection = 'column'
+    tiempo_container.style.alignItems = 'center'
+    tiempo_container.style.gap = '2px'
+
+    // Calcular el tiempo numérico para mostrar
+    let tiempoNumerico = calcularTiempoNumerico(element)
+    if (tiempoNumerico) {
+        let tiempoTotalMinutos = calcularTiempoTotalMinutos(element)
+        let colorEtiqueta = calcularColorPorTiempo(tiempoTotalMinutos)
+
+        let tiempo_span = document.createElement('span')
+        tiempo_span.classList.add('tiempo-configurado-etiqueta')
+        tiempo_span.textContent = tiempoNumerico
+        tiempo_container.appendChild(tiempo_span)
+        
+        // Aplicar estilos base comunes al elemento externo (tiempo_container)
+        aplicarEstilosBaseEtiqueta(tiempo_container)
+        
+        // Aplicar colores específicos del tiempo con el mismo estilo que la racha
+        // Usar el color del texto como base para fondo y borde
+        tiempo_container.style.color = colorEtiqueta.background
+        tiempo_container.style.backgroundColor = `${colorEtiqueta.background}20` // Transparencia del 20%
+        tiempo_container.style.border = `1px solid ${colorEtiqueta.background}`
+
+        // Debug: mostrar información en consola
+        console.log(`Hábito: ${element.nombre}, Tiempo: ${tiempoTotalMinutos}min, Color: ${colorEtiqueta.background}`)
+    }
+
     // Crear contenedor intermedio para racha
     let racha_container = document.createElement('div')
     racha_container.classList.add('racha-container')
+    racha_container.style.display = 'flex'
+    racha_container.style.flexDirection = 'column'
+    racha_container.style.alignItems = 'center'
+    racha_container.style.gap = '2px'
     
     // Crear contenedor para tags (siempre presente para consistencia)
     let tags_container = document.createElement('div')
@@ -43,20 +79,64 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     let texto_nombre = document.createTextNode(element.nombre)
     let texto_numero_racha = document.createTextNode( numero_racha_h)
     let span_racha = document.createElement("span");
-    span_racha.style.webkitTextStroke = '.2px black'
-
-    if (Number(numero_racha_h) == 0){
-      span_racha.style.color = "orange";
-    } else if (Number(numero_racha_h) <0
-    ) {
-      span_racha.style.color = "red";
-      
-    } else {
-      span_racha.style.color = "green";
-      
-    }
     span_racha.appendChild(texto_numero_racha)
     racha_habito_p.appendChild(span_racha)
+    
+    // Aplicar estilos base comunes al elemento externo (racha_habito_p)
+    aplicarEstilosBaseEtiqueta(racha_habito_p)
+    
+    // Aplicar estilos específicos de la racha al elemento externo
+    racha_habito_p.style.webkitTextStroke = '.2px black'
+
+    if (Number(numero_racha_h) == 0){
+      // Amarillo para racha de 0 días
+      racha_habito_p.style.color = "#f59e0b";  // Amarillo
+      racha_habito_p.style.backgroundColor = "#fef3c7";  // Amarillo claro
+      racha_habito_p.style.border = "1px solid #f59e0b";
+    } else if (Number(numero_racha_h) < 0) {
+      // Escala de amarillo a rojo puro para rachas negativas (0 días = amarillo, -30 días = rojo puro)
+      const intensidad = Math.min(Math.abs(Number(numero_racha_h)) / 30, 1); // Máximo a 30 días negativos
+      
+      // Colores base: amarillo para 0 días, rojo puro para -30 días
+      const amarilloBase = { r: 245, g: 158, b: 11 };    // #f59e0b - amarillo
+      const rojoPuro = { r: 220, g: 38, b: 38 };         // #dc2626 - rojo puro
+      
+      // Interpolar colores
+      const r = Math.round(amarilloBase.r + (rojoPuro.r - amarilloBase.r) * intensidad);
+      const g = Math.round(amarilloBase.g + (rojoPuro.g - amarilloBase.g) * intensidad);
+      const b = Math.round(amarilloBase.b + (rojoPuro.b - amarilloBase.b) * intensidad);
+
+      racha_habito_p.style.color = `rgb(${r}, ${g}, ${b})`;
+      racha_habito_p.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.1)`;
+      racha_habito_p.style.border = `1px solid rgba(${r}, ${g}, ${b}, 0.3)`;
+
+    } else {
+      // Para rachas positivas: verde (1 día) -> azul (100 días) -> dorado (100+ días)
+      const diasRacha = Number(numero_racha_h);
+      
+      if (diasRacha >= 100) {
+        // Dorado para rachas de 100+ días
+        racha_habito_p.style.color = "#f59e0b";  // Dorado
+        racha_habito_p.style.backgroundColor = "#fef3c7";  // Dorado claro
+        racha_habito_p.style.border = "1px solid #f59e0b";
+      } else {
+        // Gradiente de verde a azul para rachas de 1-99 días
+        const intensidad = Math.min((diasRacha - 1) / 99, 1); // De 1 día a 100 días
+        
+        // Colores base: verde para 1 día, azul para 100 días
+        const verdeBase = { r: 34, g: 197, b: 94 };     // #22c55e - verde
+        const azulBase = { r: 59, g: 130, b: 246 };    // #3b82f6 - azul
+        
+        // Interpolar colores
+        const r = Math.round(verdeBase.r + (azulBase.r - verdeBase.r) * intensidad);
+        const g = Math.round(verdeBase.g + (azulBase.g - verdeBase.g) * intensidad);
+        const b = Math.round(verdeBase.b + (azulBase.b - verdeBase.b) * intensidad);
+
+        racha_habito_p.style.color = `rgb(${r}, ${g}, ${b})`;
+        racha_habito_p.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.1)`;
+        racha_habito_p.style.border = `1px solid rgba(${r}, ${g}, ${b}, 0.3)`;
+      }
+    }
 
     let boton_config = document.createElement("button")
     boton_config.style.backgroundColor = element.color
@@ -64,11 +144,17 @@ function llenar_lista_habitos(nombre_lista, hecho, IsHabitoArchivado, data) {
     Nombre_habito_h1.appendChild(texto_nombre)
     Nombre_habito_h1.title = element.work_time
     
-    // Estructura: nombre, racha centrada, y tags
+    // Estructura: nombre, racha centrada, tiempo configurado, y tags
     Nombre_habito.appendChild(Nombre_habito_h1)
-    
+
     // Contenedor de racha pegado a la derecha
     racha_container.appendChild(racha_habito_p)
+
+    // Agregar tiempo configurado debajo de la racha
+    if (tiempoNumerico) {
+        racha_container.appendChild(tiempo_container)
+    }
+
     Nombre_habito.appendChild(racha_container)
     
     // Agregar tags si existen, si no, mantener espacio para consistencia
@@ -584,28 +670,137 @@ function llenar_lista_habitosAOrdenar(nombre_lista, data) {
   })
 }
 
+// Función para calcular el tiempo numérico de un hábito (para mostrar en etiqueta)
+function calcularTiempoNumerico(habito) {
+    let tiempoNumerico = '';
+
+    switch(habito.type__numero) {
+        case 1: // Pomodoro
+            if (habito.work_time && habito.count) {
+                const tiempoTotal = (habito.work_time + habito.short_break) * habito.count - habito.short_break;
+                const horas = Math.floor(tiempoTotal / 60);
+                const minutos = tiempoTotal % 60;
+                tiempoNumerico = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+            }
+            break;
+        case 2: // Checker
+            if (habito.work_time) {
+                const horas = Math.floor(habito.work_time / 60);
+                const minutos = habito.work_time % 60;
+                tiempoNumerico = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+            }
+            break;
+        case 3: // StopWatch
+            // No mostrar tiempo para stopwatch ya que es manual
+            break;
+        default:
+            break;
+    }
+
+    return tiempoNumerico;
+}
+
+// Función para calcular el tiempo total en minutos de un hábito
+function calcularTiempoTotalMinutos(habito) {
+    let tiempoTotal = 0;
+
+    switch(habito.type__numero) {
+        case 1: // Pomodoro
+            if (habito.work_time && habito.count) {
+                tiempoTotal = (habito.work_time + habito.short_break) * habito.count - habito.short_break;
+            }
+            break;
+        case 2: // Checker
+            if (habito.work_time) {
+                tiempoTotal = habito.work_time;
+            }
+            break;
+        case 3: // StopWatch
+            tiempoTotal = 0; // No tiene tiempo predefinido
+            break;
+        default:
+            tiempoTotal = 0;
+    }
+
+    return tiempoTotal;
+}
+
+// Función para aplicar estilos base comunes a las etiquetas
+function aplicarEstilosBaseEtiqueta(elemento) {
+    elemento.style.fontSize = '0.6em'           // Más pequeño
+    elemento.style.fontWeight = 'bold'
+    elemento.style.padding = '1px 4px'           // Más pequeño
+    elemento.style.borderRadius = '6px'          // Más pequeño
+    elemento.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)'
+    elemento.style.display = 'inline-block'
+    elemento.style.minWidth = '28px'             // Ancho mínimo para que quepa el texto
+    elemento.style.maxWidth = '35px'             // Ancho máximo para mantener uniformidad
+    elemento.style.textAlign = 'center'
+    elemento.style.lineHeight = '1.1'            // Más compacto
+    elemento.style.whiteSpace = 'nowrap'         // Evitar saltos de línea
+    elemento.style.overflow = 'hidden'           // Ocultar texto que se salga
+}
+
+// Función para calcular el color de la etiqueta basado en el tiempo (azul para más tiempo, verde para ~1 minuto)
+function calcularColorPorTiempo(minutos) {
+    // Definir rangos de tiempo
+    const tiempoMin = 1;   // 1 minuto - verde
+    const tiempoMax = 60;  // 60 minutos - azul oscuro
+
+    // Limitar el rango
+    const tiempoLimitado = Math.max(tiempoMin, Math.min(tiempoMax, minutos));
+
+    // Calcular el factor de interpolación (0 = verde, 1 = azul)
+    const factor = (tiempoLimitado - tiempoMin) / (tiempoMax - tiempoMin);
+
+    // Colores base: verde para tiempo corto, azul para tiempo largo
+    const verdeTiempo = { r: 34, g: 197, b: 94 };     // #22c55e - verde para ~1 minuto
+    const azulTiempo = { r: 59, g: 130, b: 246 };     // #3b82f6 - azul para más tiempo
+
+    // Interpolar colores
+    const r = Math.round(verdeTiempo.r + (azulTiempo.r - verdeTiempo.r) * factor);
+    const g = Math.round(verdeTiempo.g + (azulTiempo.g - verdeTiempo.g) * factor);
+    const b = Math.round(verdeTiempo.b + (azulTiempo.b - verdeTiempo.b) * factor);
+
+    // Convertir a hex
+    const backgroundColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+
+    // Calcular color del borde (un poco más oscuro)
+    const borderR = Math.max(0, r - 20);
+    const borderG = Math.max(0, g - 20);
+    const borderB = Math.max(0, b - 20);
+    const borderColor = `#${borderR.toString(16).padStart(2, '0')}${borderG.toString(16).padStart(2, '0')}${borderB.toString(16).padStart(2, '0')}`;
+
+    console.log(`Tiempo: ${minutos}min, Factor: ${factor.toFixed(2)}, Color: ${backgroundColor}`);
+
+    return {
+        background: backgroundColor,
+        border: borderColor
+    };
+}
+
 // Función auxiliar para calcular el brillo de un color
 function getBrightness(hexColor) {
   // Asegurar que el color tenga el formato correcto
   if (!hexColor || hexColor.length < 6) {
     return 128; // Valor por defecto
   }
-  
+
   // Añadir # si no lo tiene
   if (!hexColor.startsWith('#')) {
     hexColor = '#' + hexColor;
   }
-  
+
   // Convertir hex a RGB
   const r = parseInt(hexColor.substr(1, 2), 16);
   const g = parseInt(hexColor.substr(3, 2), 16);
   const b = parseInt(hexColor.substr(5, 2), 16);
-  
+
   // Validar que los valores sean números válidos
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
     return 128; // Valor por defecto
   }
-  
+
   // Calcular brillo usando la fórmula de luminancia
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
