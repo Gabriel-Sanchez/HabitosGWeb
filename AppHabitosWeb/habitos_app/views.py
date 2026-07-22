@@ -228,6 +228,11 @@ def guardar_habito(request):
             except ValueError:
                 reminder_minuto = None
         reminder_enabled = data.get('reminder_enabled', False)
+        checker_time = data.get('checker_time', 0)
+        try:
+            checker_time = int(checker_time)
+        except (ValueError, TypeError):
+            checker_time = 0
 
         if id:
             habito = Habito.objects.get(id=id)
@@ -248,6 +253,7 @@ def guardar_habito(request):
             habito.reminder_hora = reminder_hora
             habito.reminder_minuto = reminder_minuto
             habito.reminder_enabled = reminder_enabled
+            habito.checker_time = checker_time
             habito.save()
             
             # Actualizar tags
@@ -311,6 +317,7 @@ def guardar_habito(request):
                 reminder_hora=reminder_hora,
                 reminder_minuto=reminder_minuto,
                 reminder_enabled=reminder_enabled,
+                checker_time=checker_time,
                 fk_user=request.user
             )
             
@@ -373,6 +380,11 @@ def set_NewHabitoformHabito(request):
             except ValueError:
                 reminder_minuto = None
         reminder_enabled = datos.get('reminder_enabled', False)
+        checker_time = datos.get('checker_time', 0)
+        try:
+            checker_time = int(checker_time)
+        except (ValueError, TypeError):
+            checker_time = 0
         
         ultimo_valor_mas_alto = Habito.objects.aggregate(max_valor_mas_alto=Max('orden_n'))['max_valor_mas_alto']
         if ultimo_valor_mas_alto is None:
@@ -398,6 +410,7 @@ def set_NewHabitoformHabito(request):
             reminder_hora=reminder_hora,
             reminder_minuto=reminder_minuto,
             reminder_enabled=reminder_enabled,
+            checker_time=checker_time,
             fk_user=request.user
         )
         

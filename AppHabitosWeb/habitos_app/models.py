@@ -52,6 +52,7 @@ class Habito(models.Model):
     reminder_hora = models.IntegerField(null=True, blank=True, default=None)
     reminder_minuto = models.IntegerField(null=True, blank=True, default=None)
     reminder_enabled = models.BooleanField(default=False)
+    checker_time = models.IntegerField(default=0)
     
     def __str__(self):
         return self.nombre + '-' + str(self.numero) 
@@ -131,7 +132,8 @@ class Habito(models.Model):
             'es_favorito': self.es_favorito,
             'reminder_hora': self.reminder_hora,
             'reminder_minuto': self.reminder_minuto,
-            'reminder_enabled': self.reminder_enabled
+            'reminder_enabled': self.reminder_enabled,
+            'checker_time': self.checker_time
         }
         
     def totalMinutosHabitos(self):
