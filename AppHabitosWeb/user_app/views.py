@@ -140,14 +140,34 @@ def details_profile(request):
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        if request.content_type == 'application/json':
+            import json
+            datos = json.loads(request.body)
+            username = datos.get('username')
+            password = datos.get('password')
+        else:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+
+        is_api = 'okhttp' in request.headers.get('User-Agent', '').lower() or request.headers.get('Accept') == 'application/json'
+
+        if not username or not password:
+            error_msg = 'Nombre de usuario y contraseña son obligatorios'
+            if is_api:
+                return JsonResponse({'error': error_msg}, status=400)
+            return render(request, 'users/login.html', {'error': error_msg})
+
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
+            if is_api:
+                return JsonResponse({'status': 'success', 'message': 'Sesión iniciada correctamente'})
             return redirect("habitos_home")
         else:
-            return render(request, 'users/login.html', {'error': ' Nombre de usuario o contraseña incorrectas'} )
+            error_msg = 'Nombre de usuario o contraseña incorrectos'
+            if is_api:
+                return JsonResponse({'error': error_msg}, status=400)
+            return render(request, 'users/login.html', {'error': error_msg})
     return render(request, 'users/login.html')
 
 
@@ -159,25 +179,55 @@ def logout_view(request):
 
 def signup(request):
     if request.method == 'POST':
-        First_name = request.POST['First_name']
-        username = First_name
-        password = request.POST['password']
-        password_confirmation = request.POST['password_confirmation']
+        if request.content_type == 'application/json':
+            import json
+            datos = json.loads(request.body)
+            first_name = datos.get('First_name')
+            username = datos.get('username')
+            password = datos.get('password')
+            password_confirmation = datos.get('password_confirmation')
+            email = datos.get('email')
+        else:
+            first_name = request.POST.get('First_name')
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            password_confirmation = request.POST.get('password_confirmation')
+            email = request.POST.get('email')
+
+        is_api = 'okhttp' in request.headers.get('User-Agent', '').lower() or request.headers.get('Accept') == 'application/json'
+
+        if not first_name or not password or not password_confirmation or not email:
+            error_msg = 'Todos los campos son obligatorios'
+            if is_api:
+                return JsonResponse({'error': error_msg}, status=400)
+            return render(request, 'users/signup.html', {'error': error_msg})
 
         if password != password_confirmation:
-            return render(request, 'users/signup.html', {'error': 'Password confirmation does not match'})
-        try:
-            user = User.objects.create_user(username=username, password=password)
-        except IntegrityError:
-            return render(request, 'users/signup.html', {'error': 'username is already in user'})
+            error_msg = 'Las contraseñas no coinciden'
+            if is_api:
+                return JsonResponse({'error': error_msg}, status=400)
+            return render(request, 'users/signup.html', {'error': error_msg})
 
-        user.first_name = request.POST['First_name']
-        user.email = request.POST['email']
+        # Si el usuario especificó un username personalizado, lo usamos; si no, usamos su nombre de pila
+        final_username = username if username and username.strip() else first_name
+
+        try:
+            user = User.objects.create_user(username=final_username, password=password)
+        except IntegrityError:
+            error_msg = 'El nombre de usuario ya está en uso'
+            if is_api:
+                return JsonResponse({'error': error_msg}, status=400)
+            return render(request, 'users/signup.html', {'error': error_msg})
+
+        user.first_name = first_name
+        user.email = email
         user.save()
         
         profile = Profile(user=user)
         profile.save()
 
+        if is_api:
+            return JsonResponse({'status': 'success', 'message': 'Usuario registrado exitosamente'})
         return redirect('login')
     return render(request, 'users/signup.html')
 

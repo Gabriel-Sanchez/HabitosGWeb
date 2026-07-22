@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Habito, Historial_habitos, TiposHabitos, Tag, TagStats
+from .models import Habito, Historial_habitos, TiposHabitos, Tag, TagStats, Subtarea
 from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
@@ -211,6 +211,23 @@ def guardar_habito(request):
         objetivo = data.get('objetivo')
         dias_seleccionados = data.get('dias_seleccionados', '1,2,3,4,5,6,7')  # Valor por defecto si no se proporciona
         tag_ids = data.get('tags', [])  # Lista de IDs de tags
+        hora_inicio = data.get('hora_inicio') or None
+        hora_limite = data.get('hora_limite') or None
+        subtareas_data = data.get('subtareas', [])
+        es_favorito = data.get('es_favorito', False)
+        reminder_hora = data.get('reminder_hora')
+        if reminder_hora is not None:
+            try:
+                reminder_hora = int(reminder_hora)
+            except ValueError:
+                reminder_hora = None
+        reminder_minuto = data.get('reminder_minuto')
+        if reminder_minuto is not None:
+            try:
+                reminder_minuto = int(reminder_minuto)
+            except ValueError:
+                reminder_minuto = None
+        reminder_enabled = data.get('reminder_enabled', False)
 
         if id:
             habito = Habito.objects.get(id=id)
@@ -225,6 +242,12 @@ def guardar_habito(request):
             habito.archivado = archivado
             habito.objetivo = objetivo
             habito.dias_seleccionados = dias_seleccionados
+            habito.hora_inicio = hora_inicio
+            habito.hora_limite = hora_limite
+            habito.es_favorito = es_favorito
+            habito.reminder_hora = reminder_hora
+            habito.reminder_minuto = reminder_minuto
+            habito.reminder_enabled = reminder_enabled
             habito.save()
             
             # Actualizar tags
@@ -232,8 +255,45 @@ def guardar_habito(request):
             if tag_ids:
                 tags = Tag.objects.filter(id__in=tag_ids)
                 habito.tags.add(*tags)
+                
+            # Actualizar subtareas
+            subtareas_existentes = habito.subtareas.all()
+            ids_recibidas = [item.get('id') for item in subtareas_data if item.get('id')]
+            subtareas_existentes.exclude(id__in=ids_recibidas).delete()
+            
+            for sub_data in subtareas_data:
+                sub_id = sub_data.get('id')
+                nombre_sub = sub_data.get('nombre')
+                fecha_comp = sub_data.get('fecha_completada')
+                
+                if fecha_comp:
+                    try:
+                        fecha_comp = datetime.strptime(fecha_comp, '%Y-%m-%d').date()
+                    except:
+                        fecha_comp = None
+                else:
+                    fecha_comp = None
+                    
+                if sub_id:
+                    try:
+                        sub = Subtarea.objects.get(id=sub_id, fk_habito=habito)
+                        sub.nombre = nombre_sub
+                        sub.fecha_completada = fecha_comp
+                        sub.save()
+                    except Subtarea.DoesNotExist:
+                        Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
+                else:
+                    Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
         else:
+            ultimo_numero = Habito.objects.aggregate(max_val=Max('numero'))['max_val']
+            nuevo_numero = 1 if ultimo_numero is None else ultimo_numero + 1
+
+            if not orden_n:
+                ultimo_orden = Habito.objects.aggregate(max_orden=Max('orden_n'))['max_orden']
+                orden_n = 1 if ultimo_orden is None else ultimo_orden + 1
+
             habito = Habito.objects.create(
+                numero=nuevo_numero,
                 nombre=nombre,
                 comentarios=comentarios,
                 work_time=work_time,
@@ -245,6 +305,12 @@ def guardar_habito(request):
                 archivado=archivado,
                 objetivo=objetivo,
                 dias_seleccionados=dias_seleccionados,
+                hora_inicio=hora_inicio,
+                hora_limite=hora_limite,
+                es_favorito=es_favorito,
+                reminder_hora=reminder_hora,
+                reminder_minuto=reminder_minuto,
+                reminder_enabled=reminder_enabled,
                 fk_user=request.user
             )
             
@@ -252,6 +318,19 @@ def guardar_habito(request):
             if tag_ids:
                 tags = Tag.objects.filter(id__in=tag_ids)
                 habito.tags.add(*tags)
+                
+            # Agregar subtareas
+            for sub_data in subtareas_data:
+                nombre_sub = sub_data.get('nombre')
+                fecha_comp = sub_data.get('fecha_completada')
+                if fecha_comp:
+                    try:
+                        fecha_comp = datetime.strptime(fecha_comp, '%Y-%m-%d').date()
+                    except:
+                        fecha_comp = None
+                else:
+                    fecha_comp = None
+                Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
 
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
@@ -262,7 +341,11 @@ def set_NewHabitoformHabito(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
        
-        numero_campo = datos['id']
+        numero_campo = datos.get('id')
+        if numero_campo is None:
+            ultimo_numero = Habito.objects.aggregate(max_val=Max('numero'))['max_val']
+            numero_campo = 1 if ultimo_numero is None else ultimo_numero + 1
+
         nombre = str(datos['nombre']) 
         comentarios = datos.get('comentarios', '')
         work_time = datos['work_time']
@@ -271,7 +354,25 @@ def set_NewHabitoformHabito(request):
         campo_type =  TiposHabitos.objects.get(numero=datos['type']) 
         color = datos['color']
         objetivo = datos['objetivo']
+        dias_seleccionados = datos.get('dias_seleccionados', '1,2,3,4,5,6,7')
         tag_ids = datos.get('tags', [])  # Lista de IDs de tags
+        hora_inicio = datos.get('hora_inicio') or None
+        hora_limite = datos.get('hora_limite') or None
+        subtareas_data = datos.get('subtareas', [])
+        es_favorito = datos.get('es_favorito', False)
+        reminder_hora = datos.get('reminder_hora')
+        if reminder_hora is not None:
+            try:
+                reminder_hora = int(reminder_hora)
+            except ValueError:
+                reminder_hora = None
+        reminder_minuto = datos.get('reminder_minuto')
+        if reminder_minuto is not None:
+            try:
+                reminder_minuto = int(reminder_minuto)
+            except ValueError:
+                reminder_minuto = None
+        reminder_enabled = datos.get('reminder_enabled', False)
         
         ultimo_valor_mas_alto = Habito.objects.aggregate(max_valor_mas_alto=Max('orden_n'))['max_valor_mas_alto']
         if ultimo_valor_mas_alto is None:
@@ -290,6 +391,13 @@ def set_NewHabitoformHabito(request):
             orden_n=nuevo_valor,
             color=color,
             objetivo=objetivo,
+            dias_seleccionados=dias_seleccionados,
+            hora_inicio=hora_inicio,
+            hora_limite=hora_limite,
+            es_favorito=es_favorito,
+            reminder_hora=reminder_hora,
+            reminder_minuto=reminder_minuto,
+            reminder_enabled=reminder_enabled,
             fk_user=request.user
         )
         
@@ -297,6 +405,19 @@ def set_NewHabitoformHabito(request):
         if tag_ids:
             tags = Tag.objects.filter(id__in=tag_ids)
             habito.tags.add(*tags)
+
+        # Agregar subtareas
+        for sub_data in subtareas_data:
+            nombre_sub = sub_data.get('nombre')
+            fecha_comp = sub_data.get('fecha_completada')
+            if fecha_comp:
+                try:
+                    fecha_comp = datetime.strptime(fecha_comp, '%Y-%m-%d').date()
+                except:
+                    fecha_comp = None
+            else:
+                fecha_comp = None
+            Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
 
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
@@ -1098,3 +1219,30 @@ def calcular_regularidad(usuario, fecha_inicio, fecha_fin, tag_id=None):
         'data': [40, 35, 20, 5],
         'backgroundColor': ['#10B981', '#F59E0B', '#EF4444', '#6B7280']
     }
+
+
+def toggle_subtarea(request):
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+        datos = json.loads(request.body)
+        subtarea_id = datos.get('subtarea_id')
+        try:
+            subtarea = Subtarea.objects.get(id=subtarea_id, fk_habito__fk_user=request.user)
+            fecha_actual_local = timezone.localtime(timezone.now()).date()
+            if subtarea.fecha_completada == fecha_actual_local:
+                subtarea.fecha_completada = None
+                completada = False
+            else:
+                subtarea.fecha_completada = fecha_actual_local
+                completada = True
+            subtarea.save()
+            return JsonResponse({
+                'status': 'success',
+                'mensaje': 'Subtarea modificada correctamente',
+                'completada': completada,
+                'fecha_completada': subtarea.fecha_completada.strftime('%Y-%m-%d') if subtarea.fecha_completada else None
+            })
+        except Subtarea.DoesNotExist:
+            return JsonResponse({'error': 'Subtarea no encontrada'}, status=404)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)

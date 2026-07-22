@@ -46,6 +46,12 @@ class Habito(models.Model):
     fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listHabitos', null=True)
     dias_seleccionados = models.CharField(max_length=20, default='1,2,3,4,5,6,7')  # 1=Lunes, 7=Domingo
     tags = models.ManyToManyField(Tag, related_name='habitos', blank=True)
+    hora_inicio = models.CharField(max_length=5, blank=True, null=True, default=None)
+    hora_limite = models.CharField(max_length=5, blank=True, null=True, default=None)
+    es_favorito = models.BooleanField(default=False)
+    reminder_hora = models.IntegerField(null=True, blank=True, default=None)
+    reminder_minuto = models.IntegerField(null=True, blank=True, default=None)
+    reminder_enabled = models.BooleanField(default=False)
     
     def __str__(self):
         return self.nombre + '-' + str(self.numero) 
@@ -102,6 +108,7 @@ class Habito(models.Model):
  
     def obtener_valores(self):
         tag_list = [{"id": tag.id, "nombre": tag.nombre, "color": tag.color} for tag in self.tags.all()]
+        subtareas_list = [sub.obtener_valores() for sub in self.subtareas.all()]
         return {
             'id': self.id,
             'type__numero': self.type.numero,
@@ -117,7 +124,14 @@ class Habito(models.Model):
             'archivado': int(self.archivado),
             'racha': self.racha_dias(),
             'dias_seleccionados': self.dias_seleccionados,
-            'tags': tag_list
+            'tags': tag_list,
+            'subtareas': subtareas_list,
+            'hora_inicio': self.hora_inicio or '',
+            'hora_limite': self.hora_limite or '',
+            'es_favorito': self.es_favorito,
+            'reminder_hora': self.reminder_hora,
+            'reminder_minuto': self.reminder_minuto,
+            'reminder_enabled': self.reminder_enabled
         }
         
     def totalMinutosHabitos(self):
@@ -148,6 +162,22 @@ class Habito(models.Model):
         cantidadTodalListaHistorialHab = self.listHabitoHistorial.all().count()
         return cantidadTodalListaHistorialHab
         
+
+class Subtarea(models.Model):
+    fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='subtareas')
+    nombre = models.CharField(max_length=150)
+    fecha_completada = models.DateField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.nombre
+        
+    def obtener_valores(self):
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'fecha_completada': self.fecha_completada.strftime('%Y-%m-%d') if self.fecha_completada else None
+        }
+
 
 class Historial_habitos(models.Model):
     fk_habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='listHabitoHistorial')

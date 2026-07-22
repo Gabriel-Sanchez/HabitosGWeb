@@ -19,6 +19,7 @@ urlpatterns = [
     path('set_listHabitos_Sort/', views.set_listHabitos_Sort, name='set_listHabitos_Sort'),
     path('importarArchivos/', views.importarArchivos, name='importarArchivos'),
     path('guardar_habito/', views.guardar_habito, name='guardar_habito'),
+    path('subtareas/toggle/', views.toggle_subtarea, name='toggle_subtarea'),
     path('getHistorialHabito/<int:id_habito>', views.getHistorialHabito, name='getHistorialHabito'),
     
     # URLs de tags
