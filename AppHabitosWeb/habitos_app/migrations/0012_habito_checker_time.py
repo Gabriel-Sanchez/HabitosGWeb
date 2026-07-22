@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('habitos_app', '0010_habito_favorites_and_reminders'),
+        ('habitos_app', '0011_alter_habito_hora_inicio_alter_habito_hora_limite'),
     ]
 
     operations = [
