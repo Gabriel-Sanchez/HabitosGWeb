@@ -4,6 +4,7 @@ from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.db.models import Max,Sum, F
 from django.contrib.auth.models import User
 
@@ -116,10 +117,14 @@ def check_habito(request, habito):
         habitoAcompletar = Habito.objects.get(id= id_habito)
         print('habitoAcompletar')
         print(habitoAcompletar)
-        fechaInicio = timezone.make_aware(datetime.strptime(datos['fechaInicio'], '%Y-%m-%dT%H:%M:%S'))
+        fechaInicio = parse_datetime(datos['fechaInicio'])
+        if fechaInicio and timezone.is_naive(fechaInicio):
+            fechaInicio = timezone.make_aware(fechaInicio)
         print('fechaInicio')
         print(fechaInicio)
-        fechaFin = timezone.make_aware(datetime.strptime(datos['fechaFin'], '%Y-%m-%dT%H:%M:%S'))
+        fechaFin = parse_datetime(datos['fechaFin'])
+        if fechaFin and timezone.is_naive(fechaFin):
+            fechaFin = timezone.make_aware(fechaFin)
         print('fechaFin')
         print(fechaFin)
         duracion = fechaFin - fechaInicio
@@ -432,7 +437,7 @@ def set_NewHabitoformHabito(request):
                 fecha_comp = None
             Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
 
-        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+        return JsonResponse({'mensaje': 'Datos recibidos correctamente', 'id': habito.id})
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
     
