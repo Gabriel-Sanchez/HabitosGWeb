@@ -59,19 +59,27 @@ class Habito(models.Model):
     
     def racha_dias(self):
         fechas_ordenadas = self.listHabitoHistorial.all().order_by('-fecha_inicio')
+        if not fechas_ordenadas:
+            return 0
+
         dias_seleccionados = [int(d) for d in self.dias_seleccionados.split(',')]
-        
         dia_hoy = timezone.localtime(timezone.now()).date() 
         
+        # Obtener las fechas únicas locales en las que se completó el hábito
+        fechas_unicas = []
+        for elemento in fechas_ordenadas:
+            fecha_local = timezone.localtime(elemento.fecha_inicio).date()
+            if not fechas_unicas or fechas_unicas[-1] != fecha_local:
+                fechas_unicas.append(fecha_local)
+
         numero_racha = 0
-        if fechas_ordenadas:
-            if timezone.localtime(fechas_ordenadas[0].fecha_inicio).date() == dia_hoy:
+        if fechas_unicas:
+            if fechas_unicas[0] == dia_hoy:
                 fecha_anterior = dia_hoy + timedelta(days=1)
             else:
                 fecha_anterior = dia_hoy
 
-        for elemento in fechas_ordenadas:
-            fecha_actual = timezone.localtime(elemento.fecha_inicio).date()
+        for fecha_actual in fechas_unicas:
             dia_semana_actual = fecha_actual.isoweekday()
             
             # Si el día actual no está seleccionado, continuamos con el siguiente
