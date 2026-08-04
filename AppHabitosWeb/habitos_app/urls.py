@@ -33,4 +33,10 @@ urlpatterns = [
     # URLs para estadísticas por tags
     path('get_tags/', views.get_tags, name='get_tags_ajax'),
     path('get_estadisticas_tags/', views.get_estadisticas_tags, name='get_estadisticas_tags'),
+    
+    # URLs de baules
+    path('baules/', views.get_baules, name='get_baules'),
+    path('baules/crear/', views.crear_baul, name='crear_baul'),
+    path('baules/editar/<int:baul_id>/', views.editar_baul, name='editar_baul'),
+    path('baules/eliminar/<int:baul_id>/', views.eliminar_baul, name='eliminar_baul'),
 ]

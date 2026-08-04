@@ -30,6 +30,15 @@ class Tag(models.Model):
         }
     
 
+class Baul(models.Model):
+    nombre = models.CharField(max_length=100)
+    color = models.CharField(max_length=7, default='#FFFFFF')
+    fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_baules')
+
+    def __str__(self):
+        return self.nombre + ' (' + self.fk_user.username + ')'
+
+
 class Habito(models.Model):
     numero = models.IntegerField()
     nombre = models.CharField(max_length=150)
@@ -43,6 +52,7 @@ class Habito(models.Model):
     objetivo = models.IntegerField(default=0)
     progresion = models.IntegerField(default=0)
     archivado = models.BooleanField(default=False)
+    baul = models.ForeignKey(Baul, on_delete=models.SET_NULL, null=True, blank=True, related_name='habitos')
     fk_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listHabitos', null=True)
     dias_seleccionados = models.CharField(max_length=20, default='1,2,3,4,5,6,7')  # 1=Lunes, 7=Domingo
     tags = models.ManyToManyField(Tag, related_name='habitos', blank=True)
@@ -131,6 +141,7 @@ class Habito(models.Model):
             'objetivo': self.objetivo,
             'progresion': self.progresion,
             'archivado': int(self.archivado),
+            'baul': self.baul.id if self.baul else None,
             'racha': self.racha_dias(),
             'dias_seleccionados': self.dias_seleccionados,
             'tags': tag_list,

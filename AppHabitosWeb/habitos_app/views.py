@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Habito, Historial_habitos, TiposHabitos, Tag, TagStats, Subtarea
+from .models import Habito, Historial_habitos, TiposHabitos, Tag, TagStats, Subtarea, Baul
 from datetime import date, timedelta, datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
@@ -241,6 +241,15 @@ def guardar_habito(request):
 
         if id:
             habito = Habito.objects.get(id=id)
+            
+            baul_id = data.get('baul') or data.get('baul_id')
+            baul_obj = None
+            if baul_id:
+                try:
+                    baul_obj = Baul.objects.get(id=baul_id, fk_user=habito.fk_user)
+                except Baul.DoesNotExist:
+                    pass
+            
             habito.nombre = nombre
             habito.comentarios = comentarios
             habito.work_time = work_time
@@ -250,6 +259,7 @@ def guardar_habito(request):
             habito.orden_n = orden_n
             habito.color = color_hab
             habito.archivado = archivado
+            habito.baul = baul_obj
             habito.objetivo = objetivo
             habito.dias_seleccionados = dias_seleccionados
             habito.hora_inicio = hora_inicio
@@ -303,6 +313,14 @@ def guardar_habito(request):
                 ultimo_orden = Habito.objects.aggregate(max_orden=Max('orden_n'))['max_orden']
                 orden_n = 1 if ultimo_orden is None else ultimo_orden + 1
 
+            baul_id = data.get('baul') or data.get('baul_id')
+            baul_obj = None
+            if baul_id:
+                try:
+                    baul_obj = Baul.objects.get(id=baul_id, fk_user=request.user)
+                except Baul.DoesNotExist:
+                    pass
+
             habito = Habito.objects.create(
                 numero=nuevo_numero,
                 nombre=nombre,
@@ -314,6 +332,7 @@ def guardar_habito(request):
                 orden_n=orden_n,
                 color=color_hab,
                 archivado=archivado,
+                baul=baul_obj,
                 objetivo=objetivo,
                 dias_seleccionados=dias_seleccionados,
                 hora_inicio=hora_inicio,
@@ -397,6 +416,14 @@ def set_NewHabitoformHabito(request):
         else:
             nuevo_valor = ultimo_valor_mas_alto + 1
 
+        baul_id = datos.get('baul') or datos.get('baul_id')
+        baul_obj = None
+        if baul_id:
+            try:
+                baul_obj = Baul.objects.get(id=baul_id, fk_user=request.user)
+            except Baul.DoesNotExist:
+                pass
+
         habito = Habito.objects.create(
             numero=numero_campo,
             nombre=nombre,
@@ -416,6 +443,7 @@ def set_NewHabitoformHabito(request):
             reminder_minuto=reminder_minuto,
             reminder_enabled=reminder_enabled,
             checker_time=checker_time,
+            baul=baul_obj,
             fk_user=request.user
         )
         
@@ -587,6 +615,21 @@ def archivar_habito(request):
         habitoAEliminar = Habito.objects.get(id = id_habito)
         valorArchivado = habitoAEliminar.archivado
         habitoAEliminar.archivado = not valorArchivado
+        
+        if habitoAEliminar.archivado:
+            baul_id = datos.get('baul') or datos.get('baul_id')
+            if baul_id:
+                try:
+                    baul_obj = Baul.objects.get(id=baul_id, fk_user=request.user)
+                    habitoAEliminar.baul = baul_obj
+                except Baul.DoesNotExist:
+                    pass
+            else:
+                default_baul, _ = Baul.objects.get_or_create(nombre="General", fk_user=request.user)
+                habitoAEliminar.baul = default_baul
+        else:
+            habitoAEliminar.baul = None
+            
         habitoAEliminar.save()
     
         return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
@@ -1263,4 +1306,75 @@ def toggle_subtarea(request):
             })
         except Subtarea.DoesNotExist:
             return JsonResponse({'error': 'Subtarea no encontrada'}, status=404)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+
+def get_baules(request):
+    """Obtener todos los baules del usuario actual"""
+    if request.user.is_authenticated:
+        baules = Baul.objects.filter(fk_user=request.user)
+        if not baules.exists():
+            default_baul = Baul.objects.create(nombre="General", color="#FFFFFF", fk_user=request.user)
+            existing_archived = request.user.listHabitos.filter(archivado=True, baul__isnull=True)
+            for h in existing_archived:
+                h.baul = default_baul
+                h.save()
+            baules = Baul.objects.filter(fk_user=request.user)
+        
+        baules_list = [{'id': b.id, 'nombre': b.nombre, 'color': b.color} for b in baules]
+        return JsonResponse({'baules': baules_list})
+    return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+
+
+def crear_baul(request):
+    """Crear un nuevo baul"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            data = json.loads(request.body)
+            nombre = data.get('nombre')
+            color = data.get('color', '#FFFFFF')
+            
+            baul = Baul.objects.create(
+                nombre=nombre,
+                color=color,
+                fk_user=request.user
+            )
+            
+            return JsonResponse({'status': 'success', 'baul': {'id': baul.id, 'nombre': baul.nombre, 'color': baul.color}})
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+
+def editar_baul(request, baul_id):
+    """Editar un baul existente"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            data = json.loads(request.body)
+            nombre = data.get('nombre')
+            color = data.get('color', '#FFFFFF')
+            
+            try:
+                baul = Baul.objects.get(id=baul_id, fk_user=request.user)
+                baul.nombre = nombre
+                baul.color = color
+                baul.save()
+                
+                return JsonResponse({'status': 'success', 'baul': {'id': baul.id, 'nombre': baul.nombre, 'color': baul.color}})
+            except Baul.DoesNotExist:
+                return JsonResponse({'error': 'Baúl no encontrado'}, status=404)
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
+    return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
+
+
+def eliminar_baul(request, baul_id):
+    """Eliminar un baul"""
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                baul = Baul.objects.get(id=baul_id, fk_user=request.user)
+                baul.delete()
+                return JsonResponse({'status': 'success'})
+            except Baul.DoesNotExist:
+                return JsonResponse({'error': 'Baúl no encontrado'}, status=404)
+        return JsonResponse({'error': 'Usuario no autenticado'}, status=401)
     return JsonResponse({'error': 'Se espera una solicitud POST'}, status=400)
