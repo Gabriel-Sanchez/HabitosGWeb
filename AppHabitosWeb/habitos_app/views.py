@@ -363,7 +363,11 @@ def guardar_habito(request):
                     fecha_comp = None
                 Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
 
-        return JsonResponse({'status': 'success'})
+        subtareas_list = [sub.obtener_valores() for sub in habito.subtareas.all()]
+        return JsonResponse({
+            'status': 'success',
+            'subtareas': subtareas_list
+        })
     return JsonResponse({'status': 'error'})
 
 
@@ -465,7 +469,12 @@ def set_NewHabitoformHabito(request):
                 fecha_comp = None
             Subtarea.objects.create(fk_habito=habito, nombre=nombre_sub, fecha_completada=fecha_comp)
 
-        return JsonResponse({'mensaje': 'Datos recibidos correctamente', 'id': habito.id})
+        subtareas_list = [sub.obtener_valores() for sub in habito.subtareas.all()]
+        return JsonResponse({
+            'mensaje': 'Datos recibidos correctamente',
+            'id': habito.id,
+            'subtareas': subtareas_list
+        })
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
     
