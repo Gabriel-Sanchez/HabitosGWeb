@@ -5,7 +5,7 @@ from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from django.db.models import Max,Sum, F
+from django.db.models import Max,Sum, F, Q
 from django.contrib.auth.models import User
 
 import csv
@@ -69,16 +69,24 @@ def listar_habitos(Usuario):
             habitos_hoy.append(habito)
     
     # Separar hábitos hechos y no hechos hoy (comparar con fecha local)
-    habitosenelhistorial_no_hoy = [h for h in habitos_hoy if not h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual_date).exists() and not h.archivado]
-    habitosenelhistorial_hoy = [h for h in habitos_hoy if h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual_date).exists() and not h.archivado]
+    inicio_dia = timezone.make_aware(datetime.combine(fecha_actual_date, datetime.min.time()))
+    fin_dia = timezone.make_aware(datetime.combine(fecha_actual_date, datetime.max.time()))
+
+    def esta_hecho_hoy(h):
+        return h.listHabitoHistorial.filter(fecha_inicio__date=fecha_actual_date).exists() or \
+               h.listHabitoHistorial.filter(fecha_inicio__range=(inicio_dia, fin_dia)).exists()
+
+    habitosenelhistorial_no_hoy = [h for h in habitos_hoy if not esta_hecho_hoy(h) and not h.archivado]
+    habitosenelhistorial_hoy = [h for h in habitos_hoy if esta_hecho_hoy(h) and not h.archivado]
     habitosArchivado = listaHabitos.filter(archivado=True).order_by('orden_n')
  
     habitos_No_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_no_hoy]
     habitos_hechos_hoy = [habito.obtener_valores() for habito in habitosenelhistorial_hoy]
     Lista_habitos_Archivados = [habito.obtener_valores() for habito in habitosArchivado]
     
-    # listaHistorialHoy = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual)
-    listaHistorialHoy = Historial_habitos.objects.filter(fk_habito__fk_user=Usuario ,fecha_inicio__date=fecha_actual_date)
+    listaHistorialHoy = Historial_habitos.objects.filter(fk_habito__fk_user=Usuario).filter(
+        Q(fecha_inicio__date=fecha_actual_date) | Q(fecha_inicio__range=(inicio_dia, fin_dia))
+    ).distinct()
     
     varTotalTiempoHabitoHoyRestante = totalMinutosHistorialHoy(habitosenelhistorial_no_hoy)
     varTotalTiempoHabitoHoyCompletado = totalMinutosHistorialCompletadosHoy(listaHistorialHoy)

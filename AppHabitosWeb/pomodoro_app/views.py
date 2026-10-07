@@ -145,17 +145,26 @@ def set_fin_Habito(request):
         objetoHistoralHabito = Historial_habitos.objects.filter(fecha_inicio__date=fecha_actual_date, fk_habito__id=id_habito)
 
         if objetoHistoralHabito.exists():
-            
             objetoHistoralHabito = objetoHistoralHabito.first()
-            
             fecha_hora_fin = fecha_actual_utc
-         
-            objetoHistoralHabito.fecha_fin=fecha_hora_fin 
+            objetoHistoralHabito.fecha_fin = fecha_hora_fin 
             objetoHistoralHabito.save()
             objetoHistoralHabito = objetoHistoralHabito.obtenerHistorialFormateado()
-            
             return JsonResponse({'mensaje': 'Datos recibidos correctamente', 'nuevo_historial': objetoHistoralHabito})
-        return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
+        else:
+            try:
+                obj_id_habito = Habito.objects.get(id=id_habito)
+                duracion_calc = timedelta(minutes=obj_id_habito.work_time * obj_id_habito.count) if obj_id_habito.work_time else timedelta(0)
+                nuevo_historial = Historial_habitos.objects.create(
+                    fk_habito=obj_id_habito,
+                    fecha_inicio=fecha_actual_utc - duracion_calc,
+                    fecha_fin=fecha_actual_utc,
+                    duracion=duracion_calc,
+                    duracion_descanso=timedelta(0),
+                )
+                return JsonResponse({'mensaje': 'Datos recibidos correctamente', 'nuevo_historial': nuevo_historial.obtenerHistorialFormateado()})
+            except Exception:
+                return JsonResponse({'mensaje': 'Datos recibidos correctamente'})
     else:
         return JsonResponse({'error': 'Se espera una solicitud POST'})
     
