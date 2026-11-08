@@ -656,7 +656,7 @@ def archivar_habito(request):
 
 def get_listHabitos_Sort(request): 
     # listaHabitos_a_ordenar = Habito.objects.filter(archivado=False)
-    listaHabitos_a_ordenar =   request.user.listHabitos.filter(archivado=False)
+    listaHabitos_a_ordenar = request.user.listHabitos.filter(archivado=False).order_by('orden_n', 'id')
     valoresListaHabitosAordenarJson = [habito.obtener_valores() for habito in listaHabitos_a_ordenar]
     context = {
             'ListHabitosSort': valoresListaHabitosAordenarJson,
@@ -683,20 +683,21 @@ def set_listHabitos_Sort(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         habitos_ids = [item for item in data]
-        habitos = Habito.objects.filter(id__in=habitos_ids)
+        habitos = Habito.objects.filter(fk_user=request.user, id__in=habitos_ids)
 
         # Crear un diccionario que mapea los IDs a los objetos Habito
         habitos_dict = {habito.id: habito for habito in habitos}
 
         # Crear una lista de los objetos Habito en el orden correcto
-        habitos_ordenados = [habitos_dict[id] for id in habitos_ids]
+        habitos_ordenados = [habitos_dict[id] for id in habitos_ids if id in habitos_dict]
 
         # Actualizar el orden_n de manera secuencial
         for i, habito in enumerate(habitos_ordenados):
             habito.orden_n = i
 
         # Actualizar todos los hábitos de una vez
-        Habito.objects.bulk_update(habitos_ordenados, ['orden_n'])
+        if habitos_ordenados:
+            Habito.objects.bulk_update(habitos_ordenados, ['orden_n'])
             
         return JsonResponse({'message': 'Datos recibidos correctamente', 'status': 'success'})
     else:
